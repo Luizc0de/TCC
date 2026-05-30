@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Insurance - Proteja sua Vida e Seus Bens</title>
+    <meta name="description" content="Os planos de seguro mais procurados do Brasil: Vida, Prestamista, Acidentes, Doenças Graves, Auto, Residencial, Celular e Garantia Estendida.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="insurance-header" id="header">
+        <div class="insurance-header-inner">
+            <a href="index.html" class="insurance-logo" id="logoLink">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>Insurance</span>
+            </a>
+            <nav class="insurance-nav">
+                <a href="#hero" class="nav-link">Início</a>
+                <a href="#planos" class="nav-link">Planos</a>
+                <a href="#personalizado" class="nav-link">Plano Personalizado</a>
+                <a href="#contato" class="nav-link">Contato</a>
+            </nav>
+            <div class="insurance-header-actions">
+                <a href="login.html" class="insurance-btn insurance-btn-outline insurance-btn-sm">Login</a>
+                <a href="cadastro.html" class="insurance-btn insurance-btn-primary insurance-btn-sm">Cadastre-se</a>
+            </div>
+            <button class="insurance-hamburger" id="hamburgerBtn" aria-label="Abrir menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- MOBILE NAV -->
+    <div class="insurance-mobile-nav" id="mobileNav">
+        <div class="insurance-mobile-nav-content">
+            <button class="insurance-mobile-nav-close" id="closeMobileBtn" aria-label="Fechar menu">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <a href="#hero" class="nav-link">Início</a>
+            <a href="#planos" class="nav-link">Planos</a>
+            <a href="#personalizado" class="nav-link">Plano Personalizado</a>
+            <a href="#contato" class="nav-link">Contato</a>
+            <a href="login.html" class="insurance-btn insurance-btn-primary" style="margin-top: 16px;">Login</a>
+            <a href="cadastro.html" class="insurance-btn insurance-btn-outline">Cadastre-se</a>
+        </div>
+    </div>
+
+    <main>
+        <!-- HERO -->
+        <section class="insurance-hero" id="hero">
+            <div class="insurance-container">
+                <div class="insurance-hero-inner">
+                    <div class="insurance-hero-content">
+                        <h1>Proteja sua vida e seus bens com quem entende do assunto</h1>
+                        <p>Os planos mais procurados do Brasil. Escolha o melhor para você e sua família com cobertura completa e atendimento 24 horas.</p>
+                        <div class="insurance-hero-buttons">
+                            <a href="#planos" class="insurance-btn insurance-btn-primary insurance-btn-lg">
+                                VER PLANOS <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                            <a href="#personalizado" class="insurance-btn insurance-btn-outline-white insurance-btn-lg">
+                                FALAR COM ESPECIALISTA <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="insurance-hero-visual">
+                        <div class="insurance-hero-illustration">
+                            <i class="fa-solid fa-people-roof"></i>
+                            <span>Sua família e patrimônio protegidos</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO: PLANOS MAIS PROCURADOS (8 planos misturados) -->
+        <section class="insurance-plans insurance-section" id="planos">
+            <div class="insurance-container">
+                <div class="section-header">
+                    <h2 class="insurance-section-title insurance-reveal">Planos mais procurados</h2>
+                    <p class="insurance-section-subtitle insurance-reveal">Escolha o plano ideal para você e sua família</p>
+                </div>
+                <div class="insurance-plans-grid" id="planosGrid">
+                    <!-- 1. Seguro de Vida -->
+                    <div class="insurance-plan-card insurance-reveal" data-plan="vida" data-categoria="vida">
+                        <div class="insurance-plan-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+                        <div class="insurance-plan-name">Seguro de Vida</div>
+                        <div class="insurance-plan-price">R$ 39,90<span>/mês</span></div>
+                        <div class="insurance-plan-desc">Líder absoluto com 48% do mercado. Proteção para sua família.</div>
+                        <ul class="insurance-plan-features">
+                            <li><i class="fa-solid fa-circle-check"></i> Indenização para beneficiários</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Cobertura 24h</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Assistência funeral inclusa</li>
+                        </ul>
+                        <button class="insurance-btn insurance-btn-outline plan-btn">QUERO ESTE <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+
+                    <!-- 2. Seguro Automóvel -->
+                    <div class="insurance-plan-card insurance-reveal" data-plan="automovel" data-categoria="bens">
+                        <div class="insurance-plan-icon"><i class="fa-solid fa-car"></i></div>
+                        <div class="insurance-plan-name">Seguro Automóvel</div>
+                        <div class="insurance-plan-price">R$ 89,90<span>/mês</span></div>
+                        <div class="insurance-plan-desc">Mercado de R$ 65 bilhões. Proteção para seu veículo.</div>
+                        <ul class="insurance-plan-features">
+                            <li><i class="fa-solid fa-circle-check"></i> Colisão e roubo</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Danos a terceiros</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Carro reserva</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Assistência 24h</li>
+                        </ul>
+                        <button class="insurance-btn insurance-btn-outline plan-btn">QUERO ESTE <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+
+                    <!-- 3. Seguro Prestamista -->
+                    <div class="insurance-plan-card insurance-reveal" data-plan="prestamista" data-categoria="vida">
+                        <div class="insurance-plan-icon"><i class="fa-solid fa-hand-holding-usd"></i></div>
+                        <div class="insurance-plan-name">Seguro Prestamista</div>
+                        <div class="insurance-plan-price">R$ 24,90<span>/mês</span></div>
+                        <div class="insurance-plan-desc">Protege seu financiamento e suas dívidas. 27% do mercado.</div>
+                        <ul class="insurance-plan-features">
+                            <li><i class="fa-solid fa-circle-check"></i> Quitação de financiamento</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Proteção para empréstimos</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Cobertura por invalidez</li>
+                        </ul>
+                        <button class="insurance-btn insurance-btn-outline plan-btn">QUERO ESTE <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+
+                    <!-- 4. Seguro Residencial -->
+                    <div class="insurance-plan-card insurance-reveal" data-plan="imovel" data-categoria="bens">
+                        <div class="insurance-plan-icon"><i class="fa-solid fa-house-chimney"></i></div>
+                        <div class="insurance-plan-name">Seguro Residencial</div>
+                        <div class="insurance-plan-price">R$ 49,90<span>/mês</span></div>
+                        <div class="insurance-plan-desc">Crescimento de 26%. Proteção para seu lar.</div>
+                        <ul class="insurance-plan-features">
+                            <li><i class="fa-solid fa-circle-check"></i> Incêndio, explosão, raio</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Roubo e furto de bens</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Danos elétricos</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Responsabilidade familiar</li>
+                        </ul>
+                        <button class="insurance-btn insurance-btn-outline plan-btn">QUERO ESTE <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+
+                    <!-- 5. Seguro de Acidentes Pessoais -->
+                    <div class="insurance-plan-card insurance-reveal" data-plan="acidentes" data-categoria="vida">
+                        <div class="insurance-plan-icon"><i class="fa-solid fa-truck-medical"></i></div>
+                        <div class="insurance-plan-name">Acidentes Pessoais</div>
+                        <div class="insurance-plan-price">R$ 19,90<span>/mês</span></div>
+                        <div class="insurance-plan-desc">12% do mercado. Proteção para o seu dia a dia.</div>
+                        <ul class="insurance-plan-features">
+                            <li><i class="fa-solid fa-circle-check"></i> Indenização por invalidez</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Despesas médicas</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Cobertura 24h</li>
+                        </ul>
+                        <button class="insurance-btn insurance-btn-outline plan-btn">QUERO ESTE <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+
+                    <!-- 6. Seguro Celular -->
+                    <div class="insurance-plan-card insurance-reveal" data-plan="celular" data-categoria="bens">
+                        <div class="insurance-plan-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                        <div class="insurance-plan-name">Seguro Celular</div>
+                        <div class="insurance-plan-price">R$ 24,90<span>/mês</span></div>
+                        <div class="insurance-plan-desc">R$ 2,5 bilhões/ano. 10 milhões de aparelhos segurados.</div>
+                        <ul class="insurance-plan-features">
+                            <li><i class="fa-solid fa-circle-check"></i> Roubo e furto qualificado</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Danos acidentais (tela, água)</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Assistência técnica</li>
+                        </ul>
+                        <button class="insurance-btn insurance-btn-outline plan-btn">QUERO ESTE <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+
+                    <!-- 7. Seguro de Doenças Graves -->
+                    <div class="insurance-plan-card insurance-reveal" data-plan="doencas" data-categoria="vida">
+                        <div class="insurance-plan-icon"><i class="fa-solid fa-stethoscope"></i></div>
+                        <div class="insurance-plan-name">Doenças Graves</div>
+                        <div class="insurance-plan-price">R$ 49,90<span>/mês</span></div>
+                        <div class="insurance-plan-desc">Crescimento de 19,7%. Cobertura para +10 doenças.</div>
+                        <ul class="insurance-plan-features">
+                            <li><i class="fa-solid fa-circle-check"></i> Câncer, infarto, AVC</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Indenização integral</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Isenção de carência</li>
+                        </ul>
+                        <button class="insurance-btn insurance-btn-outline plan-btn">QUERO ESTE <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+
+                    <!-- 8. Garantia Estendida -->
+                    <div class="insurance-plan-card insurance-reveal" data-plan="garantia" data-categoria="bens">
+                        <div class="insurance-plan-icon"><i class="fa-solid fa-wrench"></i></div>
+                        <div class="insurance-plan-name">Garantia Estendida</div>
+                        <div class="insurance-plan-price">R$ 14,90<span>/mês</span></div>
+                        <div class="insurance-plan-desc">R$ 3 bilhões em 2025. Proteção para eletrônicos.</div>
+                        <ul class="insurance-plan-features">
+                            <li><i class="fa-solid fa-circle-check"></i> Extensão de garantia de fábrica</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Danos elétricos</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Assistência técnica especializada</li>
+                        </ul>
+                        <button class="insurance-btn insurance-btn-outline plan-btn">QUERO ESTE <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO: PLANO PERSONALIZADO -->
+        <section class="insurance-custom" id="personalizado">
+            <div class="insurance-container">
+                <div class="insurance-custom-inner insurance-reveal">
+                    <div class="insurance-custom-icon">
+                        <i class="fa-solid fa-sliders"></i>
+                    </div>
+                    <h2>Monte seu Plano Personalizado</h2>
+                    <p>Não encontrou o que procura? Monte um plano sob medida para suas necessidades. Escolha as coberturas que você realmente precisa e pague apenas por elas.</p>
+                    <div class="insurance-custom-features">
+                        <div class="custom-feature"><i class="fa-solid fa-check-circle"></i> Escolha as coberturas</div>
+                        <div class="custom-feature"><i class="fa-solid fa-check-circle"></i> Defina os valores</div>
+                        <div class="custom-feature"><i class="fa-solid fa-check-circle"></i> Pagamento flexível</div>
+                        <div class="custom-feature"><i class="fa-solid fa-check-circle"></i> Atendimento exclusivo</div>
+                    </div>
+                    <button class="insurance-btn insurance-btn-primary insurance-btn-lg" id="customPlanBtn">
+                        SOLICITAR ORÇAMENTO <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section class="insurance-faq insurance-section" id="faq">
+            <div class="insurance-container">
+                <h2 class="insurance-section-title insurance-reveal">Perguntas Frequentes</h2>
+                <p class="insurance-section-subtitle insurance-reveal">Tire suas dúvidas sobre nossos serviços</p>
+                <div class="insurance-faq-list" id="faqList">
+                    <div class="insurance-faq-item">
+                        <button class="insurance-faq-question">Qual a diferença entre os planos de vida e bens? <i class="fa-solid fa-chevron-down"></i></button>
+                        <div class="insurance-faq-answer">
+                            <div class="insurance-faq-answer-inner">Os planos de vida protegem pessoas (você e sua família) em casos de acidentes, doenças, invalidez ou falecimento. Já os planos para bens materiais protegem seu patrimônio como carro, casa, celular, entre outros.</div>
+                        </div>
+                    </div>
+                    <div class="insurance-faq-item">
+                        <button class="insurance-faq-question">Como funciona o plano personalizado? <i class="fa-solid fa-chevron-down"></i></button>
+                        <div class="insurance-faq-answer">
+                            <div class="insurance-faq-answer-inner">Você escolhe as coberturas que deseja, define os valores e montamos um plano exclusivo para você. Entre em contato conosco e um especialista irá te ajudar.</div>
+                        </div>
+                    </div>
+                    <div class="insurance-faq-item">
+                        <button class="insurance-faq-question">Posso contratar mais de um plano? <i class="fa-solid fa-chevron-down"></i></button>
+                        <div class="insurance-faq-answer">
+                            <div class="insurance-faq-answer-inner">Sim! Você pode contratar quantos planos desejar. Além disso, oferecemos descontos especiais para quem contrata múltiplos planos.</div>
+                        </div>
+                    </div>
+                    <div class="insurance-faq-item">
+                        <button class="insurance-faq-question">Como funciona o cancelamento? <i class="fa-solid fa-chevron-down"></i></button>
+                        <div class="insurance-faq-answer">
+                            <div class="insurance-faq-answer-inner">Você pode cancelar seu plano a qualquer momento, sem multas ou taxas adicionais. Basta entrar em contato com nosso suporte.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NEWSLETTER / CONTATO -->
+        <section class="insurance-newsletter" id="contato">
+            <div class="insurance-container">
+                <div class="insurance-newsletter-inner insurance-reveal">
+                    <h2>Receba novidades e ofertas exclusivas</h2>
+                    <p>Cadastre-se e fique por dentro das melhores ofertas em seguros.</p>
+                    <form class="insurance-newsletter-form" id="newsletterForm">
+                        <input type="email" name="email" placeholder="Seu melhor e-mail" required>
+                        <button type="submit">CADASTRAR</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="insurance-footer">
+        <div class="insurance-container">
+            <div class="insurance-footer-grid">
+                <div class="insurance-footer-brand">
+                    <a href="index.html" class="insurance-logo"><i class="fa-solid fa-shield-halved"></i> Insurance</a>
+                    <p>Protegendo famílias e patrimônios brasileiros com excelência desde 2010.</p>
+                    <div class="insurance-footer-social">
+                        <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                        <a href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4>Planos</h4>
+                    <ul class="insurance-footer-links">
+                        <li><a href="#planos">Seguro de Vida</a></li>
+                        <li><a href="#planos">Seguro Auto</a></li>
+                        <li><a href="#planos">Seguro Residencial</a></li>
+                        <li><a href="#planos">Seguro Celular</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Suporte</h4>
+                    <ul class="insurance-footer-links">
+                        <li><a href="#faq">FAQ</a></li>
+                        <li><a href="#">Central de ajuda</a></li>
+                        <li><a href="#">Ouvidoria</a></li>
+                        <li><a href="#">Sinistros</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Contato</h4>
+                    <ul class="insurance-footer-links">
+                        <li><i class="fa-solid fa-phone"></i> (11) 4000-1234</li>
+                        <li><i class="fa-solid fa-envelope"></i> contato@insurance.com.br</li>
+                        <li><i class="fa-solid fa-location-dot"></i> Av. Paulista, 1000 - SP</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="insurance-footer-bottom">
+                © 2024 Insurance. Todos os direitos reservados. | <a href="#">Política de Privacidade</a> | <a href="#">Termos de Uso</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODAL -->
+    <div class="insurance-modal-overlay" id="modalOverlay">
+        <div class="insurance-modal" id="modal">
+            <button class="insurance-modal-close" id="modalClose"><i class="fa-solid fa-xmark"></i></button>
+            <h3 id="modalTitle"></h3>
+            <div class="price" id="modalPrice"></div>
+            <p id="modalDesc"></p>
+            <ul id="modalFeatures"></ul>
+            <button class="insurance-btn insurance-btn-primary" id="modalBtn">CONTRATAR AGORA</button>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="insurance-toast" id="toast">✅ Plano selecionado com sucesso!</div>
+
+    <!-- WHATSAPP -->
+    <a href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer" class="insurance-whatsapp" aria-label="WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <!-- BACK TO TOP -->
+    <button class="insurance-back-to-top" id="backToTop" aria-label="Voltar ao topo">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <script src="script.js"></script>
+</body>
+</html>
