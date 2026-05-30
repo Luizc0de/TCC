@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Insurance - Proteja sua Vida e Seus Bens</title>
-    <meta name="description" content="Planos de seguro de vida e bens materiais personalizados. Proteção para você, sua família e seu patrimônio.">
+    <meta name="description" content="Os planos de seguro mais procurados do Brasil: Vida, Prestamista, Acidentes, Doenças Graves, Auto, Residencial, Celular e Garantia Estendida.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -15,20 +15,19 @@
     <!-- HEADER -->
     <header class="insurance-header" id="header">
         <div class="insurance-header-inner">
-            <a href="#" class="insurance-logo" id="logoLink">
+            <a href="index.html" class="insurance-logo" id="logoLink">
                 <i class="fa-solid fa-shield-halved"></i>
                 <span>Insurance</span>
             </a>
             <nav class="insurance-nav">
                 <a href="#hero" class="nav-link">Início</a>
-                <a href="#vida" class="nav-link">Planos de Vida</a>
-                <a href="#bens" class="nav-link">Planos para Bens</a>
+                <a href="#planos" class="nav-link">Planos</a>
                 <a href="#personalizado" class="nav-link">Plano Personalizado</a>
                 <a href="#contato" class="nav-link">Contato</a>
             </nav>
             <div class="insurance-header-actions">
-                <a href="#" class="insurance-btn insurance-btn-outline insurance-btn-sm">Login</a>
-                <a href="#" class="insurance-btn insurance-btn-primary insurance-btn-sm">Cadastre-se</a>
+                <a href="login.html" class="insurance-btn insurance-btn-outline insurance-btn-sm">Login</a>
+                <a href="cadastro.html" class="insurance-btn insurance-btn-primary insurance-btn-sm">Cadastre-se</a>
             </div>
             <button class="insurance-hamburger" id="hamburgerBtn" aria-label="Abrir menu">
                 <i class="fa-solid fa-bars"></i>
@@ -43,12 +42,11 @@
                 <i class="fa-solid fa-xmark"></i>
             </button>
             <a href="#hero" class="nav-link">Início</a>
-            <a href="#vida" class="nav-link">Planos de Vida</a>
-            <a href="#bens" class="nav-link">Planos para Bens</a>
+            <a href="#planos" class="nav-link">Planos</a>
             <a href="#personalizado" class="nav-link">Plano Personalizado</a>
             <a href="#contato" class="nav-link">Contato</a>
-            <a href="#" class="insurance-btn insurance-btn-primary" style="margin-top: 16px;">Login</a>
-            <a href="#" class="insurance-btn insurance-btn-outline">Cadastre-se</a>
+            <a href="login.html" class="insurance-btn insurance-btn-primary" style="margin-top: 16px;">Login</a>
+            <a href="cadastro.html" class="insurance-btn insurance-btn-outline">Cadastre-se</a>
         </div>
     </div>
 
@@ -59,13 +57,13 @@
                 <div class="insurance-hero-inner">
                     <div class="insurance-hero-content">
                         <h1>Proteja sua vida e seus bens com quem entende do assunto</h1>
-                        <p>Planos personalizados para você, sua família e seu patrimônio. Cobertura completa e atendimento 24 horas.</p>
+                        <p>Os planos mais procurados do Brasil. Escolha o melhor para você e sua família com cobertura completa e atendimento 24 horas.</p>
                         <div class="insurance-hero-buttons">
-                            <a href="#vida" class="insurance-btn insurance-btn-primary insurance-btn-lg" id="heroVidaBtn">
-                                VER PLANOS DE VIDA <i class="fa-solid fa-arrow-right"></i>
+                            <a href="#planos" class="insurance-btn insurance-btn-primary insurance-btn-lg">
+                                VER PLANOS <i class="fa-solid fa-arrow-right"></i>
                             </a>
-                            <a href="#bens" class="insurance-btn insurance-btn-outline-white insurance-btn-lg" id="heroBensBtn">
-                                VER PLANOS PARA BENS <i class="fa-solid fa-arrow-right"></i>
+                            <a href="#personalizado" class="insurance-btn insurance-btn-outline-white insurance-btn-lg">
+                                FALAR COM ESPECIALISTA <i class="fa-solid fa-arrow-right"></i>
                             </a>
                         </div>
                     </div>
@@ -79,20 +77,20 @@
             </div>
         </section>
 
-        <!-- SEÇÃO: PLANOS DE VIDA -->
-        <section class="insurance-plans insurance-section" id="vida">
+        <!-- SEÇÃO: PLANOS MAIS PROCURADOS (8 planos misturados) -->
+        <section class="insurance-plans insurance-section" id="planos">
             <div class="insurance-container">
                 <div class="section-header">
-                    <h2 class="insurance-section-title insurance-reveal">Planos de Vida</h2>
-                    <p class="insurance-section-subtitle insurance-reveal">Proteja quem você mais ama com nossos seguros pessoais</p>
+                    <h2 class="insurance-section-title insurance-reveal">Planos mais procurados</h2>
+                    <p class="insurance-section-subtitle insurance-reveal">Escolha o plano ideal para você e sua família</p>
                 </div>
-                <div class="insurance-plans-grid" id="vidaGrid">
-                    <!-- Seguro de Vida -->
+                <div class="insurance-plans-grid" id="planosGrid">
+                    <!-- 1. Seguro de Vida -->
                     <div class="insurance-plan-card insurance-reveal" data-plan="vida" data-categoria="vida">
                         <div class="insurance-plan-icon"><i class="fa-solid fa-heart-pulse"></i></div>
                         <div class="insurance-plan-name">Seguro de Vida</div>
                         <div class="insurance-plan-price">R$ 39,90<span>/mês</span></div>
-                        <div class="insurance-plan-desc">Proteção financeira para sua família em caso de imprevistos.</div>
+                        <div class="insurance-plan-desc">Líder absoluto com 48% do mercado. Proteção para sua família.</div>
                         <ul class="insurance-plan-features">
                             <li><i class="fa-solid fa-circle-check"></i> Indenização para beneficiários</li>
                             <li><i class="fa-solid fa-circle-check"></i> Cobertura 24h</li>
@@ -101,93 +99,12 @@
                         <button class="insurance-btn insurance-btn-outline plan-btn">QUERO ESTE <i class="fa-solid fa-arrow-right"></i></button>
                     </div>
 
-                    <!-- Seguro de Acidentes Pessoais -->
-                    <div class="insurance-plan-card insurance-reveal" data-plan="acidentes" data-categoria="vida">
-                        <div class="insurance-plan-icon"><i class="fa-solid fa-truck-medical"></i></div>
-                        <div class="insurance-plan-name">Seguro de Acidentes</div>
-                        <div class="insurance-plan-price">R$ 19,90<span>/mês</span></div>
-                        <div class="insurance-plan-desc">Proteção em caso de acidentes pessoais.</div>
-                        <ul class="insurance-plan-features">
-                            <li><i class="fa-solid fa-circle-check"></i> Indenização por invalidez</li>
-                            <li><i class="fa-solid fa-circle-check"></i> Despesas médicas</li>
-                            <li><i class="fa-solid fa-circle-check"></i> Cobertura 24h</li>
-                        </ul>
-                        <button class="insurance-btn insurance-btn-outline plan-btn">QUERO ESTE <i class="fa-solid fa-arrow-right"></i></button>
-                    </div>
-
-                    <!-- Seguro de Doenças Graves -->
-                    <div class="insurance-plan-card insurance-reveal" data-plan="doencas" data-categoria="vida">
-                        <div class="insurance-plan-icon"><i class="fa-solid fa-stethoscope"></i></div>
-                        <div class="insurance-plan-name">Doenças Graves</div>
-                        <div class="insurance-plan-price">R$ 49,90<span>/mês</span></div>
-                        <div class="insurance-plan-desc">Cobertura para câncer, infarto, AVC e outras doenças.</div>
-                        <ul class="insurance-plan-features">
-                            <li><i class="fa-solid fa-circle-check"></i> Cobertura para +10 doenças</li>
-                            <li><i class="fa-solid fa-circle-check"></i> Indenização integral</li>
-                            <li><i class="fa-solid fa-circle-check"></i> Isenção de carência</li>
-                        </ul>
-                        <button class="insurance-btn insurance-btn-outline plan-btn">QUERO ESTE <i class="fa-solid fa-arrow-right"></i></button>
-                    </div>
-
-                    <!-- Seguro de Invalidez -->
-                    <div class="insurance-plan-card insurance-reveal" data-plan="invalidez" data-categoria="vida">
-                        <div class="insurance-plan-icon"><i class="fa-solid fa-wheelchair"></i></div>
-                        <div class="insurance-plan-name">Seguro de Invalidez</div>
-                        <div class="insurance-plan-price">R$ 29,90<span>/mês</span></div>
-                        <div class="insurance-plan-desc">Proteção por incapacidade permanente total ou parcial.</div>
-                        <ul class="insurance-plan-features">
-                            <li><i class="fa-solid fa-circle-check"></i> Renda mensal vitalícia</li>
-                            <li><i class="fa-solid fa-circle-check"></i> Cobertura por acidente ou doença</li>
-                            <li><i class="fa-solid fa-circle-check"></i> Assistência especializada</li>
-                        </ul>
-                        <button class="insurance-btn insurance-btn-outline plan-btn">QUERO ESTE <i class="fa-solid fa-arrow-right"></i></button>
-                    </div>
-
-                    <!-- Seguro Funeral -->
-                    <div class="insurance-plan-card insurance-reveal" data-plan="funeral" data-categoria="vida">
-                        <div class="insurance-plan-icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
-                        <div class="insurance-plan-name">Seguro Funeral</div>
-                        <div class="insurance-plan-price">R$ 14,90<span>/mês</span></div>
-                        <div class="insurance-plan-desc">Assistência para despesas funerárias.</div>
-                        <ul class="insurance-plan-features">
-                            <li><i class="fa-solid fa-circle-check"></i> Cobertura nacional</li>
-                            <li><i class="fa-solid fa-circle-check"></i> Assistência psicológica</li>
-                            <li><i class="fa-solid fa-circle-check"></i> Sem carência</li>
-                        </ul>
-                        <button class="insurance-btn insurance-btn-outline plan-btn">QUERO ESTE <i class="fa-solid fa-arrow-right"></i></button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- SEÇÃO: PLANOS PARA BENS MATERIAIS -->
-        <section class="insurance-plans insurance-section bg-light" id="bens">
-            <div class="insurance-container">
-                <div class="section-header">
-                    <h2 class="insurance-section-title insurance-reveal">Planos para Bens Materiais</h2>
-                    <p class="insurance-section-subtitle insurance-reveal">Proteja seu patrimônio com nossos seguros especializados</p>
-                </div>
-                <div class="insurance-plans-grid" id="bensGrid">
-                    <!-- Seguro Smartphone -->
-                    <div class="insurance-plan-card insurance-reveal" data-plan="smartphone" data-categoria="bens">
-                        <div class="insurance-plan-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
-                        <div class="insurance-plan-name">Seguro Smartphone</div>
-                        <div class="insurance-plan-price">R$ 24,90<span>/mês</span></div>
-                        <div class="insurance-plan-desc">Proteção completa para seu celular.</div>
-                        <ul class="insurance-plan-features">
-                            <li><i class="fa-solid fa-circle-check"></i> Roubo e furto qualificado</li>
-                            <li><i class="fa-solid fa-circle-check"></i> Danos acidentais (tela, água)</li>
-                            <li><i class="fa-solid fa-circle-check"></i> Assistência técnica</li>
-                        </ul>
-                        <button class="insurance-btn insurance-btn-outline plan-btn">QUERO ESTE <i class="fa-solid fa-arrow-right"></i></button>
-                    </div>
-
-                    <!-- Seguro Automóvel -->
+                    <!-- 2. Seguro Automóvel -->
                     <div class="insurance-plan-card insurance-reveal" data-plan="automovel" data-categoria="bens">
                         <div class="insurance-plan-icon"><i class="fa-solid fa-car"></i></div>
                         <div class="insurance-plan-name">Seguro Automóvel</div>
                         <div class="insurance-plan-price">R$ 89,90<span>/mês</span></div>
-                        <div class="insurance-plan-desc">Proteção para seu veículo.</div>
+                        <div class="insurance-plan-desc">Mercado de R$ 65 bilhões. Proteção para seu veículo.</div>
                         <ul class="insurance-plan-features">
                             <li><i class="fa-solid fa-circle-check"></i> Colisão e roubo</li>
                             <li><i class="fa-solid fa-circle-check"></i> Danos a terceiros</li>
@@ -197,12 +114,26 @@
                         <button class="insurance-btn insurance-btn-outline plan-btn">QUERO ESTE <i class="fa-solid fa-arrow-right"></i></button>
                     </div>
 
-                    <!-- Seguro Imóvel -->
+                    <!-- 3. Seguro Prestamista -->
+                    <div class="insurance-plan-card insurance-reveal" data-plan="prestamista" data-categoria="vida">
+                        <div class="insurance-plan-icon"><i class="fa-solid fa-hand-holding-usd"></i></div>
+                        <div class="insurance-plan-name">Seguro Prestamista</div>
+                        <div class="insurance-plan-price">R$ 24,90<span>/mês</span></div>
+                        <div class="insurance-plan-desc">Protege seu financiamento e suas dívidas. 27% do mercado.</div>
+                        <ul class="insurance-plan-features">
+                            <li><i class="fa-solid fa-circle-check"></i> Quitação de financiamento</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Proteção para empréstimos</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Cobertura por invalidez</li>
+                        </ul>
+                        <button class="insurance-btn insurance-btn-outline plan-btn">QUERO ESTE <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+
+                    <!-- 4. Seguro Residencial -->
                     <div class="insurance-plan-card insurance-reveal" data-plan="imovel" data-categoria="bens">
                         <div class="insurance-plan-icon"><i class="fa-solid fa-house-chimney"></i></div>
-                        <div class="insurance-plan-name">Seguro Imóvel</div>
+                        <div class="insurance-plan-name">Seguro Residencial</div>
                         <div class="insurance-plan-price">R$ 49,90<span>/mês</span></div>
-                        <div class="insurance-plan-desc">Proteção para sua casa ou apartamento.</div>
+                        <div class="insurance-plan-desc">Crescimento de 26%. Proteção para seu lar.</div>
                         <ul class="insurance-plan-features">
                             <li><i class="fa-solid fa-circle-check"></i> Incêndio, explosão, raio</li>
                             <li><i class="fa-solid fa-circle-check"></i> Roubo e furto de bens</li>
@@ -212,44 +143,58 @@
                         <button class="insurance-btn insurance-btn-outline plan-btn">QUERO ESTE <i class="fa-solid fa-arrow-right"></i></button>
                     </div>
 
-                    <!-- Seguro Maquinários -->
-                    <div class="insurance-plan-card insurance-reveal" data-plan="maquinarios" data-categoria="bens">
-                        <div class="insurance-plan-icon"><i class="fa-solid fa-industry"></i></div>
-                        <div class="insurance-plan-name">Seguro Maquinários</div>
-                        <div class="insurance-plan-price">R$ 119,90<span>/mês</span></div>
-                        <div class="insurance-plan-desc">Proteção para equipamentos industriais.</div>
+                    <!-- 5. Seguro de Acidentes Pessoais -->
+                    <div class="insurance-plan-card insurance-reveal" data-plan="acidentes" data-categoria="vida">
+                        <div class="insurance-plan-icon"><i class="fa-solid fa-truck-medical"></i></div>
+                        <div class="insurance-plan-name">Acidentes Pessoais</div>
+                        <div class="insurance-plan-price">R$ 19,90<span>/mês</span></div>
+                        <div class="insurance-plan-desc">12% do mercado. Proteção para o seu dia a dia.</div>
                         <ul class="insurance-plan-features">
-                            <li><i class="fa-solid fa-circle-check"></i> Quebra de máquinas</li>
-                            <li><i class="fa-solid fa-circle-check"></i> Danos elétricos</li>
-                            <li><i class="fa-solid fa-circle-check"></i> Perda de lucros</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Indenização por invalidez</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Despesas médicas</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Cobertura 24h</li>
                         </ul>
                         <button class="insurance-btn insurance-btn-outline plan-btn">QUERO ESTE <i class="fa-solid fa-arrow-right"></i></button>
                     </div>
 
-                    <!-- Seguro Eletrônicos -->
-                    <div class="insurance-plan-card insurance-reveal" data-plan="eletronicos" data-categoria="bens">
-                        <div class="insurance-plan-icon"><i class="fa-solid fa-laptop"></i></div>
-                        <div class="insurance-plan-name">Seguro Eletrônicos</div>
-                        <div class="insurance-plan-price">R$ 34,90<span>/mês</span></div>
-                        <div class="insurance-plan-desc">Proteção para notebooks, tablets e TVs.</div>
+                    <!-- 6. Seguro Celular -->
+                    <div class="insurance-plan-card insurance-reveal" data-plan="celular" data-categoria="bens">
+                        <div class="insurance-plan-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                        <div class="insurance-plan-name">Seguro Celular</div>
+                        <div class="insurance-plan-price">R$ 24,90<span>/mês</span></div>
+                        <div class="insurance-plan-desc">R$ 2,5 bilhões/ano. 10 milhões de aparelhos segurados.</div>
                         <ul class="insurance-plan-features">
-                            <li><i class="fa-solid fa-circle-check"></i> Roubo e furto</li>
-                            <li><i class="fa-solid fa-circle-check"></i> Danos acidentais</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Roubo e furto qualificado</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Danos acidentais (tela, água)</li>
                             <li><i class="fa-solid fa-circle-check"></i> Assistência técnica</li>
                         </ul>
                         <button class="insurance-btn insurance-btn-outline plan-btn">QUERO ESTE <i class="fa-solid fa-arrow-right"></i></button>
                     </div>
 
-                    <!-- Seguro Pet -->
-                    <div class="insurance-plan-card insurance-reveal" data-plan="pet" data-categoria="bens">
-                        <div class="insurance-plan-icon"><i class="fa-solid fa-dog"></i></div>
-                        <div class="insurance-plan-name">Seguro Pet</div>
-                        <div class="insurance-plan-price">R$ 29,90<span>/mês</span></div>
-                        <div class="insurance-plan-desc">Proteção para seu melhor amigo.</div>
+                    <!-- 7. Seguro de Doenças Graves -->
+                    <div class="insurance-plan-card insurance-reveal" data-plan="doencas" data-categoria="vida">
+                        <div class="insurance-plan-icon"><i class="fa-solid fa-stethoscope"></i></div>
+                        <div class="insurance-plan-name">Doenças Graves</div>
+                        <div class="insurance-plan-price">R$ 49,90<span>/mês</span></div>
+                        <div class="insurance-plan-desc">Crescimento de 19,7%. Cobertura para +10 doenças.</div>
                         <ul class="insurance-plan-features">
-                            <li><i class="fa-solid fa-circle-check"></i> Consultas e exames</li>
-                            <li><i class="fa-solid fa-circle-check"></i> Cirurgias e internações</li>
-                            <li><i class="fa-solid fa-circle-check"></i> Assistência 24h</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Câncer, infarto, AVC</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Indenização integral</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Isenção de carência</li>
+                        </ul>
+                        <button class="insurance-btn insurance-btn-outline plan-btn">QUERO ESTE <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+
+                    <!-- 8. Garantia Estendida -->
+                    <div class="insurance-plan-card insurance-reveal" data-plan="garantia" data-categoria="bens">
+                        <div class="insurance-plan-icon"><i class="fa-solid fa-wrench"></i></div>
+                        <div class="insurance-plan-name">Garantia Estendida</div>
+                        <div class="insurance-plan-price">R$ 14,90<span>/mês</span></div>
+                        <div class="insurance-plan-desc">R$ 3 bilhões em 2025. Proteção para eletrônicos.</div>
+                        <ul class="insurance-plan-features">
+                            <li><i class="fa-solid fa-circle-check"></i> Extensão de garantia de fábrica</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Danos elétricos</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Assistência técnica especializada</li>
                         </ul>
                         <button class="insurance-btn insurance-btn-outline plan-btn">QUERO ESTE <i class="fa-solid fa-arrow-right"></i></button>
                     </div>
@@ -333,7 +278,7 @@
         <div class="insurance-container">
             <div class="insurance-footer-grid">
                 <div class="insurance-footer-brand">
-                    <a href="#" class="insurance-logo"><i class="fa-solid fa-shield-halved"></i> Insurance</a>
+                    <a href="index.html" class="insurance-logo"><i class="fa-solid fa-shield-halved"></i> Insurance</a>
                     <p>Protegendo famílias e patrimônios brasileiros com excelência desde 2010.</p>
                     <div class="insurance-footer-social">
                         <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
@@ -343,21 +288,21 @@
                     </div>
                 </div>
                 <div>
-                    <h4>Planos de Vida</h4>
+                    <h4>Planos</h4>
                     <ul class="insurance-footer-links">
-                        <li><a href="#vida">Seguro de Vida</a></li>
-                        <li><a href="#vida">Seguro de Acidentes</a></li>
-                        <li><a href="#vida">Seguro de Doenças Graves</a></li>
-                        <li><a href="#vida">Seguro Funeral</a></li>
+                        <li><a href="#planos">Seguro de Vida</a></li>
+                        <li><a href="#planos">Seguro Auto</a></li>
+                        <li><a href="#planos">Seguro Residencial</a></li>
+                        <li><a href="#planos">Seguro Celular</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4>Planos para Bens</h4>
+                    <h4>Suporte</h4>
                     <ul class="insurance-footer-links">
-                        <li><a href="#bens">Seguro Auto</a></li>
-                        <li><a href="#bens">Seguro Residencial</a></li>
-                        <li><a href="#bens">Seguro Smartphone</a></li>
-                        <li><a href="#bens">Seguro Pet</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                        <li><a href="#">Central de ajuda</a></li>
+                        <li><a href="#">Ouvidoria</a></li>
+                        <li><a href="#">Sinistros</a></li>
                     </ul>
                 </div>
                 <div>
