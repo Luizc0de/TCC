@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Seguro Doenças Graves - Insurance</title>
+    <meta name="description" content="Proteja-se contra doenças graves com a Insurance. Cobertura para câncer, infarto, AVC e mais. Indenização integral e isenção de carência.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/seguro-doenças.css">
+</head>
+<body>
+    <!-- TELA DE CARREGAMENTO -->
+    <div id="loading-screen">
+        <div class="loader-logo">
+            <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div class="loader-text">Carregando<span class="loader-dots"></span></div>
+        <div class="loader-spinner"></div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="insurance-header" id="header">
+        <div class="insurance-header-inner">
+            <a href="index.html" class="insurance-logo">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>Insurance</span>
+            </a>
+            <nav class="insurance-nav">
+                <a href="index.html">Início</a>
+                <div class="dropdown">
+                    <a href="#" class="dropdown-trigger">Planos <i class="fa-solid fa-chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-column">
+                            <h4>Planos de Vida</h4>
+                            <a href="seguro-vida.html" class="dropdown-link" data-plano="vida">Seguro de Vida</a>
+                            <a href="seguro-prestamista.html" class="dropdown-link" data-plano="prestamista">Seguro Prestamista</a>
+                            <a href="seguro-acidentes.html" class="dropdown-link" data-plano="acidentes">Acidentes Pessoais</a>
+                            <a href="seguro-doenças.html" class="dropdown-link" data-plano="doencas">Doenças Graves</a>
+                            <a href="seguro-invalidez.html" class="dropdown-link" data-plano="invalidez">Seguro Invalidez</a>
+                            <a href="seguro-funeral.html" class="dropdown-link" data-plano="funeral">Seguro Funeral</a>
+                        </div>
+                        <div class="dropdown-column">
+                            <h4>Planos para Bens</h4>
+                            <a href="#" class="dropdown-link" data-plano="automovel">Seguro Automóvel</a>
+                            <a href="#" class="dropdown-link" data-plano="imovel">Seguro Residencial</a>
+                            <a href="#" class="dropdown-link" data-plano="celular">Seguro Celular</a>
+                            <a href="#" class="dropdown-link" data-plano="garantia">Garantia Estendida</a>
+                            <a href="#" class="dropdown-link" data-plano="maquinarios">Seguro Maquinários</a>
+                            <a href="#" class="dropdown-link" data-plano="eletronicos">Seguro Eletrônicos</a>
+                            <a href="#" class="dropdown-link" data-plano="pet">Seguro Pet</a>
+                        </div>
+                    </div>
+                </div>
+                <a href="#personalizado">Plano Personalizado</a>
+                <a href="#contato">Contato</a>
+            </nav>
+            <div class="insurance-header-actions">
+                <a href="login.html" class="insurance-btn insurance-btn-outline insurance-btn-sm">Login</a>
+                <a href="cadastro.html" class="insurance-btn insurance-btn-primary insurance-btn-sm">Cadastre-se</a>
+            </div>
+            <button class="insurance-hamburger" id="hamburgerBtn"><i class="fa-solid fa-bars"></i></button>
+        </div>
+    </header>
+
+    <!-- MOBILE NAV -->
+    <div class="insurance-mobile-nav" id="mobileNav">
+        <div class="insurance-mobile-nav-content">
+            <button class="insurance-mobile-nav-close" id="closeMobileBtn"><i class="fa-solid fa-xmark"></i></button>
+            <a href="index.html">Início</a>
+            <a href="seguro-vida.html">Seguro de Vida</a>
+            <a href="seguro-prestamista.html">Seguro Prestamista</a>
+            <a href="seguro-acidentes.html">Acidentes Pessoais</a>
+            <a href="seguro-doenças.html">Doenças Graves</a>
+            <a href="seguro-invalidez.html">Seguro Invalidez</a>
+            <a href="seguro-funeral.html">Seguro Funeral</a>
+            <a href="#personalizado">Plano Personalizado</a>
+            <a href="#contato">Contato</a>
+            <a href="login.html" class="insurance-btn insurance-btn-primary">Login</a>
+            <a href="cadastro.html" class="insurance-btn insurance-btn-outline">Cadastre-se</a>
+        </div>
+    </div>
+
+    <main>
+        <!-- HERO DA PÁGINA -->
+        <section class="page-hero" id="hero">
+            <div class="insurance-container">
+                <div class="page-hero-content">
+                    <div class="breadcrumb">
+                        <a href="index.html">Início</a> <i class="fa-solid fa-chevron-right"></i>
+                        <span>Doenças Graves</span>
+                    </div>
+                    <h1>Seguro Doenças Graves</h1>
+                    <p>Cobertura para as doenças mais críticas. <strong>Crescimento de 19,7%</strong> no setor, a Insurance protege você contra as principais doenças graves.</p>
+                    <div class="hero-badges">
+                        <span class="badge"><i class="fa-solid fa-star"></i> +10 doenças cobertas</span>
+                        <span class="badge"><i class="fa-solid fa-arrow-up"></i> 19,7% de crescimento</span>
+                        <span class="badge"><i class="fa-solid fa-clock"></i> Isenção de carência</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COBERTURAS DO PLANO -->
+        <section class="insurance-section" id="coberturas">
+            <div class="insurance-container">
+                <div class="section-header">
+                    <h2 class="insurance-section-title">O que está incluso</h2>
+                    <p class="insurance-section-subtitle">Cobertura para as principais doenças graves</p>
+                </div>
+                <div class="coberturas-grid">
+                    <div class="cobertura-card">
+                        <div class="cobertura-icon"><i class="fa-solid fa-heart"></i></div>
+                        <h3>Câncer, infarto, AVC</h3>
+                        <p>Cobertura para as três doenças mais críticas e com maior incidência.</p>
+                    </div>
+                    <div class="cobertura-card">
+                        <div class="cobertura-icon"><i class="fa-solid fa-circle-check"></i></div>
+                        <h3>Indenização integral</h3>
+                        <p>Você recebe o valor total contratado ao ser diagnosticado com uma doença coberta.</p>
+                    </div>
+                    <div class="cobertura-card">
+                        <div class="cobertura-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                        <h3>Isenção de carência</h3>
+                        <p>Proteção imediata após a assinatura do contrato, sem período de carência.</p>
+                    </div>
+                    <div class="cobertura-card">
+                        <div class="cobertura-icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                        <h3>+10 doenças cobertas</h3>
+                        <p>Além das principais, diversas outras doenças graves estão incluídas.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PLANOS DE DOENÇAS GRAVES -->
+        <section class="insurance-plans insurance-section bg-light" id="planos-doencas">
+            <div class="insurance-container">
+                <div class="section-header">
+                    <h2 class="insurance-section-title">Planos de Doenças Graves</h2>
+                    <p class="insurance-section-subtitle">Escolha a proteção ideal para você</p>
+                </div>
+                <div class="insurance-plans-grid">
+                    <!-- Plano Básico -->
+                    <div class="insurance-plan-card" data-plan="doencas-basico">
+                        <div class="insurance-plan-icon"><i class="fa-solid fa-shield"></i></div>
+                        <div class="insurance-plan-name">Plano Essencial</div>
+                        <div class="insurance-plan-price">R$ 29,90<span>/mês</span></div>
+                        <div class="insurance-plan-desc">Proteção básica para as principais doenças.</div>
+                        <ul class="insurance-plan-features">
+                            <li><i class="fa-solid fa-circle-check"></i> Cobertura de R$ 30.000</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Câncer, infarto, AVC</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Isenção de carência</li>
+                        </ul>
+                        <button class="insurance-btn insurance-btn-outline plan-btn">QUERO ESTE <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+
+                    <!-- Plano Plus -->
+                    <div class="insurance-plan-card featured" data-plan="doencas-plus">
+                        <div class="insurance-plan-badge">Mais Vendido</div>
+                        <div class="insurance-plan-icon"><i class="fa-solid fa-heart"></i></div>
+                        <div class="insurance-plan-name">Plano Completo</div>
+                        <div class="insurance-plan-price">R$ 59,90<span>/mês</span></div>
+                        <div class="insurance-plan-desc">Proteção completa para sua família.</div>
+                        <ul class="insurance-plan-features">
+                            <li><i class="fa-solid fa-circle-check"></i> Cobertura de R$ 70.000</li>
+                            <li><i class="fa-solid fa-circle-check"></i> +10 doenças cobertas</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Isenção de carência</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Cônjuge incluso</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Telemedicina</li>
+                        </ul>
+                        <button class="insurance-btn insurance-btn-primary plan-btn">QUERO ESTE <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+
+                    <!-- Plano Premium -->
+                    <div class="insurance-plan-card" data-plan="doencas-premium">
+                        <div class="insurance-plan-icon"><i class="fa-solid fa-crown"></i></div>
+                        <div class="insurance-plan-name">Plano Família</div>
+                        <div class="insurance-plan-price">R$ 89,90<span>/mês</span></div>
+                        <div class="insurance-plan-desc">Proteção total para você e sua família.</div>
+                        <ul class="insurance-plan-features">
+                            <li><i class="fa-solid fa-circle-check"></i> Cobertura de R$ 120.000</li>
+                            <li><i class="fa-solid fa-circle-check"></i> +15 doenças cobertas</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Isenção de carência</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Cônjuge e filhos</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Telemedicina</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Check-up anual</li>
+                        </ul>
+                        <button class="insurance-btn insurance-btn-outline plan-btn">QUERO ESTE <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DIFERENCIAIS -->
+        <section class="insurance-section" id="diferenciais">
+            <div class="insurance-container">
+                <div class="section-header">
+                    <h2 class="insurance-section-title">Por que escolher a Insurance?</h2>
+                    <p class="insurance-section-subtitle">Proteção contra as doenças mais graves</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon"><i class="fa-solid fa-circle-check"></i></div>
+                        <div>
+                            <h4>19,7% de crescimento</h4>
+                            <p>O setor de doenças graves que mais cresce no Brasil.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon"><i class="fa-solid fa-circle-check"></i></div>
+                        <div>
+                            <h4>Atendimento rápido</h4>
+                            <p>Suporte especializado 24h.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon"><i class="fa-solid fa-circle-check"></i></div>
+                        <div>
+                            <h4>Cobertura imediata</h4>
+                            <p>Proteção a partir do primeiro dia.</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon"><i class="fa-solid fa-circle-check"></i></div>
+                        <div>
+                            <h4>+15 doenças cobertas</h4>
+                            <p>Abrangência completa para sua tranquilidade.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ ESPECÍFICO -->
+        <section class="insurance-faq insurance-section" id="faq">
+            <div class="insurance-container">
+                <h2 class="insurance-section-title">Perguntas Frequentes</h2>
+                <p class="insurance-section-subtitle">Tire suas dúvidas sobre o Seguro Doenças Graves</p>
+                <div class="insurance-faq-list">
+                    <div class="insurance-faq-item">
+                        <button class="insurance-faq-question">Quais doenças são cobertas? <i class="fa-solid fa-chevron-down"></i></button>
+                        <div class="insurance-faq-answer">
+                            <div class="insurance-faq-answer-inner">Câncer, infarto, AVC, insuficiência renal, doença de Parkinson, Alzheimer, entre outras. Consulte a lista completa.</div>
+                        </div>
+                    </div>
+                    <div class="insurance-faq-item">
+                        <button class="insurance-faq-question">A cobertura é imediata? <i class="fa-solid fa-chevron-down"></i></button>
+                        <div class="insurance-faq-answer">
+                            <div class="insurance-faq-answer-inner">Sim! Não há carência para as doenças cobertas. A proteção começa a partir da assinatura do contrato.</div>
+                        </div>
+                    </div>
+                    <div class="insurance-faq-item">
+                        <button class="insurance-faq-question">Posso incluir minha família? <i class="fa-solid fa-chevron-down"></i></button>
+                        <div class="insurance-faq-answer">
+                            <div class="insurance-faq-answer-inner">Sim! Você pode incluir cônjuge e filhos dependentes na mesma apólice.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NEWSLETTER -->
+        <section class="insurance-newsletter" id="contato">
+            <div class="insurance-container">
+                <div class="insurance-newsletter-inner">
+                    <h2>Receba novidades e ofertas exclusivas</h2>
+                    <p>Cadastre-se e fique por dentro das melhores ofertas em seguros de doenças graves.</p>
+                    <form class="insurance-newsletter-form" id="newsletterForm">
+                        <input type="email" name="email" placeholder="Seu melhor e-mail" required>
+                        <button type="submit">CADASTRAR</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="insurance-footer">
+        <div class="insurance-container">
+            <div class="insurance-footer-grid">
+                <div class="insurance-footer-brand">
+                    <a href="index.html" class="insurance-logo"><i class="fa-solid fa-shield-halved"></i> Insurance</a>
+                    <p>Protegendo famílias e patrimônios desde 2010.</p>
+                    <div class="insurance-footer-social">
+                        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4>Planos de Vida</h4>
+                    <ul class="insurance-footer-links">
+                        <li><a href="seguro-vida.html">Seguro de Vida</a></li>
+                        <li><a href="seguro-prestamista.html">Seguro Prestamista</a></li>
+                        <li><a href="seguro-acidentes.html">Acidentes Pessoais</a></li>
+                        <li><a href="seguro-doenças.html">Doenças Graves</a></li>
+                        <li><a href="seguro-invalidez.html">Seguro Invalidez</a></li>
+                        <li><a href="seguro-funeral.html">Seguro Funeral</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Planos para Bens</h4>
+                    <ul class="insurance-footer-links">
+                        <li><a href="#">Seguro Auto</a></li>
+                        <li><a href="#">Seguro Residencial</a></li>
+                        <li><a href="#">Seguro Celular</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Contato</h4>
+                    <ul class="insurance-footer-links">
+                        <li><i class="fa-solid fa-phone"></i> (11) 4000-1234</li>
+                        <li><i class="fa-solid fa-envelope"></i> contato@insurance.com.br</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="insurance-footer-bottom">© 2024 Insurance. Todos os direitos reservados.</div>
+        </div>
+    </footer>
+
+    <!-- MODAL -->
+    <div class="insurance-modal-overlay" id="modalOverlay">
+        <div class="insurance-modal">
+            <button class="insurance-modal-close" id="modalClose"><i class="fa-solid fa-xmark"></i></button>
+            <h3 id="modalTitle"></h3>
+            <div class="price" id="modalPrice"></div>
+            <p id="modalDesc"></p>
+            <ul id="modalFeatures"></ul>
+            <button class="insurance-btn insurance-btn-primary" id="modalBtn">CONTRATAR AGORA</button>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="insurance-toast" id="toast">✅ Plano selecionado com sucesso!</div>
+
+    <!-- WHATSAPP -->
+    <a href="https://wa.me/5511999999999" target="_blank" class="insurance-whatsapp"><i class="fa-brands fa-whatsapp"></i></a>
+
+    <!-- BACK TO TOP -->
+    <button class="insurance-back-to-top" id="backToTop"><i class="fa-solid fa-arrow-up"></i></button>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

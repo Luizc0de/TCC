@@ -1,5 +1,53 @@
-// Dados dos planos para o modal
+// ============================================
+// TELA DE CARREGAMENTO + TRANSIÇÃO ENTRE PÁGINAS
+// ============================================
+
+const loadingScreen = document.getElementById('loading-screen');
+
+function showLoading() {
+    if (loadingScreen) {
+        loadingScreen.classList.add('active');
+    }
+}
+
+function hideLoading() {
+    if (loadingScreen) {
+        loadingScreen.classList.remove('active');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    hideLoading();
+    document.body.classList.add('loaded');
+});
+
+// ============================================
+// INTERCEPTA CLICKS EM LINKS INTERNOS
+// ============================================
+
+document.addEventListener('click', function(e) {
+    const link = e.target.closest('a');
+    
+    if (link) {
+        const href = link.getAttribute('href');
+        
+        if (href && href.endsWith('.html') && !href.includes('#') && href !== window.location.pathname.split('/').pop()) {
+            e.preventDefault();
+            const url = href;
+            showLoading();
+            setTimeout(() => {
+                window.location.href = url;
+            }, 500);
+        }
+    }
+});
+
+// ============================================
+// DADOS DOS PLANOS
+// ============================================
+
 const plansData = {
+    // ========== PLANOS DA HOME ==========
     vida: {
         name: "Seguro de Vida",
         price: "R$ 39,90",
@@ -48,7 +96,6 @@ const plansData = {
         desc: "R$ 3 bilhões em 2025.",
         features: ["Extensão de garantia", "Danos elétricos", "Assistência técnica"]
     },
-    // ========== PLANOS ADICIONADOS ==========
     invalidez: {
         name: "Seguro Invalidez",
         price: "R$ 29,90",
@@ -78,10 +125,93 @@ const plansData = {
         price: "R$ 29,90",
         desc: "Proteção para seu melhor amigo.",
         features: ["Consultas e exames", "Cirurgias e internações", "Assistência 24h"]
+    },
+
+    // ========== PLANOS DA PÁGINA SEGURO DE VIDA ==========
+    'vida-basico': {
+        name: "Plano Básico - Seguro de Vida",
+        price: "R$ 29,90",
+        desc: "Ideal para quem busca proteção essencial.",
+        features: ["2 beneficiários", "Cobertura de R$ 50.000", "Assistência funeral", "Suporte 24h"]
+    },
+    'vida-plus': {
+        name: "Plano Plus - Seguro de Vida",
+        price: "R$ 59,90",
+        desc: "O mais escolhido pelos nossos clientes.",
+        features: ["4 beneficiários", "Cobertura de R$ 120.000", "Assistência funeral", "Telemedicina", "Suporte prioritário"]
+    },
+    'vida-premium': {
+        name: "Plano Premium - Seguro de Vida",
+        price: "R$ 99,90",
+        desc: "Proteção total para sua família.",
+        features: ["6 beneficiários", "Cobertura de R$ 250.000", "Assistência funeral", "Telemedicina", "Check-up anual", "Atendimento vip"]
+    },
+
+    // ========== PLANOS DA PÁGINA SEGURO PRESTAMISTA ==========
+    'prestamista-basico': {
+        name: "Plano Essencial - Prestamista",
+        price: "R$ 19,90",
+        desc: "Proteção básica para suas dívidas.",
+        features: ["Quitação de financiamento", "Cobertura por morte", "Assistência funeral"]
+    },
+    'prestamista-plus': {
+        name: "Plano Completo - Prestamista",
+        price: "R$ 39,90",
+        desc: "Proteção completa para sua família.",
+        features: ["Quitação de financiamento", "Cobertura por morte", "Invalidez total/permanente", "Assistência funeral", "Suporte psicológico"]
+    },
+    'prestamista-premium': {
+        name: "Plano Família - Prestamista",
+        price: "R$ 59,90",
+        desc: "Proteção total para você e sua família.",
+        features: ["Quitação de financiamento", "Cobertura por morte", "Invalidez total/permanente", "Assistência funeral", "Suporte psicológico", "Cobertura para o cônjuge"]
+    },
+
+    // ========== PLANOS DA PÁGINA ACIDENTES PESSOAIS ==========
+    'acidentes-basico': {
+        name: "Plano Individual - Acidentes",
+        price: "R$ 14,90",
+        desc: "Proteção essencial para você.",
+        features: ["Cobertura de R$ 25.000", "Despesas médicas", "Cobertura 24h"]
+    },
+    'acidentes-plus': {
+        name: "Plano Família - Acidentes",
+        price: "R$ 29,90",
+        desc: "Proteção para você e sua família.",
+        features: ["Cobertura de R$ 50.000", "Despesas médicas", "Cobertura 24h", "Cônjuge incluso", "Assistência funeral"]
+    },
+    'acidentes-premium': {
+        name: "Plano Completo - Acidentes",
+        price: "R$ 49,90",
+        desc: "Proteção total para você e sua família.",
+        features: ["Cobertura de R$ 100.000", "Despesas médicas", "Cobertura 24h", "Cônjuge e filhos", "Assistência funeral", "Suporte psicológico"]
+    },
+
+    // ========== PLANOS DA PÁGINA DOENÇAS GRAVES ==========
+    'doencas-basico': {
+        name: "Plano Essencial - Doenças Graves",
+        price: "R$ 29,90",
+        desc: "Proteção básica para as principais doenças.",
+        features: ["Cobertura de R$ 30.000", "Câncer, infarto, AVC", "Isenção de carência"]
+    },
+    'doencas-plus': {
+        name: "Plano Completo - Doenças Graves",
+        price: "R$ 59,90",
+        desc: "Proteção completa para sua família.",
+        features: ["Cobertura de R$ 70.000", "+10 doenças cobertas", "Isenção de carência", "Cônjuge incluso", "Telemedicina"]
+    },
+    'doencas-premium': {
+        name: "Plano Família - Doenças Graves",
+        price: "R$ 89,90",
+        desc: "Proteção total para você e sua família.",
+        features: ["Cobertura de R$ 120.000", "+15 doenças cobertas", "Isenção de carência", "Cônjuge e filhos", "Telemedicina", "Check-up anual"]
     }
 };
 
-// Função Toast
+// ============================================
+// FUNÇÕES DO SITE
+// ============================================
+
 function showToast(message) {
     const toast = document.getElementById('toast');
     toast.textContent = message;
@@ -91,10 +221,12 @@ function showToast(message) {
     }, 3000);
 }
 
-// Modal
 function openModal(planId) {
     const plan = plansData[planId];
-    if (!plan) return;
+    if (!plan) {
+        console.warn('Plano não encontrado:', planId);
+        return;
+    }
 
     const modalOverlay = document.getElementById('modalOverlay');
     const modalTitle = document.getElementById('modalTitle');
@@ -123,7 +255,6 @@ function closeModal() {
     document.body.style.overflow = '';
 }
 
-// Header scroll
 function handleHeaderScroll() {
     const header = document.getElementById('header');
     if (window.scrollY > 50) {
@@ -133,7 +264,6 @@ function handleHeaderScroll() {
     }
 }
 
-// Scroll suave
 function initSmoothScroll() {
     document.querySelectorAll('.nav-link, .insurance-logo, .insurance-footer-links a, .dropdown-link, .insurance-hero-buttons a, #customPlanBtn').forEach(link => {
         link.addEventListener('click', function(e) {
@@ -156,7 +286,6 @@ function initSmoothScroll() {
     });
 }
 
-// Menu mobile
 function initMobileMenu() {
     const hamburger = document.getElementById('hamburgerBtn');
     const mobileNav = document.getElementById('mobileNav');
@@ -184,7 +313,6 @@ function initMobileMenu() {
     });
 }
 
-// Botões dos planos
 function initPlanButtons() {
     const planBtns = document.querySelectorAll('.plan-btn');
     const cards = document.querySelectorAll('.insurance-plan-card');
@@ -207,17 +335,32 @@ function initPlanButtons() {
     });
 }
 
-// Dropdown links
 function initDropdownLinks() {
     const dropdownLinks = document.querySelectorAll('.dropdown-link');
     dropdownLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
+        link.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            const planId = this.getAttribute('data-plano');
+            
+            if (href && href.endsWith('.html')) {
+                return;
+            }
+            
+            if (href && href.startsWith('#')) {
+                e.preventDefault();
+                const targetId = href.substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offsetTop = targetElement.offsetTop - 80;
+                    window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+                }
+                return;
+            }
+            
             e.preventDefault();
-            const planId = link.getAttribute('data-plano');
             if (planId && plansData[planId]) {
                 openModal(planId);
             } else {
-                // Se não tiver plano específico, só rola para a seção de planos
                 const planosSection = document.getElementById('planos');
                 if (planosSection) {
                     const offsetTop = planosSection.offsetTop - 80;
@@ -228,7 +371,6 @@ function initDropdownLinks() {
     });
 }
 
-// Plano personalizado
 function initCustomPlan() {
     const customBtn = document.getElementById('customPlanBtn');
     if (customBtn) {
@@ -238,7 +380,6 @@ function initCustomPlan() {
     }
 }
 
-// FAQ
 function initFaq() {
     const faqItems = document.querySelectorAll('.insurance-faq-item');
     
@@ -271,7 +412,6 @@ function initFaq() {
     });
 }
 
-// Newsletter
 function initNewsletter() {
     const form = document.getElementById('newsletterForm');
     if (form) {
@@ -292,7 +432,6 @@ function initNewsletter() {
     }
 }
 
-// Modal buttons
 function initModal() {
     const closeBtn = document.getElementById('modalClose');
     const modalBtn = document.getElementById('modalBtn');
@@ -318,7 +457,6 @@ function initModal() {
     }
 }
 
-// Back to top
 function initBackToTop() {
     const backToTop = document.getElementById('backToTop');
     
@@ -335,7 +473,6 @@ function initBackToTop() {
     });
 }
 
-// Scroll reveal
 function initScrollReveal() {
     const revealElements = document.querySelectorAll('.insurance-reveal');
     
@@ -351,7 +488,6 @@ function initScrollReveal() {
     revealElements.forEach(el => observer.observe(el));
 }
 
-// Card animation
 function initCardAnimation() {
     const cards = document.querySelectorAll('.insurance-plan-card');
     
@@ -375,7 +511,6 @@ function initCardAnimation() {
     });
 }
 
-// Login page
 function initLogin() {
     const loginForm = document.getElementById('loginForm');
     const togglePassword = document.getElementById('togglePassword');
@@ -412,7 +547,6 @@ function initLogin() {
     }
 }
 
-// Cadastro page
 function initCadastro() {
     const cadastroForm = document.getElementById('cadastroForm');
     const togglePassword = document.getElementById('togglePassword');
@@ -547,7 +681,10 @@ function initCadastro() {
     }
 }
 
-// Initialize
+// ============================================
+// INICIALIZAÇÃO
+// ============================================
+
 document.addEventListener('DOMContentLoaded', () => {
     initSmoothScroll();
     initMobileMenu();
