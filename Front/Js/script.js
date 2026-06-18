@@ -31,7 +31,6 @@ document.addEventListener('click', function(e) {
     if (link) {
         const href = link.getAttribute('href');
         
-        // Se for link para .html, redireciona com loading
         if (href && href.endsWith('.html') && !href.includes('#')) {
             e.preventDefault();
             showLoading();
@@ -47,7 +46,6 @@ document.addEventListener('click', function(e) {
 // ============================================
 
 const plansData = {
-    // ========== PLANOS DA HOME ==========
     vida: {
         name: "Seguro de Vida",
         price: "R$ 39,90",
@@ -126,8 +124,6 @@ const plansData = {
         desc: "Proteção para seu melhor amigo.",
         features: ["Consultas e exames", "Cirurgias e internações", "Assistência 24h"]
     },
-
-    // ========== PLANOS SEGURO DE VIDA ==========
     'vida-basico': {
         name: "Plano Básico - Seguro de Vida",
         price: "R$ 29,90",
@@ -146,8 +142,6 @@ const plansData = {
         desc: "Proteção total para sua família.",
         features: ["6 beneficiários", "Cobertura de R$ 250.000", "Assistência funeral", "Telemedicina", "Check-up anual", "Atendimento vip"]
     },
-
-    // ========== PLANOS PRESTAMISTA ==========
     'prestamista-basico': {
         name: "Plano Essencial - Prestamista",
         price: "R$ 19,90",
@@ -166,8 +160,6 @@ const plansData = {
         desc: "Proteção total para você e sua família.",
         features: ["Quitação de financiamento", "Cobertura por morte", "Invalidez total/permanente", "Assistência funeral", "Suporte psicológico", "Cobertura para o cônjuge"]
     },
-
-    // ========== PLANOS ACIDENTES ==========
     'acidentes-basico': {
         name: "Plano Individual - Acidentes",
         price: "R$ 14,90",
@@ -186,8 +178,6 @@ const plansData = {
         desc: "Proteção total para você e sua família.",
         features: ["Cobertura de R$ 100.000", "Despesas médicas", "Cobertura 24h", "Cônjuge e filhos", "Assistência funeral", "Suporte psicológico"]
     },
-
-    // ========== PLANOS DOENÇAS GRAVES ==========
     'doencas-basico': {
         name: "Plano Essencial - Doenças Graves",
         price: "R$ 29,90",
@@ -206,8 +196,6 @@ const plansData = {
         desc: "Proteção total para você e sua família.",
         features: ["Cobertura de R$ 120.000", "+15 doenças cobertas", "Isenção de carência", "Cônjuge e filhos", "Telemedicina", "Check-up anual"]
     },
-
-    // ========== PLANOS INVALIDEZ ==========
     'invalidez-basico': {
         name: "Plano Essencial - Invalidez",
         price: "R$ 19,90",
@@ -226,8 +214,6 @@ const plansData = {
         desc: "Proteção total para você e sua família.",
         features: ["Renda de R$ 6.000/mês", "Cobertura por acidente ou doença", "Assistência 24h", "Reabilitação profissional", "Suporte psicológico", "Cônjuge e filhos"]
     },
-
-    // ========== PLANOS FUNERAL ==========
     'funeral-basico': {
         name: "Plano Essencial - Funeral",
         price: "R$ 9,90",
@@ -381,7 +367,6 @@ function initDropdownLinks() {
         link.addEventListener('click', function(e) {
             const href = this.getAttribute('href');
             
-            // Se for link para .html, o evento global cuida do redirecionamento
             if (href && href.endsWith('.html')) {
                 return;
             }
@@ -579,49 +564,39 @@ function initLogin() {
 }
 
 function initCadastro() {
+    console.log('🔍 Inicializando cadastro...');
+    
     const cadastroForm = document.getElementById('cadastroForm');
+    
+    if (!cadastroForm) {
+        console.warn('⚠️ Formulário de cadastro não encontrado!');
+        return;
+    }
+
+    console.log('✅ Formulário de cadastro encontrado!');
+
+    // ============================================
+    // BOTÃO MOSTRAR SENHA
+    // ============================================
     const togglePassword = document.getElementById('togglePassword');
     const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
     const passwordInput = document.getElementById('password');
     const confirmInput = document.getElementById('confirmPassword');
-    const cpfInput = document.getElementById('cpf');
-    const telefoneInput = document.getElementById('telefone');
-    const strengthFill = document.getElementById('strengthFill');
-    const strengthText = document.getElementById('strengthText');
-    
-    if (cpfInput) {
-        cpfInput.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length <= 11) {
-                value = value.replace(/(\d{3})(\d)/, '$1.$2');
-                value = value.replace(/(\d{3})(\d)/, '$1.$2');
-                value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-                e.target.value = value;
-            }
-        });
-    }
-    
-    if (telefoneInput) {
-        telefoneInput.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length <= 11) {
-                value = value.replace(/(\d{2})(\d)/, '($1) $2');
-                value = value.replace(/(\d{5})(\d)/, '$1-$2');
-                e.target.value = value;
-            }
-        });
-    }
-    
+
     if (togglePassword && passwordInput) {
+        console.log('✅ Botão mostrar senha encontrado!');
         togglePassword.addEventListener('click', function() {
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
             this.querySelector('i').classList.toggle('fa-eye');
             this.querySelector('i').classList.toggle('fa-eye-slash');
         });
+    } else {
+        console.warn('⚠️ Botão mostrar senha NÃO encontrado!');
     }
-    
+
     if (toggleConfirmPassword && confirmInput) {
+        console.log('✅ Botão confirmar senha encontrado!');
         toggleConfirmPassword.addEventListener('click', function() {
             const type = confirmInput.getAttribute('type') === 'password' ? 'text' : 'password';
             confirmInput.setAttribute('type', type);
@@ -629,8 +604,15 @@ function initCadastro() {
             this.querySelector('i').classList.toggle('fa-eye-slash');
         });
     }
-    
+
+    // ============================================
+    // FORÇA DA SENHA
+    // ============================================
+    const strengthFill = document.getElementById('strengthFill');
+    const strengthText = document.getElementById('strengthText');
+
     if (passwordInput && strengthFill && strengthText) {
+        console.log('✅ Medidor de força da senha encontrado!');
         passwordInput.addEventListener('input', function() {
             const password = this.value;
             let strength = 0;
@@ -666,50 +648,138 @@ function initCadastro() {
                 strengthText.style.color = '#16a34a';
             }
         });
+    } else {
+        console.warn('⚠️ Medidor de força da senha NÃO encontrado!');
     }
-    
-    if (cadastroForm) {
-        cadastroForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const nome = document.getElementById('nome').value.trim();
-            const cpf = document.getElementById('cpf').value.trim();
-            const telefone = document.getElementById('telefone').value.trim();
-            const nascimento = document.getElementById('nascimento').value;
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            
-            if (!nome || !cpf || !telefone || !nascimento || !email || !password) {
-                const errorMsg = document.getElementById('errorMessage');
-                if (errorMsg) {
-                    errorMsg.textContent = 'Por favor, preencha todos os campos.';
-                    errorMsg.style.display = 'block';
-                    setTimeout(() => { errorMsg.style.display = 'none'; }, 3000);
-                }
-                return;
+
+    // ============================================
+    // MÁSCARAS
+    // ============================================
+    const cpfInput = document.getElementById('cpf');
+    const telefoneInput = document.getElementById('telefone');
+
+    if (cpfInput) {
+        cpfInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length <= 11) {
+                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                e.target.value = value;
             }
-            
-            if (password !== confirmPassword) {
-                const errorMsg = document.getElementById('errorMessage');
-                if (errorMsg) {
-                    errorMsg.textContent = 'As senhas não conferem.';
-                    errorMsg.style.display = 'block';
-                    setTimeout(() => { errorMsg.style.display = 'none'; }, 3000);
-                }
-                return;
-            }
-            
-            const successMsg = document.getElementById('successMessage');
-            if (successMsg) {
-                successMsg.textContent = 'Cadastro realizado com sucesso! Redirecionando...';
-                successMsg.style.display = 'block';
-            }
-            
-            setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 2000);
         });
     }
+
+    if (telefoneInput) {
+        telefoneInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length <= 11) {
+                value = value.replace(/(\d{2})(\d)/, '($1) $2');
+                value = value.replace(/(\d{5})(\d)/, '$1-$2');
+                e.target.value = value;
+            }
+        });
+    }
+
+    // ============================================
+    // ENVIO DO FORMULÁRIO
+    // ============================================
+    const errorMessage = document.getElementById('errorMessage');
+    const successMessage = document.getElementById('successMessage');
+
+    cadastroForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const nome = document.getElementById('nome').value.trim();
+        const cpf = document.getElementById('cpf').value.trim();
+        const telefone = document.getElementById('telefone').value.trim();
+        const nascimento = document.getElementById('nascimento').value;
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (!nome) {
+            if (errorMessage) {
+                errorMessage.textContent = 'Por favor, informe seu nome completo.';
+                errorMessage.style.display = 'block';
+                setTimeout(() => { errorMessage.style.display = 'none'; }, 3000);
+            }
+            return;
+        }
+
+        if (!cpf || cpf.replace(/\D/g, '').length !== 11) {
+            if (errorMessage) {
+                errorMessage.textContent = 'Por favor, informe um CPF válido.';
+                errorMessage.style.display = 'block';
+                setTimeout(() => { errorMessage.style.display = 'none'; }, 3000);
+            }
+            return;
+        }
+
+        if (!telefone || telefone.replace(/\D/g, '').length < 10) {
+            if (errorMessage) {
+                errorMessage.textContent = 'Por favor, informe um telefone válido.';
+                errorMessage.style.display = 'block';
+                setTimeout(() => { errorMessage.style.display = 'none'; }, 3000);
+            }
+            return;
+        }
+
+        if (!nascimento) {
+            if (errorMessage) {
+                errorMessage.textContent = 'Por favor, informe sua data de nascimento.';
+                errorMessage.style.display = 'block';
+                setTimeout(() => { errorMessage.style.display = 'none'; }, 3000);
+            }
+            return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email || !emailRegex.test(email)) {
+            if (errorMessage) {
+                errorMessage.textContent = 'Por favor, informe um e-mail válido.';
+                errorMessage.style.display = 'block';
+                setTimeout(() => { errorMessage.style.display = 'none'; }, 3000);
+            }
+            return;
+        }
+
+        if (password.length < 6) {
+            if (errorMessage) {
+                errorMessage.textContent = 'A senha deve ter no mínimo 6 caracteres.';
+                errorMessage.style.display = 'block';
+                setTimeout(() => { errorMessage.style.display = 'none'; }, 3000);
+            }
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            if (errorMessage) {
+                errorMessage.textContent = 'As senhas não conferem!';
+                errorMessage.style.display = 'block';
+                setTimeout(() => { errorMessage.style.display = 'none'; }, 3000);
+            }
+            return;
+        }
+
+        // Sucesso
+        if (successMessage) {
+            successMessage.textContent = '✅ Cadastro realizado com sucesso! Redirecionando...';
+            successMessage.style.display = 'block';
+        }
+
+        console.log('Cadastro realizado:', { 
+            nome, 
+            cpf: cpf.replace(/\D/g, ''), 
+            telefone: telefone.replace(/\D/g, ''), 
+            nascimento, 
+            email 
+        });
+
+        setTimeout(() => {
+            window.location.href = 'login.html';
+        }, 2000);
+    });
 }
 
 // ============================================

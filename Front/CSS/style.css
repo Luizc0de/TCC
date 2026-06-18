@@ -373,10 +373,7 @@ body.loaded {
     color: rgba(255, 255, 255, 0.5);
 }
 
-/* ============================================ */
-/* PLANOS - CARD INTEIRO LEVANTA              */
-/* ============================================ */
-
+/* PLANOS */
 .insurance-plans-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -483,10 +480,7 @@ body.loaded {
     transform: translateY(-2px);
 }
 
-/* ============================================ */
-/* DROPDOWN MENU - PLANOS                       */
-/* ============================================ */
-
+/* DROPDOWN */
 .dropdown {
     position: relative;
     display: inline-block;
