@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ============================================
-// INTERCEPTA CLICKS EM LINKS INTERNOS
+// REDIRECIONAMENTO PARA PÁGINAS .HTML
 // ============================================
 
 document.addEventListener('click', function(e) {
@@ -31,12 +31,12 @@ document.addEventListener('click', function(e) {
     if (link) {
         const href = link.getAttribute('href');
         
-        if (href && href.endsWith('.html') && !href.includes('#') && href !== window.location.pathname.split('/').pop()) {
+        // Se for link para .html, redireciona com loading
+        if (href && href.endsWith('.html') && !href.includes('#')) {
             e.preventDefault();
-            const url = href;
             showLoading();
             setTimeout(() => {
-                window.location.href = url;
+                window.location.href = href;
             }, 500);
         }
     }
@@ -127,7 +127,7 @@ const plansData = {
         features: ["Consultas e exames", "Cirurgias e internações", "Assistência 24h"]
     },
 
-    // ========== PLANOS DA PÁGINA SEGURO DE VIDA ==========
+    // ========== PLANOS SEGURO DE VIDA ==========
     'vida-basico': {
         name: "Plano Básico - Seguro de Vida",
         price: "R$ 29,90",
@@ -147,7 +147,7 @@ const plansData = {
         features: ["6 beneficiários", "Cobertura de R$ 250.000", "Assistência funeral", "Telemedicina", "Check-up anual", "Atendimento vip"]
     },
 
-    // ========== PLANOS DA PÁGINA SEGURO PRESTAMISTA ==========
+    // ========== PLANOS PRESTAMISTA ==========
     'prestamista-basico': {
         name: "Plano Essencial - Prestamista",
         price: "R$ 19,90",
@@ -167,7 +167,7 @@ const plansData = {
         features: ["Quitação de financiamento", "Cobertura por morte", "Invalidez total/permanente", "Assistência funeral", "Suporte psicológico", "Cobertura para o cônjuge"]
     },
 
-    // ========== PLANOS DA PÁGINA ACIDENTES PESSOAIS ==========
+    // ========== PLANOS ACIDENTES ==========
     'acidentes-basico': {
         name: "Plano Individual - Acidentes",
         price: "R$ 14,90",
@@ -187,7 +187,7 @@ const plansData = {
         features: ["Cobertura de R$ 100.000", "Despesas médicas", "Cobertura 24h", "Cônjuge e filhos", "Assistência funeral", "Suporte psicológico"]
     },
 
-    // ========== PLANOS DA PÁGINA DOENÇAS GRAVES ==========
+    // ========== PLANOS DOENÇAS GRAVES ==========
     'doencas-basico': {
         name: "Plano Essencial - Doenças Graves",
         price: "R$ 29,90",
@@ -205,6 +205,46 @@ const plansData = {
         price: "R$ 89,90",
         desc: "Proteção total para você e sua família.",
         features: ["Cobertura de R$ 120.000", "+15 doenças cobertas", "Isenção de carência", "Cônjuge e filhos", "Telemedicina", "Check-up anual"]
+    },
+
+    // ========== PLANOS INVALIDEZ ==========
+    'invalidez-basico': {
+        name: "Plano Essencial - Invalidez",
+        price: "R$ 19,90",
+        desc: "Proteção básica para invalidez.",
+        features: ["Renda de R$ 1.500/mês", "Cobertura por acidente", "Assistência 24h"]
+    },
+    'invalidez-plus': {
+        name: "Plano Completo - Invalidez",
+        price: "R$ 39,90",
+        desc: "Proteção completa para sua família.",
+        features: ["Renda de R$ 3.500/mês", "Cobertura por acidente ou doença", "Assistência 24h", "Reabilitação profissional", "Suporte psicológico"]
+    },
+    'invalidez-premium': {
+        name: "Plano Família - Invalidez",
+        price: "R$ 59,90",
+        desc: "Proteção total para você e sua família.",
+        features: ["Renda de R$ 6.000/mês", "Cobertura por acidente ou doença", "Assistência 24h", "Reabilitação profissional", "Suporte psicológico", "Cônjuge e filhos"]
+    },
+
+    // ========== PLANOS FUNERAL ==========
+    'funeral-basico': {
+        name: "Plano Essencial - Funeral",
+        price: "R$ 9,90",
+        desc: "Proteção básica para despesas funerárias.",
+        features: ["Cobertura de R$ 5.000", "Cobertura nacional", "Sem carência"]
+    },
+    'funeral-plus': {
+        name: "Plano Completo - Funeral",
+        price: "R$ 19,90",
+        desc: "Proteção completa para sua família.",
+        features: ["Cobertura de R$ 10.000", "Cobertura nacional", "Sem carência", "Assistência psicológica", "Serviço de translado"]
+    },
+    'funeral-premium': {
+        name: "Plano Família - Funeral",
+        price: "R$ 29,90",
+        desc: "Proteção total para toda a família.",
+        features: ["Cobertura de R$ 20.000", "Cobertura nacional", "Sem carência", "Assistência psicológica", "Serviço de translado", "Cônjuge e filhos"]
     }
 };
 
@@ -340,24 +380,15 @@ function initDropdownLinks() {
     dropdownLinks.forEach(link => {
         link.addEventListener('click', function(e) {
             const href = this.getAttribute('href');
-            const planId = this.getAttribute('data-plano');
             
+            // Se for link para .html, o evento global cuida do redirecionamento
             if (href && href.endsWith('.html')) {
                 return;
             }
             
-            if (href && href.startsWith('#')) {
-                e.preventDefault();
-                const targetId = href.substring(1);
-                const targetElement = document.getElementById(targetId);
-                if (targetElement) {
-                    const offsetTop = targetElement.offsetTop - 80;
-                    window.scrollTo({ top: offsetTop, behavior: 'smooth' });
-                }
-                return;
-            }
-            
             e.preventDefault();
+            const planId = this.getAttribute('data-plano');
+            
             if (planId && plansData[planId]) {
                 openModal(planId);
             } else {
