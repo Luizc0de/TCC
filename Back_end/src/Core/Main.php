@@ -2,9 +2,10 @@
 
 use App\Core\Routes;
 
-Routes::get('/', 'UserController@index');
-Routes::post('/users', 'UserController@store');
-Routes::put('/users/{id}', 'UserController@update');
-Routes::delete('/users/{id}', 'UserController@destroy');
+// Create routes for the application
+Routes::post('/users_PF', 'UserController@createUserPF');
+Routes::post('/users_PJ', 'UserController@createUserPJ');
+
+
 
 ?>
