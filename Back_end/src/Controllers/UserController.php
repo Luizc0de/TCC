@@ -41,7 +41,7 @@ class UserController
             Response::json(['error' => $e->getMessage()], 400);
             return;
         }
-        UserServices::createUserPJ($fields);
+       
     }
 
     public function verifyCode()
@@ -60,6 +60,7 @@ class UserController
         
         return AuthServices::verifyCode($fields['code'], $fields['email']);
     }
+    
 
 }
 ?>

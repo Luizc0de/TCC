@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 use App\Models\UserPF;
-use App\Utils\Response;
+
 class UserRepository
     {
         public static function createUserPF($user)
@@ -50,6 +50,28 @@ class UserRepository
             $stmt->bindValue(':status', (int) $status, \PDO::PARAM_INT);
             $stmt->bindParam(':email', $email);
             return $stmt->execute();
+        }
+
+        public static function getUserByEmail($email)
+        {
+            $db = new \PDO('mysql:host=localhost;dbname=tcc', 'root', '');
+            $stmt = $db->prepare("SELECT * FROM users_pf WHERE email = :email");
+            $stmt->bindParam(':email', $email);
+            $stmt->execute();
+            $userData = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+            if ($userData) {
+                return new UserPF(
+                    $userData['id'],
+                    $userData['name'],
+                    $userData['email'],
+                    $userData['password'],
+                    $userData['cpf'],
+                    null // O código não é necessário aqui
+                );
+            }
+
+            return null; // Retorna null se o usuário não for encontrado
         }
 
     }

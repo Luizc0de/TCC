@@ -19,8 +19,14 @@ class AuthServices
 
         return Response::json(["message" => "Código inválido."], 400);
     }
-    
-    
+    public static function login($email, $password)
+    {
+        $user = UserRepository::getUserByEmail($email);
+        if ($user && password_verify($password, $user->getPassword())) {
+            return Response::json(["message" => "Login successful."], 200);
+        }
+        return Response::json(["message" => "Invalid email or password."], 400);
+    }
 }
 
 

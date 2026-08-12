@@ -20,7 +20,7 @@ class UserServices
                 null,
                 $fields['name'],
                 $fields['email'],
-                $fields['password'],
+                password_hash($fields['password'], PASSWORD_DEFAULT),
                 $fields['cpf'],
                 $code
             );
@@ -40,19 +40,5 @@ class UserServices
         }
     }
 
-    public static function createUserPJ($data)
-    {
-        $user = new UserPJ(
-            null,
-            $data['company_name'],
-            $data['email'],
-            $data['password'],
-            $data['cnpj']
-        );
-
-        Response::json([
-            'message' => 'User PJ created successfully',
-            'data' => $user->getCompanyName()
-        ], 201);
-    }
+   
 }
