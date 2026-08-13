@@ -1,0 +1,26 @@
+@baseUrl = http://localhost/TCC/Back_end
+
+### Verificar se o servidor está respondendo
+GET {{baseUrl}}/
+
+### Cadastrar Pessoa Física
+POST {{baseUrl}}/users_PF
+Content-Type: application/json
+
+{
+  "name": "João Silva",
+  "email": "joao@email.com",
+  "password": "123456",
+  "cpf": "12345678900"
+}
+
+
+### Verificar código de validação
+POST {{baseUrl}}/auth/verify_code
+Content-Type: application/json
+
+{
+  "email": "joao@email.com",
+  "code": "144"
+}
+ 

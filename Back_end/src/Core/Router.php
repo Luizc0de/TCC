@@ -2,8 +2,8 @@
 
 namespace App\Core;
 
-use App\Core\Request;
-use App\Core\Response;
+use App\Utils\Request;
+use App\Utils\Response;
 
 Class Router {
 
