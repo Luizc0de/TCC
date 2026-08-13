@@ -23,4 +23,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
 
           local-dir: ./Back_end/
-          server-dir: ./api.insurance.dev.br/
+          server-dir: ./api.insurance.dev.br
