@@ -11,6 +11,7 @@ use App\Repository\UserRepository;
 
 class UserServices
 {
+    // Cria usuario PF (Pessoa Física)
     public static function createUserPF($fields)
     {
         try {
@@ -39,6 +40,27 @@ class UserServices
             Response::json(['error' => $e->getMessage()], $status);
         }
     }
+    // ver usuario 
+    public static function getProfile($email)
+    {
+        try {
+            $user = UserRepository::getUserByEmail($email);
 
-   
+            if (!$user) {
+                Response::json(['error' => 'User not found'], 404);
+                return;
+            }
+
+            Response::json(['nome' => $user->getName(), 
+                            'email' => $user->getEmail(),
+                            'cpf' => $user->getCpf(),
+                            ], 200);
+                            
+        } catch (\Exception $e) {
+            $status = $e->getCode() ?: 500;
+            Response::json(['error' => $e->getMessage()], $status);
+        }
+    }
+    
+
 }

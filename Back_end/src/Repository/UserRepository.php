@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Repository;
 use App\Models\UserPF;
@@ -10,18 +10,20 @@ class UserRepository
             try {
                 $db = new \PDO('mysql:host=localhost;dbname=tcc', 'root', '');
                 $db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-                $stmt = $db->prepare("INSERT INTO users_pf (name, email, password, cpf, code) VALUES (:name, :email, :password, :cpf, :code)");
+                $stmt = $db->prepare("INSERT INTO users_pf (name, email, password, cpf, code, roles) VALUES (:name, :email, :password, :cpf, :code, :roles)");
                 $name = $user->getName();
                 $email = $user->getEmail();
                 $password = $user->getPassword();
                 $cpf = $user->getCpf();
                 $code = $user->getCode();
+                $roles = 'user';
 
                 $stmt->bindParam(':name', $name);
                 $stmt->bindParam(':email', $email);
                 $stmt->bindParam(':password', $password);
                 $stmt->bindParam(':cpf', $cpf);
                 $stmt->bindParam(':code', $code);
+                $stmt->bindParam(':roles', $roles);
                 return $stmt->execute();
             } catch (\PDOException $e) {
                 if ($e->getCode() == 23000) { // Código de erro para violação de chave única
@@ -61,7 +63,7 @@ class UserRepository
             $userData = $stmt->fetch(\PDO::FETCH_ASSOC);
 
             if ($userData) {
-                return new UserPF(
+                $user = new UserPF(
                     $userData['id'],
                     $userData['name'],
                     $userData['email'],
@@ -69,6 +71,8 @@ class UserRepository
                     $userData['cpf'],
                     null // O código não é necessário aqui
                 );
+                $user->roles = $userData['roles'];
+                return $user;
             }
 
             return null; // Retorna null se o usuário não for encontrado

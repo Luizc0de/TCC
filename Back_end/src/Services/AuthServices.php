@@ -23,9 +23,9 @@ class AuthServices
     {
         $user = UserRepository::getUserByEmail($email);
         if ($user && password_verify($password, $user->getPassword())) {
-            return Response::json(["message" => "Login successful."], 200);
+            return $user;
         }
-        return Response::json(["message" => "Invalid email or password."], 400);
+        return null;
     }
 }
 

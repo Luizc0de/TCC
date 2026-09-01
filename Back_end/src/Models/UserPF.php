@@ -9,6 +9,8 @@ class UserPF {
     private $password;
     private $cpf;
     private $code;
+    public $roles;
+    
     
     public function __construct($id, $name, $email, $password, $cpf, $code = null) {
         $this->id = $id;

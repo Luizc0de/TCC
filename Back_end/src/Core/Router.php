@@ -4,6 +4,8 @@ namespace App\Core;
 
 use App\Utils\Request;
 use App\Utils\Response;
+use App\Core\JwtService;
+
 
 Class Router {
 
@@ -14,7 +16,7 @@ Class Router {
 
         $url !== '/' && $url = rtrim($url, '/');
 
-       $prefixController = 'App\\Controllers\\';
+        $prefixController = 'App\\Controllers\\';
 
         $routeFound = false;
 
@@ -35,6 +37,14 @@ Class Router {
                     return;
                 }
 
+                // Rota privada: exige token válido (e role, se especificada)
+                $auth = $route['auth'] ?? false;
+                if ($auth === true) {
+                    JwtService::authenticate();
+                } elseif (is_string($auth) && $auth !== '') {
+                    JwtService::requireRole($auth);
+                }
+
                 [$controller, $action] = explode('@', $route['action']);
 
                 $controller = $prefixController . $controller;
@@ -53,5 +63,3 @@ Class Router {
     }
 }
 
-
-?>
