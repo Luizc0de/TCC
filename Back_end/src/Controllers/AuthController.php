@@ -33,4 +33,21 @@ class AuthController
 
         Response::json(['message' => 'Login successful.', 'token' => $token], 200);
     }
+    
+    public function verifyCode()
+    {
+        $body = Request::getBody();
+        
+        try {
+            $fields = Request::validate([
+                'code' => $body['code']   ?? '',
+                'email' => $body['email'] ?? '',
+            ]);
+        } catch (\Exception $e) {
+            Response::json(['error' => $e->getMessage()], 400);
+            return;
+        }
+        
+        return AuthServices::verifyCode($fields['code'], $fields['email']);
+    }
 }

@@ -78,6 +78,30 @@ class UserRepository
             return null; // Retorna null se o usuário não for encontrado
         }
 
+        public static function getUserById($id)
+        {
+            $db = new \PDO('mysql:host=localhost;dbname=tcc', 'root', '');
+            $stmt = $db->prepare("SELECT * FROM users_pf WHERE id = :id");
+            $stmt->bindParam(':id', $id);
+            $stmt->execute();
+            $userData = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+            if ($userData) {
+                $user = new UserPF(
+                    $userData['id'],
+                    $userData['name'],
+                    $userData['email'],
+                    $userData['password'],
+                    $userData['cpf'],
+                    null // O código não é necessário aqui
+                );
+                $user->roles = $userData['roles'];
+                return $user;
+            }
+
+            return null; // Retorna null se o usuário não for encontrado
+        }
+
     }
 
 ?>

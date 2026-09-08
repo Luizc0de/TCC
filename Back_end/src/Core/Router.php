@@ -39,17 +39,21 @@ Class Router {
 
                 // Rota privada: exige token válido (e role, se especificada)
                 $auth = $route['auth'] ?? false;
+                $request = new Request();
+
                 if ($auth === true) {
-                    JwtService::authenticate();
+                    $user = JwtService::authenticate();
+                    $request->setUser($user);
                 } elseif (is_string($auth) && $auth !== '') {
-                    JwtService::requireRole($auth);
+                    $user = JwtService::requireRole($auth);
+                    $request->setUser($user);
                 }
 
                 [$controller, $action] = explode('@', $route['action']);
 
                 $controller = $prefixController . $controller;
                 $extendController = new $controller();
-                $extendController->$action(new Request, new Response, $matches);
+                $extendController->$action($request, new Response, $matches);
             }
         }
 

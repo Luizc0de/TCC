@@ -27,40 +27,10 @@ class UserController
         UserServices::createUserPF($fields);
     }
 
-    public function createUserPJ(){
-        $body = Request::getBody();
-        
-        try {
-            $fields = Request::validate([
-                'company_name' => $body['company_name'] ?? '',
-                'email' => $body['email']             ?? '',
-                'password' => $body['password']       ?? '',
-                'cnpj' => $body['cnpj']               ?? '',
-            ]);
-        } catch (\Exception $e) {
-            Response::json(['error' => $e->getMessage()], 400);
-            return;
-        }
-       
-    }
+    public function getUserPF(Request $request){
+        $user = $request->user();
 
-    public function verifyCode()
-    {
-        $body = Request::getBody();
-        
-        try {
-            $fields = Request::validate([
-                'code' => $body['code']   ?? '',
-                'email' => $body['email'] ?? '',
-            ]);
-        } catch (\Exception $e) {
-            Response::json(['error' => $e->getMessage()], 400);
-            return;
-        }
-        
-        return AuthServices::verifyCode($fields['code'], $fields['email']);
+        UserServices::getProfile($user->sub);
     }
-    
-
 }
 ?>

@@ -41,10 +41,10 @@ class UserServices
         }
     }
     // ver usuario 
-    public static function getProfile($email)
+    public static function getProfile($id)
     {
         try {
-            $user = UserRepository::getUserByEmail($email);
+            $user = UserRepository::getUserById($id);
 
             if (!$user) {
                 Response::json(['error' => 'User not found'], 404);
