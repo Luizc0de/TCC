@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insurance | Solicitação de Apólice</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="topbar">
+        <div class="container nav-container">
+            <a class="brand" href="#">
+                <span class="brand-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </span>
+                <span>Insurance</span>
+            </a>
+
+            <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <nav class="nav-links" id="navLinks">
+                <a href="#">Início</a>
+
+                <div class="nav-dropdown">
+                    <button type="button" class="nav-dropdown-button">
+                        Seguros
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="nav-dropdown-menu">
+                        <a href="#">Seguro Auto</a>
+                        <a href="#">Seguro Residencial</a>
+                        <a href="#">Seguro de Vida</a>
+                        <a href="#">Seguro para Eletrônicos</a>
+                    </div>
+                </div>
+
+                <a href="#">Simulador</a>
+                <a href="#">Sobre</a>
+                <a href="#">Contato</a>
+            </nav>
+
+            <button class="profile-button" type="button">
+                <span class="profile-avatar">JM</span>
+                <span>Olá, Jurandir</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="page">
+        <section class="policy-wrapper">
+
+            <div class="policy-card">
+                <div class="card-header">
+                    <div class="card-header-icon">
+                        <i class="fa-regular fa-file-lines"></i>
+                    </div>
+
+                    <div>
+                        <h1>Solicitação de Apólice</h1>
+                        <p>Preencha os dados abaixo para solicitar sua apólice.</p>
+                    </div>
+                </div>
+
+                <form id="policyForm" novalidate>
+                    <div class="form-grid">
+
+                        <div class="field">
+                            <label for="assetType">Tipo de bem</label>
+                            <div class="control">
+                                <i class="fa-solid fa-house field-icon"></i>
+                                <select id="assetType" name="assetType" required>
+                                    <option value="" selected disabled>Selecione o tipo de bem</option>
+                                    <option value="veiculo">Veículo</option>
+                                    <option value="imovel">Imóvel</option>
+                                    <option value="eletronico">Eletrônico</option>
+                                    <option value="maquinario">Maquinário</option>
+                                    <option value="vida">Vida</option>
+                                </select>
+                            </div>
+                            <span class="error-message"></span>
+                        </div>
+
+                        <div class="field">
+                            <label for="fullName">Nome completo / Razão social</label>
+                            <div class="control">
+                                <i class="fa-regular fa-user field-icon"></i>
+                                <input
+                                    id="fullName"
+                                    name="fullName"
+                                    type="text"
+                                    placeholder="Digite seu nome completo ou razão social"
+                                    autocomplete="name"
+                                    required
+                                >
+                            </div>
+                            <span class="error-message"></span>
+                        </div>
+
+                        <div class="field">
+                            <label for="document">CPF / CNPJ</label>
+                            <div class="control">
+                                <i class="fa-regular fa-id-card field-icon"></i>
+                                <input
+                                    id="document"
+                                    name="document"
+                                    type="text"
+                                    inputmode="numeric"
+                                    placeholder="000.000.000-00 ou 00.000.000/0000-00"
+                                    maxlength="18"
+                                    required
+                                >
+                            </div>
+                            <span class="error-message"></span>
+                        </div>
+
+                        <div class="field">
+                            <label for="email">E-mail</label>
+                            <div class="control">
+                                <i class="fa-regular fa-envelope field-icon"></i>
+                                <input
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    placeholder="seu@email.com"
+                                    autocomplete="email"
+                                    required
+                                >
+                            </div>
+                            <span class="error-message"></span>
+                        </div>
+
+                        <div class="field">
+                            <label for="phone">Telefone</label>
+                            <div class="control">
+                                <i class="fa-solid fa-phone field-icon"></i>
+                                <input
+                                    id="phone"
+                                    name="phone"
+                                    type="tel"
+                                    inputmode="numeric"
+                                    placeholder="(00) 00000-0000"
+                                    maxlength="15"
+                                    autocomplete="tel"
+                                    required
+                                >
+                            </div>
+                            <span class="error-message"></span>
+                        </div>
+
+                        <div class="field" id="assetValueField">
+                            <label for="assetValue">Valor estimado do bem</label>
+                            <div class="control">
+                                <i class="fa-solid fa-money-bill field-icon"></i>
+                                <input
+                                    id="assetValue"
+                                    name="assetValue"
+                                    type="text"
+                                    inputmode="numeric"
+                                    placeholder="R$ 0,00"
+                                    required
+                                >
+                            </div>
+                            <span class="error-message"></span>
+                        </div>
+
+                        <div class="field">
+                            <label for="startDate">Data de início da cobertura</label>
+                            <div class="control">
+                                <i class="fa-regular fa-calendar field-icon"></i>
+                                <input
+                                    id="startDate"
+                                    name="startDate"
+                                    type="date"
+                                    required
+                                >
+                            </div>
+                            <span class="error-message"></span>
+                        </div>
+
+                    </div>
+
+                    <div id="dynamicFields" class="dynamic-fields"></div>
+
+                    <div class="field full-width">
+                        <label for="notes">Observações</label>
+                        <div class="control textarea-control">
+                            <i class="fa-regular fa-file-lines field-icon textarea-icon"></i>
+                            <textarea
+                                id="notes"
+                                name="notes"
+                                rows="4"
+                                maxlength="500"
+                                placeholder="Conte-nos mais detalhes sobre sua necessidade (opcional)"
+                            ></textarea>
+                        </div>
+                        <div class="textarea-footer">
+                            <span></span>
+                            <small><span id="charCount">0</span>/500</small>
+                        </div>
+                    </div>
+
+                    <button class="submit-button" type="submit">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>Enviar solicitação</span>
+                    </button>
+
+                    <div class="security-message">
+                        <i class="fa-solid fa-lock"></i>
+                        <span>Seus dados estão protegidos e serão utilizados apenas para a solicitação da apólice.</span>
+                    </div>
+                </form>
+            </div>
+
+            <div class="features">
+                <div class="feature">
+                    <span class="feature-icon">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </span>
+                    <div>
+                        <strong>Processo seguro</strong>
+                        <span>Seus dados protegidos</span>
+                    </div>
+                </div>
+
+                <div class="feature">
+                    <span class="feature-icon">
+                        <i class="fa-solid fa-bolt"></i>
+                    </span>
+                    <div>
+                        <strong>Resposta rápida</strong>
+                        <span>Retorno em até 24h</span>
+                    </div>
+                </div>
+
+                <div class="feature">
+                    <span class="feature-icon">
+                        <i class="fa-solid fa-headset"></i>
+                    </span>
+                    <div>
+                        <strong>Suporte especializado</strong>
+                        <span>Nosso time está com você</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite">
+        <div class="toast-icon">
+            <i class="fa-solid fa-check"></i>
+        </div>
+        <div>
+            <strong>Solicitação enviada!</strong>
+            <p>Recebemos seus dados e entraremos em contato em breve.</p>
+        </div>
+        <button type="button" id="closeToast" aria-label="Fechar">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

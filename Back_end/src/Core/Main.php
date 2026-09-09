@@ -11,8 +11,15 @@ Routes::post('/auth/login', 'AuthController@login');
 Routes::get('/test/public', 'TestController@publicRoute');
 
 
+
 //privadas
 Routes::get('/profile', 'UserController@getUserPF', true);
+Routes::post('/profile/change_password', 'UserController@ChangePassword', true);
+
+// polices
+
+
+
 Routes::get('/test/private', 'TestController@privateRoute', true);
 
 Routes::get('/test/admin', 'TestController@adminRoute', 'admin');

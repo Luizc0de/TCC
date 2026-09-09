@@ -1106,34 +1106,24 @@ if (mudarFotoForm) {
             });
         }
 
-        mudarFotoForm.addEventListener('submit', function(e) {
+        mudarFotoForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            var mensagem = document.getElementById('mensagem');
+            const file = fotoInput.files[0];
+            if (!file) return;
 
-            if (!fotoInput.files[0]) {
-                mensagem.className = 'mensagem erro';
-                mensagem.textContent = 'Selecione uma foto!';
-                mensagem.style.display = 'block';
-                return;
-            }
+            const formData = new FormData();
+            formData.append('foto', file);
 
-            var salvar = function(dataUrl) {
-                user.foto = dataUrl;
-                atualizarUsuario(user);
+            const resp = await fetch('http://localhost/TCC/Back_end/index.php?url=user/foto', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token // seu JWT
+                },
+                body: formData // NÃO defina Content-Type manualmente, o browser define o boundary
+            });
 
-                mensagem.className = 'mensagem sucesso';
-                mensagem.textContent = 'Foto atualizada com sucesso!';
-                mensagem.style.display = 'block';
-
-                if (fotoPreview) fotoPreview.src = dataUrl;
-            };
-
-            if (fotoComprimida) {
-                salvar(fotoComprimida);
-            } else {
-                comprimirImagem(fotoInput.files[0], salvar);
-            }
+            const data = await resp.json();
         });
     }
 }

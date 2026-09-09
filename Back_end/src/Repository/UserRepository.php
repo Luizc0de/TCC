@@ -119,6 +119,16 @@ class UserRepository
             return null; // Retorna null se o usuário não for encontrado
         }
 
+        public static function updatePassword($userId, $newHashedPassword)
+        {
+            $db = self::getConnection();
+            $stmt = $db->prepare("UPDATE users_pf SET password = :password WHERE id = :id");
+            $stmt->bindParam(':password', $newHashedPassword);
+            $stmt->bindParam(':id', $userId);
+            return $stmt->execute();
+        }
+
+
     }
 
 ?>
