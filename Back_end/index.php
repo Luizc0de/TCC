@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . "/vendor/autoload.php";
-require_once __DIR__ . "/src/Core/main.php";
+require_once __DIR__ . "/src/Core/Main.php";
 
 use App\Core\Router;
 use App\Core\Routes;

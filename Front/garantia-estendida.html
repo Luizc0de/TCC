@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garantia Estendida - Insurance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="loading-screen">
+        <div class="loader-logo"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="loader-text">Carregando...</div>
+        <div class="loader-spinner"></div>
+    </div>
+
+    <header id="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Insurance</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="index.html">Início</a></li>
+                    <li class="dropdown">
+                        <a href="#seguros">Seguros <i class="fa-solid fa-chevron-down"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="seguro-vida.html">Seguro de Vida</a></li>
+                            <li><a href="seguro-prestamista.html">Seguro Prestamista</a></li>
+                            <li><a href="seguro-acidentes.html">Acidentes Pessoais</a></li>
+                            <li><a href="seguro-doencas.html">Doenças Graves</a></li>
+                            <li><a href="seguro-invalidez.html">Seguro Invalidez</a></li>
+                            <li><a href="seguro-funeral.html">Seguro Funeral</a></li>
+                            <li><a href="seguro-automovel.html">Seguro Automóvel</a></li>
+                            <li><a href="seguro-residencial.html">Seguro Residencial</a></li>
+                            <li><a href="seguro-celular.html">Seguro Celular</a></li>
+                            <li><a href="garantia-estendida.html">Garantia Estendida</a></li>
+                            <li><a href="seguro-maquinarios.html">Seguro Maquinários</a></li>
+                            <li><a href="seguro-eletronicos.html">Seguro Eletrônicos</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="simulador1.html">Simulador</a></li>
+                    <li><a href="index.html#contato">Contato</a></li>
+                </ul>
+                <div class="header-buttons" id="headerButtons">
+                    <a href="login.html" class="btn btn-secondary">Entrar</a>
+                    <a href="cadastro.html" class="btn btn-primary">Solicitar Cotação</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main style="padding:120px 20px 60px; background:linear-gradient(135deg,#06143a,#1d4ed8); min-height:100vh;">
+        <div style="max-width:900px; margin:0 auto;">
+            <div style="text-align:center; color:white; margin-bottom:40px;">
+                <h1 style="font-size:2.5rem; font-weight:800;">Garantia Estendida</h1>
+                <p style="font-size:1.1rem; opacity:0.9;">Estenda a vida útil dos seus produtos.</p>
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px;">
+                <div style="background:white; padding:25px; border-radius:16px; text-align:center;">
+                    <i class="fa-solid fa-calendar-plus" style="font-size:2rem; color:#1d4ed8;"></i>
+                    <h3 style="color:#06143a; margin:10px 0;">Extensão de garantia</h3>
+                    <p style="color:#64748b;">+12, 24 ou 36 meses.</p>
+                </div>
+                <div style="background:white; padding:25px; border-radius:16px; text-align:center;">
+                    <i class="fa-solid fa-bolt" style="font-size:2rem; color:#1d4ed8;"></i>
+                    <h3 style="color:#06143a; margin:10px 0;">Danos elétricos</h3>
+                    <p style="color:#64748b;">Curtos e oscilações.</p>
+                </div>
+                <div style="background:white; padding:25px; border-radius:16px; text-align:center;">
+                    <i class="fa-solid fa-screwdriver-wrench" style="font-size:2rem; color:#1d4ed8;"></i>
+                    <h3 style="color:#06143a; margin:10px 0;">Assistência técnica</h3>
+                    <p style="color:#64748b;">Rede autorizada.</p>
+                </div>
+            </div>
+
+            <div style="text-align:center; margin-top:30px;">
+                <a href="simulador1.html?tipo=garantia" style="display:inline-block; padding:14px 30px; background:white; color:#1d4ed8; font-weight:700; border-radius:50px; text-decoration:none;">Simular este seguro</a>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
