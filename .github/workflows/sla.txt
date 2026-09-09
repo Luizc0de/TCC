@@ -1,0 +1,53 @@
+name: Deploy Back-end
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      # Monitora qualquer alteração na pasta Back_end
+      - "Back_end/**"
+
+jobs:
+  web-deploy:
+    name: Deploy Back-end
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get latest code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Baixa o histórico para comparar alterações do commit
+
+      - name: Verificar se dependências mudaram
+        id: check_deps
+        uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            Back_end/vendor/**
+            Back_end/composer.json
+            Back_end/composer.lock
+
+      - name: Definir exclusões do FTP
+        id: set_exclude
+        run: |
+          if [ "${{ steps.check_deps.outputs.any_changed }}" == "true" ]; then
+            echo "Dependências alteradas! Enviando vendor e composer para o FTP."
+            echo "exclude_list=" >> $GITHUB_OUTPUT
+          else
+            echo "Sem alterações de dependências. Excluindo vendor e composer do FTP."
+            echo "exclude_list<<EOF" >> $GITHUB_OUTPUT
+            echo "vendor/**" >> $GITHUB_OUTPUT
+            echo "composer.json" >> $GITHUB_OUTPUT
+            echo "composer.lock" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Sync files via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./Back_end/
+          server-dir: ./
+          exclude: ${{ steps.set_exclude.outputs.exclude_list }}
