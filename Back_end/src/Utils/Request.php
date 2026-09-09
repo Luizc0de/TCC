@@ -4,6 +4,7 @@ namespace App\Utils;
 
 class Request
 {
+    private ?object $user = null;
     public static function method()
     {
         return $_SERVER["REQUEST_METHOD"];
@@ -31,6 +32,20 @@ class Request
             default => [],
         };
     }
+     
+
+    public function setUser(object $user): void
+    {
+        $this->user = $user;
+    }
+
+    public function user(): ?object
+    {
+        return $this->user;
+    }
+
+    // mantém seus outros métodos, como getBody(), method(), etc.
+
 
 }
 
