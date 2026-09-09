@@ -3,7 +3,6 @@
 namespace App\Controllers;  
 
 use App\Services\UserServices;
-use App\Services\AuthServices;
 use App\Utils\Request;
 use App\Utils\Response;
 
