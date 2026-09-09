@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Seguros - Insurance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="loading-screen">
+        <div class="loader-logo"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="loader-text">Carregando...</div>
+        <div class="loader-spinner"></div>
+    </div>
+
+    <header id="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Insurance</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="index.html#seguros">Seguros</a></li>
+                    <li><a href="index.html#contato">Contato</a></li>
+                </ul>
+                <div class="header-buttons" id="headerButtons">
+                    <a href="login.html" class="btn btn-secondary">Entrar</a>
+                    <a href="cadastro.html" class="btn btn-primary">Solicitar Cotação</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page-bg" style="min-height:100vh; padding:120px 20px 60px; display:flex; justify-content:center; align-items:flex-start;">
+        <div style="background:white; border-radius:24px; padding:40px 35px; max-width:600px; width:100%; box-shadow:0 25px 60px rgba(6,20,58,0.25);">
+            <div style="text-align:center; margin-bottom:30px;">
+                <div style="width:65px; height:65px; margin:0 auto 15px; border-radius:50%; background:linear-gradient(135deg,#1d4ed8,#3b82f6); display:flex; align-items:center; justify-content:center; font-size:28px; color:white;">
+                    <i class="fa-solid fa-calculator"></i>
+                </div>
+                <h1 style="color:#06143a; font-size:1.6rem; font-weight:800;">Simulador de Seguros</h1>
+                <p style="color:#64748b; font-size:0.9rem;">Monte seu plano personalizado e veja o valor estimado</p>
+            </div>
+
+            <div id="mensagem" style="display:none; padding:12px; border-radius:10px; margin-bottom:15px; text-align:center; font-weight:600;"></div>
+
+            <div style="margin-bottom:20px;">
+                <label style="display:block; font-weight:700; color:#06143a; margin-bottom:8px;">Tipo de Seguro</label>
+                <select id="tipoSeguro" style="width:100%; padding:14px 16px; border:2px solid #1d4ed8; border-radius:12px; font-family:inherit; font-size:1rem; font-weight:600; color:#06143a; background:#f0f6ff; cursor:pointer;">
+                    <option value="0">Selecione um seguro...</option>
+                    <option value="vida">Seguro de Vida</option>
+                    <option value="prestamista">Seguro Prestamista</option>
+                    <option value="acidentes">Acidentes Pessoais</option>
+                    <option value="doencas">Doenças Graves</option>
+                    <option value="invalidez">Seguro Invalidez</option>
+                    <option value="funeral">Seguro Funeral</option>
+                    <option value="automovel">Seguro Automóvel</option>
+                    <option value="residencial">Seguro Residencial</option>
+                    <option value="celular">Seguro Celular</option>
+                    <option value="garantia">Garantia Estendida</option>
+                    <option value="maquinarios">Seguro Maquinários</option>
+                    <option value="eletronicos">Seguro Eletrônicos</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <label style="display:block; font-weight:700; color:#06143a; margin-bottom:8px;">Coberturas Adicionais</label>
+                <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:10px;">
+                    <label style="display:flex; align-items:center; gap:8px; padding:12px; background:#f8fafc; border-radius:10px; cursor:pointer; border:2px solid #e2e8f0;">
+                        <input type="checkbox" class="cobertura" value="30" style="width:18px; height:18px; accent-color:#1d4ed8;">
+                        <span style="font-weight:600; color:#06143a; font-size:0.8rem;">Telemedicina (+R$ 30)</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:8px; padding:12px; background:#f8fafc; border-radius:10px; cursor:pointer; border:2px solid #e2e8f0;">
+                        <input type="checkbox" class="cobertura" value="20" style="width:18px; height:18px; accent-color:#1d4ed8;">
+                        <span style="font-weight:600; color:#06143a; font-size:0.8rem;">Assistência Funeral (+R$ 20)</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:8px; padding:12px; background:#f8fafc; border-radius:10px; cursor:pointer; border:2px solid #e2e8f0;">
+                        <input type="checkbox" class="cobertura" value="40" style="width:18px; height:18px; accent-color:#1d4ed8;">
+                        <span style="font-weight:600; color:#06143a; font-size:0.8rem;">Suporte Prioritário (+R$ 40)</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:8px; padding:12px; background:#f8fafc; border-radius:10px; cursor:pointer; border:2px solid #e2e8f0;">
+                        <input type="checkbox" class="cobertura" value="50" style="width:18px; height:18px; accent-color:#1d4ed8;">
+                        <span style="font-weight:600; color:#06143a; font-size:0.8rem;">Check-up Anual (+R$ 50)</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:8px; padding:12px; background:#f8fafc; border-radius:10px; cursor:pointer; border:2px solid #e2e8f0;">
+                        <input type="checkbox" class="cobertura" value="60" style="width:18px; height:18px; accent-color:#1d4ed8;">
+                        <span style="font-weight:600; color:#06143a; font-size:0.8rem;">Cobertura Internacional (+R$ 60)</span>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:8px; padding:12px; background:#f8fafc; border-radius:10px; cursor:pointer; border:2px solid #e2e8f0;">
+                        <input type="checkbox" class="cobertura" value="25" style="width:18px; height:18px; accent-color:#1d4ed8;">
+                        <span style="font-weight:600; color:#06143a; font-size:0.8rem;">Proteção para Cônjuge (+R$ 25)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div style="text-align:center; padding:25px; background:linear-gradient(135deg,#06143a,#1d4ed8); border-radius:16px; color:white; margin-bottom:20px;">
+                <h3 style="font-size:0.85rem; opacity:0.8; margin-bottom:8px;">Valor Estimado</h3>
+                <div id="valorTotal" style="font-size:2.5rem; font-weight:800;">R$ 0,00<span style="font-size:0.9rem; font-weight:500;">/mês</span></div>
+            </div>
+
+            <button id="btnContratar" style="width:100%; padding:16px; border-radius:12px; background:linear-gradient(135deg,#1d4ed8,#3b82f6); color:white; font-weight:700; font-size:1rem; cursor:pointer; border:none;">Contratar Agora</button>
+        </div>
+    </main>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

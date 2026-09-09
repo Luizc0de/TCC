@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Insurance - Proteja quem você ama</title>
+    <meta name="description" content="Os melhores seguros do Brasil em um só lugar. Vida, Auto, Residencial, Celular, Pet e muito mais. Cote agora!">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- LOADING -->
+    <div id="loading-screen">
+        <div class="loader-logo"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="loader-text">Carregando<span class="loader-dots"></span></div>
+        <div class="loader-spinner"></div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="insurance-header" id="header">
+        <div class="insurance-header-inner">
+            <a href="index.html" class="insurance-logo"><i class="fa-solid fa-shield-halved"></i><span>Insurance</span></a>
+            <nav class="insurance-nav">
+                <a href="#hero">Início</a>
+                <a href="#planos">Planos</a>
+                <a href="#depoimentos">Depoimentos</a>
+                <a href="#contato">Contato</a>
+            </nav>
+            <div class="insurance-header-actions">
+                <a href="login.html" class="insurance-btn insurance-btn-outline insurance-btn-sm">Login</a>
+                <a href="cadastro.html" class="insurance-btn insurance-btn-primary insurance-btn-sm">Cadastre-se</a>
+            </div>
+            <button class="insurance-hamburger" id="hamburgerBtn"><i class="fa-solid fa-bars"></i></button>
+        </div>
+    </header>
+
+    <main>
+        <!-- HERO SECTION - IMPACTO TOTAL -->
+        <section class="hero-impacto" id="hero">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <span class="hero-tag">🔥 MAIS DE 2 MILHÕES DE CLIENTES</span>
+                <h1>Proteja <span>tudo</span> que é importante pra você</h1>
+                <p>Os melhores seguros do Brasil em um só lugar.<br>Vida, Auto, Residencial, Celular, Pet e muito mais.</p>
+                <div class="hero-botoes">
+                    <a href="#planos" class="botao-primario">VER PLANOS <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="#contato" class="botao-secundario">FALAR COM ESPECIALISTA</a>
+                </div>
+                <div class="hero-numeros">
+                    <div class="numero-item"><strong>2M+</strong><span>Clientes</span></div>
+                    <div class="numero-item"><strong>98%</strong><span>Satisfação</span></div>
+                    <div class="numero-item"><strong>24h</strong><span>Atendimento</span></div>
+                </div>
+            </div>
+            <div class="hero-scroll">
+                <span>Role para baixo</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </div>
+        </section>
+
+        <!-- SEÇÃO DE PLANOS - CARDS GRANDES -->
+        <section class="planos-impacto" id="planos">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">NOSSOS PLANOS</span>
+                    <h2>Escolha sua proteção</h2>
+                    <p>Planos flexíveis que cabem no seu bolso</p>
+                </div>
+                <div class="planos-grid">
+                    <!-- Plano 1 -->
+                    <a href="seguro-vida.html" class="plano-card">
+                        <div class="plano-card-img" style="background-image: url('https://images.unsplash.com/photo-1511895426328-dc8714191300?w=600')"></div>
+                        <div class="plano-card-body">
+                            <i class="fa-solid fa-heart-pulse"></i>
+                            <h3>Seguro de Vida</h3>
+                            <p>A partir de <strong>R$ 39,90</strong>/mês</p>
+                            <span class="plano-card-link">Saiba mais <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </a>
+                    <!-- Plano 2 -->
+                    <a href="seguro-automovel.html" class="plano-card">
+                        <div class="plano-card-img" style="background-image: url('https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600')"></div>
+                        <div class="plano-card-body">
+                            <i class="fa-solid fa-car"></i>
+                            <h3>Seguro Auto</h3>
+                            <p>A partir de <strong>R$ 89,90</strong>/mês</p>
+                            <span class="plano-card-link">Saiba mais <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </a>
+                    <!-- Plano 3 -->
+                    <a href="seguro-residencial.html" class="plano-card">
+                        <div class="plano-card-img" style="background-image: url('https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600')"></div>
+                        <div class="plano-card-body">
+                            <i class="fa-solid fa-house-chimney"></i>
+                            <h3>Seguro Residencial</h3>
+                            <p>A partir de <strong>R$ 49,90</strong>/mês</p>
+                            <span class="plano-card-link">Saiba mais <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </a>
+                    <!-- Plano 4 -->
+                    <a href="seguro-celular.html" class="plano-card">
+                        <div class="plano-card-img" style="background-image: url('https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600')"></div>
+                        <div class="plano-card-body">
+                            <i class="fa-solid fa-mobile-screen-button"></i>
+                            <h3>Seguro Celular</h3>
+                            <p>A partir de <strong>R$ 24,90</strong>/mês</p>
+                            <span class="plano-card-link">Saiba mais <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </a>
+                    <!-- Plano 5 -->
+                    <a href="seguro-pet.html" class="plano-card">
+                        <div class="plano-card-img" style="background-image: url('https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600')"></div>
+                        <div class="plano-card-body">
+                            <i class="fa-solid fa-paw"></i>
+                            <h3>Seguro Pet</h3>
+                            <p>A partir de <strong>R$ 29,90</strong>/mês</p>
+                            <span class="plano-card-link">Saiba mais <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </a>
+                    <!-- Plano 6 -->
+                    <a href="garantia-estendida.html" class="plano-card">
+                        <div class="plano-card-img" style="background-image: url('https://images.unsplash.com/photo-1556911220-bff31c812dba?w=600')"></div>
+                        <div class="plano-card-body">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <h3>Garantia Estendida</h3>
+                            <p>A partir de <strong>R$ 14,90</strong>/mês</p>
+                            <span class="plano-card-link">Saiba mais <i class="fa-solid fa-arrow-right"></i></span>
+                        </div>
+                    </a>
+                </div>
+                <div class="planos-cta">
+                    <a href="#" class="botao-primario">VER TODOS OS PLANOS <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </section>
+
+        <!-- DEPOIMENTOS -->
+        <section class="depoimentos" id="depoimentos">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">DEPOIMENTOS</span>
+                    <h2>Quem confia na Insurance</h2>
+                </div>
+                <div class="depoimentos-grid">
+                    <div class="depoimento-card">
+                        <div class="depoimento-estrelas">⭐ ⭐ ⭐ ⭐ ⭐</div>
+                        <p>"Contratei o seguro auto e em menos de 24h já estava com o carro reserva. Atendimento incrível!"</p>
+                        <div class="depoimento-pessoa">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100" alt="Cliente">
+                            <div><strong>Carlos Silva</strong><span>São Paulo - SP</span></div>
+                        </div>
+                    </div>
+                    <div class="depoimento-card">
+                        <div class="depoimento-estrelas">⭐ ⭐ ⭐ ⭐ ⭐</div>
+                        <p>"Meu cachorro precisou de cirurgia e o seguro pet cobriu tudo. Salvou a vida do meu melhor amigo!"</p>
+                        <div class="depoimento-pessoa">
+                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100" alt="Cliente">
+                            <div><strong>Ana Oliveira</strong><span>Rio de Janeiro - RJ</span></div>
+                        </div>
+                    </div>
+                    <div class="depoimento-card">
+                        <div class="depoimento-estrelas">⭐ ⭐ ⭐ ⭐ ⭐</div>
+                        <p>"O seguro residencial cobriu os danos da enchente em 48h. Profissionais excelentes!"</p>
+                        <div class="depoimento-pessoa">
+                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100" alt="Cliente">
+                            <div><strong>Roberto Lima</strong><span>Belo Horizonte - MG</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA FINAL -->
+        <section class="cta-final" id="contato">
+            <div class="container">
+                <h2>Pronto para proteger o que importa?</h2>
+                <p>Faça uma cotação gratuita em 2 minutos. Sem compromisso.</p>
+                <form class="cta-form">
+                    <input type="text" placeholder="Seu nome">
+                    <input type="email" placeholder="Seu melhor e-mail">
+                    <input type="tel" placeholder="Seu telefone">
+                    <button type="submit" class="botao-primario">QUERO UMA COTAÇÃO GRÁTIS <i class="fa-solid fa-arrow-right"></i></button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="insurance-footer">
+        <div class="insurance-container">
+            <div class="insurance-footer-grid">
+                <div class="insurance-footer-brand">
+                    <a href="index.html" class="insurance-logo"><i class="fa-solid fa-shield-halved"></i> Insurance</a>
+                    <p>Protegendo famílias e patrimônios desde 2010.</p>
+                    <div class="insurance-footer-social">
+                        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fa-brands fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4>Planos de Vida</h4>
+                    <ul class="insurance-footer-links">
+                        <li><a href="seguro-vida.html">Seguro de Vida</a></li>
+                        <li><a href="seguro-prestamista.html">Seguro Prestamista</a></li>
+                        <li><a href="seguro-acidentes.html">Acidentes Pessoais</a></li>
+                        <li><a href="seguro-doencas.html">Doenças Graves</a></li>
+                        <li><a href="seguro-invalidez.html">Seguro Invalidez</a></li>
+                        <li><a href="seguro-funeral.html">Seguro Funeral</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Planos para Bens</h4>
+                    <ul class="insurance-footer-links">
+                        <li><a href="seguro-automovel.html">Seguro Auto</a></li>
+                        <li><a href="seguro-residencial.html">Seguro Residencial</a></li>
+                        <li><a href="seguro-celular.html">Seguro Celular</a></li>
+                        <li><a href="garantia-estendida.html">Garantia Estendida</a></li>
+                        <li><a href="seguro-maquinarios.html">Seguro Maquinários</a></li>
+                        <li><a href="seguro-eletronicos.html">Seguro Eletrônicos</a></li>
+                        <li><a href="seguro-pet.html">Seguro Pet</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Contato</h4>
+                    <ul class="insurance-footer-links">
+                        <li><i class="fa-solid fa-phone"></i> (11) 4000-1234</li>
+                        <li><i class="fa-solid fa-envelope"></i> contato@insurance.com.br</li>
+                        <li><i class="fa-solid fa-map-marker-alt"></i> São Paulo - SP</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="insurance-footer-bottom">© 2024 Insurance. Todos os direitos reservados.</div>
+        </div>
+    </footer>
+
+    <!-- WhatsApp fixo -->
+    <a href="https://wa.me/5511999999999" target="_blank" class="insurance-whatsapp"><i class="fa-brands fa-whatsapp"></i></a>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
