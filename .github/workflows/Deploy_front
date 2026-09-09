@@ -1,0 +1,26 @@
+name: Deploy Back-end via FTP
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "Front/**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: ${{ secrets.FTP_SERVER2 }}
+          username: ${{ secrets.FTP_USERNAME2 }}
+          password: ${{ secrets.FTP_PASSWORD2 }}
+
+          local-dir: ./Front/
+          server-dir: ./
