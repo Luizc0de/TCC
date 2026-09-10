@@ -61,6 +61,31 @@ class UserServices
             Response::json(['error' => $e->getMessage()], $status);
         }
     }
+
+    public static function changePassword($userId, $fields)
+    {
+        try {
+            $user = UserRepository::getUserById($userId);
+
+            if (!$user) {
+                Response::json(['error' => 'User not found'], 404);
+                return;
+            }
+
+            if (!password_verify($fields['current_password'], $user->getPassword())) {
+                Response::json(['error' => 'Current password is incorrect'], 400);
+                return;
+            }
+
+            $newHashedPassword = password_hash($fields['new_password'], PASSWORD_DEFAULT);
+            UserRepository::updatePassword($userId, $newHashedPassword);
+
+            Response::json(['message' => 'Password changed successfully'], 200);
+        } catch (\Exception $e) {
+            $status = $e->getCode() ?: 500;
+            Response::json(['error' => $e->getMessage()], $status);
+        }
+    }
     
 
 }

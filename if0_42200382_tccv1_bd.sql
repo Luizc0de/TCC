@@ -37,20 +37,21 @@ CREATE TABLE `apolice` (
   `numero_apolice` decimal(10,2) DEFAULT NULL,
   `valor_total` enum('fixo','percentual') DEFAULT NULL,
   `tipo_apolice` varchar(50) DEFAULT NULL,
-  `quantidade_parcela` int(11) DEFAULT NULL
+  `quantidade_parcela` int(11) DEFAULT NULL,
+  `id_funcionario` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Extraindo dados da tabela `apolice`
 --
 
-INSERT INTO `apolice` (`id_apolice`, `id_cliente`, `status_apolice`, `data_assinatura`, `data_vencimento`, `numero_apolice`, `valor_total`, `tipo_apolice`, `quantidade_parcela`) VALUES
-(1, 0, 'ativa', '2024-01-15', '2025-01-15', '500.00', 'fixo', 'Compreensiva', 1),
-(2, 0, 'ativa', '2024-03-10', '2025-03-10', '10.00', 'percentual', 'Multirrisco', 2),
-(3, 0, 'fechada', '2023-06-20', '2024-06-20', '300.00', 'fixo', 'Danos a terceiros', 3),
-(4, 0, 'inadimplente', '2024-08-01', '2025-08-01', '15.00', 'percentual', 'Compreensiva', 4),
-(5, 0, 'ativa', '2024-09-15', '2025-09-15', '600.00', 'fixo', 'Multirrisco', 1),
-(6, 0, 'cancelada', '2023-11-01', '2024-11-01', '0.00', 'fixo', 'Recibo', 2);
+INSERT INTO `apolice` (`id_apolice`, `id_cliente`, `status_apolice`, `data_assinatura`, `data_vencimento`, `numero_apolice`, `valor_total`, `tipo_apolice`, `quantidade_parcela`, `id_funcionario`) VALUES
+(1, 0, 'ativa', '2024-01-15', '2025-01-15', '500.00', 'fixo', 'Compreensiva', 1, 1),
+(2, 0, 'ativa', '2024-03-10', '2025-03-10', '10.00', 'percentual', 'Multirrisco', 2, 1),
+(3, 0, 'fechada', '2023-06-20', '2024-06-20', '300.00', 'fixo', 'Danos a terceiros', 3, 1),
+(4, 0, 'inadimplente', '2024-08-01', '2025-08-01', '15.00', 'percentual', 'Compreensiva', 4, 1),
+(5, 0, 'ativa', '2024-09-15', '2025-09-15', '600.00', 'fixo', 'Multirrisco', 1, 1),
+(6, 0, 'cancelada', '2023-11-01', '2024-11-01', '0.00', 'fixo', 'Recibo', 2, 1);
 
 -- --------------------------------------------------------
 
@@ -272,7 +273,8 @@ INSERT INTO `sinistro` (`id_sinistro`, `id_apolice`, `data_ocorrido`, `Descriç�
 --
 ALTER TABLE `apolice`
   ADD PRIMARY KEY (`id_apolice`),
-  ADD KEY `id_cliente` (`quantidade_parcela`);
+  ADD KEY `id_cliente` (`id_cliente`),
+  ADD KEY `id_funcionario` (`id_funcionario`);
 
 --
 -- Índices para tabela `avaliacao_financeira`

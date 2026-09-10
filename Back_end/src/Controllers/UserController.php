@@ -31,5 +31,24 @@ class UserController
 
         UserServices::getProfile($user->sub);
     }
+
+    public function ChangePassword(Request $request){
+        $user = $request->user();
+        $body = Request::getBody();
+
+        try {
+            $fields = Request::validate([
+                'current_password' => $body['current_password'] ?? '',
+                'new_password' => $body['new_password'] ?? '',
+            ]);
+        } catch (\Exception $e) {
+            Response::json(['error' => $e->getMessage()], 400);
+            return;
+        }
+
+        UserServices::changePassword($user->sub, $fields);
+    }
+
+
 }
 ?>

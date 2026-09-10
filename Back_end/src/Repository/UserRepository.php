@@ -27,7 +27,7 @@ class UserRepository
         {
             try {
                 $db = self::getConnection();
-                $stmt = $db->prepare("INSERT INTO users_pf (name, email, password, cpf, code, roles) VALUES (:name, :email, :password, :cpf, :code, :roles)");
+                $stmt = $db->prepare("INSERT INTO cliente (name, email, password, cpf, code, roles) VALUES (:name, :email, :password, :cpf, :code, :roles)");
                 $name = $user->getName();
                 $email = $user->getEmail();
                 $password = $user->getPassword();
@@ -54,7 +54,7 @@ class UserRepository
         public static function getcodebyemail($email)
         {
             $db = self::getConnection();
-            $stmt = $db->prepare("SELECT code FROM users_pf WHERE email = :email");
+            $stmt = $db->prepare("SELECT code FROM cliente WHERE email = :email");
             $stmt->bindParam(':email', $email); 
             $stmt->execute();
             return $stmt->fetchColumn();
@@ -65,7 +65,7 @@ class UserRepository
         public static function changeValidationStatus($email, $status)
         {
             $db = self::getConnection();
-            $stmt = $db->prepare("UPDATE users_pf SET valid = :status, code = NULL WHERE email = :email");
+            $stmt = $db->prepare("UPDATE cliente SET valid = :status, code = NULL WHERE email = :email");
             $stmt->bindValue(':status', (int) $status, \PDO::PARAM_INT);
             $stmt->bindParam(':email', $email);
             return $stmt->execute();
@@ -74,7 +74,7 @@ class UserRepository
         public static function getUserByEmail($email)
         {
             $db = self::getConnection();
-            $stmt = $db->prepare("SELECT * FROM users_pf WHERE email = :email");
+            $stmt = $db->prepare("SELECT cliente.*, cliente.idCliente AS id FROM cliente WHERE email = :email");
             $stmt->bindParam(':email', $email);
             $stmt->execute();
             $userData = $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -98,7 +98,7 @@ class UserRepository
         public static function getUserById($id)
         {
             $db = self::getConnection();
-            $stmt = $db->prepare("SELECT * FROM users_pf WHERE id = :id");
+            $stmt = $db->prepare("SELECT cliente.*, cliente.idCliente AS id FROM cliente WHERE idCliente = :id");
             $stmt->bindParam(':id', $id);
             $stmt->execute();
             $userData = $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -118,6 +118,16 @@ class UserRepository
 
             return null; // Retorna null se o usuário não for encontrado
         }
+
+        public static function updatePassword($userId, $newHashedPassword)
+        {
+            $db = self::getConnection();
+            $stmt = $db->prepare("UPDATE cliente SET password = :password WHERE id = :id");
+            $stmt->bindParam(':password', $newHashedPassword);
+            $stmt->bindParam(':id', $userId);
+            return $stmt->execute();
+        }
+
 
     }
 

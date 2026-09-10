@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Utils\Response;
+use App\Repository\FuncionarioRepository;
 use App\Repository\UserRepository;
 
 class AuthServices
@@ -25,6 +26,12 @@ class AuthServices
         if ($user && password_verify($password, $user->getPassword())) {
             return $user;
         }
+
+        $funcionario = FuncionarioRepository::findByEmail($email);
+        if ($funcionario && password_verify($password, $funcionario->getPassword())) {
+            return $funcionario;
+        }
+
         return null;
     }
 }

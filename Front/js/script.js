@@ -304,35 +304,36 @@ if (loginForm) {
             return;
         }
 
-        var users = getUsers();
-        var user = users.find(function(u) { return u.email.toLowerCase() === email; });
+        fetch('http://localhost/TCC/Back_end/?url=auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, password: senha })
+        })
+            .then(function(response) {
+                return response.json().then(function(data) {
+                    if (!response.ok) {
+                        throw new Error(data.message || data.error || 'E-mail ou senha inválidos.');
+                    }
+                    return data;
+                });
+            })
+            .then(function(data) {
+                localStorage.setItem('token', data.token);
+                errorMsg.style.display = 'none';
+                successMsg.textContent = 'Login realizado com sucesso! Redirecionando...';
+                successMsg.style.display = 'block';
 
-        if (!user) {
-            errorMsg.textContent = 'E-mail não cadastrado!';
-            errorMsg.style.display = 'block';
-            successMsg.style.display = 'none';
-            return;
-        }
-
-        if (user.senha !== senha) {
-            errorMsg.textContent = 'Senha incorreta!';
-            errorMsg.style.display = 'block';
-            successMsg.style.display = 'none';
-            return;
-        }
-
-        localStorage.setItem('token', user.id);
-        localStorage.setItem('user', JSON.stringify(user));
-
-        errorMsg.style.display = 'none';
-        successMsg.textContent = 'Login realizado com sucesso! Redirecionando...';
-        successMsg.style.display = 'block';
-
-        setTimeout(function() {
-            var destino = localStorage.getItem('redirectAfterLogin');
-            localStorage.removeItem('redirectAfterLogin');
-            window.location.href = destino || 'index.html';
-        }, 1500);
+                setTimeout(function() {
+                    var destino = localStorage.getItem('redirectAfterLogin');
+                    localStorage.removeItem('redirectAfterLogin');
+                    window.location.href = destino || 'index.html';
+                }, 1500);
+            })
+            .catch(function(error) {
+                errorMsg.textContent = error.message;
+                errorMsg.style.display = 'block';
+                successMsg.style.display = 'none';
+            });
     });
 }
 
@@ -1106,34 +1107,24 @@ if (mudarFotoForm) {
             });
         }
 
-        mudarFotoForm.addEventListener('submit', function(e) {
+        mudarFotoForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            var mensagem = document.getElementById('mensagem');
+            const file = fotoInput.files[0];
+            if (!file) return;
 
-            if (!fotoInput.files[0]) {
-                mensagem.className = 'mensagem erro';
-                mensagem.textContent = 'Selecione uma foto!';
-                mensagem.style.display = 'block';
-                return;
-            }
+            const formData = new FormData();
+            formData.append('foto', file);
 
-            var salvar = function(dataUrl) {
-                user.foto = dataUrl;
-                atualizarUsuario(user);
+            const resp = await fetch('http://localhost/TCC/Back_end/index.php?url=user/foto', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token // seu JWT
+                },
+                body: formData // NÃO defina Content-Type manualmente, o browser define o boundary
+            });
 
-                mensagem.className = 'mensagem sucesso';
-                mensagem.textContent = 'Foto atualizada com sucesso!';
-                mensagem.style.display = 'block';
-
-                if (fotoPreview) fotoPreview.src = dataUrl;
-            };
-
-            if (fotoComprimida) {
-                salvar(fotoComprimida);
-            } else {
-                comprimirImagem(fotoInput.files[0], salvar);
-            }
+            const data = await resp.json();
         });
     }
 }
