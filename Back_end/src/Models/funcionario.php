@@ -4,7 +4,7 @@ namespace App\Models;
 
 class Funcionario
 {
-    private int $id;
+    private ?int $id;
     private string $name;
     private string $email;
     private string $password;
@@ -13,8 +13,9 @@ class Funcionario
     private float $salario;
     public array $roles;
 
-    public function __construct($name, $email, $password, $setor, $cpf, $salario)
+    public function __construct($name, $email, $password, $setor, $cpf, $salario, $id = null)
     {
+        $this->id = $id;
         $this->name = $name;
         $this->email = $email;
         $this->password = $password;
@@ -43,6 +44,11 @@ class Funcionario
         return $this->password;
     }
 
+    public function setPassword($password)
+    {
+        $this->password = $password;
+    }
+
     public function getSetor()
     {
         return $this->setor;
@@ -51,6 +57,10 @@ class Funcionario
     public function getCpf()
     {
         return $this->cpf;
+    }
+    public function getSalario()
+    {
+        return $this->salario;
     }
 }
 

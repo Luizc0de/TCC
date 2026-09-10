@@ -304,35 +304,36 @@ if (loginForm) {
             return;
         }
 
-        var users = getUsers();
-        var user = users.find(function(u) { return u.email.toLowerCase() === email; });
+        fetch('http://localhost/TCC/Back_end/?url=auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, password: senha })
+        })
+            .then(function(response) {
+                return response.json().then(function(data) {
+                    if (!response.ok) {
+                        throw new Error(data.message || data.error || 'E-mail ou senha inválidos.');
+                    }
+                    return data;
+                });
+            })
+            .then(function(data) {
+                localStorage.setItem('token', data.token);
+                errorMsg.style.display = 'none';
+                successMsg.textContent = 'Login realizado com sucesso! Redirecionando...';
+                successMsg.style.display = 'block';
 
-        if (!user) {
-            errorMsg.textContent = 'E-mail não cadastrado!';
-            errorMsg.style.display = 'block';
-            successMsg.style.display = 'none';
-            return;
-        }
-
-        if (user.senha !== senha) {
-            errorMsg.textContent = 'Senha incorreta!';
-            errorMsg.style.display = 'block';
-            successMsg.style.display = 'none';
-            return;
-        }
-
-        localStorage.setItem('token', user.id);
-        localStorage.setItem('user', JSON.stringify(user));
-
-        errorMsg.style.display = 'none';
-        successMsg.textContent = 'Login realizado com sucesso! Redirecionando...';
-        successMsg.style.display = 'block';
-
-        setTimeout(function() {
-            var destino = localStorage.getItem('redirectAfterLogin');
-            localStorage.removeItem('redirectAfterLogin');
-            window.location.href = destino || 'index.html';
-        }, 1500);
+                setTimeout(function() {
+                    var destino = localStorage.getItem('redirectAfterLogin');
+                    localStorage.removeItem('redirectAfterLogin');
+                    window.location.href = destino || 'index.html';
+                }, 1500);
+            })
+            .catch(function(error) {
+                errorMsg.textContent = error.message;
+                errorMsg.style.display = 'block';
+                successMsg.style.display = 'none';
+            });
     });
 }
 

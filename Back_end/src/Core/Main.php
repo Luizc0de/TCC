@@ -24,5 +24,7 @@ Routes::get('/test/private', 'TestController@privateRoute', true);
 
 Routes::get('/test/admin', 'TestController@adminRoute', 'admin');
 
+Routes::post('/funcionario', 'FuncionarioController@CreateFuncionario', true);
+Routes::post('/apolice', 'ApoliceController@createApolice', true);
 
 ?>

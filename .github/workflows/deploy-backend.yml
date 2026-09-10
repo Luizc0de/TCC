@@ -24,3 +24,7 @@ jobs:
 
           local-dir: ./Back_end/
           server-dir: ./
+          exclude: |
+            **/.env
+            **/.htaccess
+            vendor/**
