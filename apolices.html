@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Apólices - Insurance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="loading-screen">
+        <div class="loader-logo"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="loader-text">Carregando...</div>
+        <div class="loader-spinner"></div>
+    </div>
+
+    <header id="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo"><i class="fa-solid fa-shield-halved"></i><span>Insurance</span></a>
+                <ul class="nav-links">
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="simulador1.html">Simulador</a></li>
+                    <li><a href="apolices.html">Minhas Apólices</a></li>
+                </ul>
+                <div class="header-buttons" id="headerButtons">
+                    <a href="login.html" class="btn btn-secondary">Entrar</a>
+                    <a href="cadastro.html" class="btn btn-primary">Solicitar Cotação</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page-bg" style="min-height:100vh; padding:120px 20px 60px;">
+        <div class="container" style="max-width:900px;">
+            <div style="text-align:center; margin-bottom:40px;">
+                <h1 style="color:white; font-size:2rem; font-weight:800;">
+                    <i class="fa-solid fa-file-contract"></i> Minhas Apólices
+                </h1>
+                <p style="color:rgba(255,255,255,0.75);">Acompanhe seus seguros contratados</p>
+            </div>
+
+            <div id="listaApolices" style="display:grid; gap:20px;">
+                <div style="text-align:center; color:white; padding:40px;">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size:2rem;"></i>
+                    <p style="margin-top:15px;">Carregando apólices...</p>
+                </div>
+            </div>
+
+            <div style="text-align:center; margin-top:40px;">
+                <a href="simulador1.html" class="btn btn-primary">
+                    <i class="fa-solid fa-plus"></i> Contratar novo seguro
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

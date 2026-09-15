@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2ª Via de Boleto - Insurance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="loading-screen">
+        <div class="loader-logo"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="loader-text">Carregando...</div>
+        <div class="loader-spinner"></div>
+    </div>
+
+    <header id="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo"><i class="fa-solid fa-shield-halved"></i><span>Insurance</span></a>
+                <ul class="nav-links">
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="simulador1.html">Simulador</a></li>
+                </ul>
+                <div class="header-buttons" id="headerButtons">
+                    <a href="login.html" class="btn btn-secondary">Entrar</a>
+                    <a href="cadastro.html" class="btn btn-primary">Solicitar Cotação</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page-bg" style="min-height:100vh; padding:120px 20px 60px;">
+        <div class="container" style="max-width:960px;">
+            <div class="section-header" style="margin-bottom:40px;">
+                <span><i class="fa-solid fa-barcode"></i> Pagamentos</span>
+                <h2 style="color:#06143a; font-size:2.2rem; font-weight:800; margin-bottom:10px;">2ª Via de Boleto</h2>
+                <p style="color:#e0e7ff; font-size:1rem;">Solicite a segunda via dos seus boletos em aberto</p>
+            </div>
+
+            <div id="listaBoletos" style="background:#ffffff; border-radius:20px; box-shadow:0 15px 40px rgba(15,23,42,0.15); overflow:hidden;">
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse:collapse;">
+                        <thead>
+                            <tr style="background:#06143a; color:#ffffff; text-align:left;">
+                                <th style="padding:14px 18px; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.3px;">Nº parcela</th>
+                                <th style="padding:14px 18px; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.3px;">Valor</th>
+                                <th style="padding:14px 18px; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.3px;">Vencimento</th>
+                                <th style="padding:14px 18px; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.3px;">Status</th>
+                                <th style="padding:14px 18px; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.3px;">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom:1px solid #eef2f7;">
+                                <td style="padding:14px 18px; color:#334155; font-weight:700;">Parcela 1</td>
+                                <td style="padding:14px 18px; color:#334155;">R$ 289,90</td>
+                                <td style="padding:14px 18px; color:#334155;">10/10/2026</td>
+                                <td style="padding:14px 18px;">
+                                    <span style="padding:5px 12px; border-radius:50px; background:#fef3c7; color:#92400e; font-size:0.78rem; font-weight:700;">Pendente</span>
+                                </td>
+                                <td style="padding:14px 18px;">
+                                    <button class="btn btn-primary" style="padding:10px 18px; font-size:0.85rem;">
+                                        <i class="fa-solid fa-file-invoice-dollar"></i> 2ª via
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="estadoVazioBoleto" style="display:none; text-align:center; padding:50px 20px; color:#64748b;">
+                    <i class="fa-solid fa-file-invoice" style="font-size:3rem; color:#cbd5e1; margin-bottom:14px; display:block;"></i>
+                    <p style="font-size:0.95rem;">Você não tem boletos disponíveis</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <div class="footer-logo"><i class="fa-solid fa-shield-halved"></i><span>Insurance</span></div>
+                    <p class="footer-about">Segurança, confiança e tranquilidade para proteger você, sua família e seu patrimônio.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4>Planos de Vida</h4>
+                    <ul>
+                        <li><a href="seguro-vida.html">Seguro de Vida</a></li>
+                        <li><a href="seguro-prestamista.html">Prestamista</a></li>
+                        <li><a href="seguro-invalidez.html">Invalidez</a></li>
+                        <li><a href="seguro-funeral.html">Funeral</a></li>
+                        <li><a href="seguro-doencas.html">Doenças Graves</a></li>
+                        <li><a href="seguro-acidentes.html">Acidentes</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Planos para Bens</h4>
+                    <ul>
+                        <li><a href="seguro-automovel.html">Seguro Auto</a></li>
+                        <li><a href="seguro-residencial.html">Seguro Residencial</a></li>
+                        <li><a href="seguro-celular.html">Seguro Celular</a></li>
+                        <li><a href="garantia-estendida.html">Garantia Estendida</a></li>
+                        <li><a href="seguro-maquinarios.html">Seguro Maquinários</a></li>
+                        <li><a href="seguro-eletronicos.html">Seguro Eletrônicos</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Contato</h4>
+                    <ul class="footer-contact">
+                        <li><i class="fa-solid fa-phone"></i> (11) 99999-9999</li>
+                        <li><i class="fa-solid fa-envelope"></i> contato@insurance.com.br</li>
+                        <li><i class="fa-solid fa-location-dot"></i> São Paulo - SP</li>
+                        <li><i class="fa-solid fa-clock"></i> Atendimento 24 horas</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 Insurance. Todos os direitos reservados.</p>
+                <p>Desenvolvido para o TCC.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamentos - Insurance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="../../css/stylefuncionario.css">
+</head>
+<body>
+
+    <aside class="admin-sidebar" id="sidebarPagamentos">
+        <div class="admin-logo"><i class="fa-solid fa-shield-halved"></i><span>Insurance</span></div>
+        <nav class="admin-nav">
+            <a href="admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+            <a href="admin-clientes.html"><i class="fa-solid fa-users"></i> Clientes</a>
+            <a href="admin-apolices.html"><i class="fa-solid fa-file-contract"></i> Apólices</a>
+            <a href="admin-sinistros.html"><i class="fa-solid fa-triangle-exclamation"></i> Sinistros</a>
+            <a href="admin-pagamentos.html" class="active"><i class="fa-solid fa-money-bill"></i> Pagamentos</a>
+            <a href="admin-bens.html"><i class="fa-solid fa-box-open"></i> Bens</a>
+            <a href="admin-usuarios.html"><i class="fa-solid fa-user-gear"></i> Usuários</a>
+        </nav>
+        <div class="admin-sidebar-footer">
+            <a href="../index.html"><i class="fa-solid fa-arrow-left"></i> Voltar ao site</a>
+            <a href="../login.html" class="sair"><i class="fa-solid fa-right-from-bracket"></i> Sair</a>
+        </div>
+    </aside>
+
+    <main class="admin-main">
+        <div class="admin-topbar">
+            <div style="display:flex; align-items:center; gap:14px;">
+                <button class="admin-menu-toggle" onclick="document.getElementById('sidebarPagamentos').classList.toggle('open');" aria-label="Abrir menu"><i class="fa-solid fa-bars"></i></button>
+                <div>
+                    <h1>Pagamentos</h1>
+                    <p class="admin-subtitle">Controle os pagamentos das apólices</p>
+                </div>
+            </div>
+            <div class="admin-user">
+                <img src="../../images/default-avatar.png" alt="Avatar">
+                <span>Admin</span>
+            </div>
+        </div>
+        <div class="admin-content">
+            <div class="admin-filters">
+                <div class="admin-filter">
+                    <label>Mês</label>
+                    <select>
+                        <option>Setembro/2026</option>
+                        <option>Agosto/2026</option>
+                        <option>Julho/2026</option>
+                    </select>
+                </div>
+                <div class="admin-filter">
+                    <label>Status</label>
+                    <select>
+                        <option>Todos</option>
+                        <option>Pago</option>
+                        <option>Pendente</option>
+                        <option>Atrasado</option>
+                    </select>
+                </div>
+                <div class="admin-filter">
+                    <label>Método</label>
+                    <select>
+                        <option>Todos</option>
+                        <option>Boleto</option>
+                        <option>Cartão</option>
+                        <option>Pix</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="admin-panel">
+                <div class="admin-panel-header">
+                    <h2><i class="fa-solid fa-money-bill-transfer"></i> Pagamentos recebidos</h2>
+                    <button class="admin-btn admin-btn-primary"><i class="fa-solid fa-plus"></i> Registrar pagamento</button>
+                </div>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Apólice</th>
+                                <th>Valor</th>
+                                <th>Método</th>
+                                <th>Data</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#P-001</td>
+                                <td class="cliente-nome">Maria Souza</td>
+                                <td>#A-1024</td>
+                                <td>R$ 289,90</td>
+                                <td>Boleto</td>
+                                <td>05/09/2026</td>
+                                <td><span class="admin-status status-pago">Pago</span></td>
+                                <td>
+                                    <button class="admin-btn admin-btn-ghost"><i class="fa-solid fa-receipt"></i> Emitir recibo</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#P-002</td>
+                                <td class="cliente-nome">João Pereira</td>
+                                <td>#A-1025</td>
+                                <td>R$ 1.450,00</td>
+                                <td>Cartão</td>
+                                <td>12/09/2026</td>
+                                <td><span class="admin-status status-atrasado">Atrasado</span></td>
+                                <td>
+                                    <button class="admin-btn admin-btn-ghost"><i class="fa-solid fa-receipt"></i> Emitir recibo</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>

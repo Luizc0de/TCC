@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abrir Sinistro - Insurance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="loading-screen">
+        <div class="loader-logo"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="loader-text">Carregando...</div>
+        <div class="loader-spinner"></div>
+    </div>
+
+    <header id="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo"><i class="fa-solid fa-shield-halved"></i><span>Insurance</span></a>
+                <ul class="nav-links">
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="simulador1.html">Simulador</a></li>
+                </ul>
+                <div class="header-buttons" id="headerButtons">
+                    <a href="login.html" class="btn btn-secondary">Entrar</a>
+                    <a href="cadastro.html" class="btn btn-primary">Solicitar Cotação</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page-bg" style="min-height:100vh; padding:120px 20px 60px; display:flex; justify-content:center; align-items:flex-start;">
+        <div style="background:#ffffff; border-radius:24px; padding:40px 35px; max-width:560px; width:100%; box-shadow:0 25px 60px rgba(6,20,58,0.25);">
+
+            <div style="margin-bottom:28px;">
+                <a href="sinistros.html" style="color:#1d4ed8; font-weight:700; font-size:0.9rem; text-decoration:none;">
+                    <i class="fa-solid fa-arrow-left"></i> Voltar
+                </a>
+                <div style="width:60px; height:60px; margin:16px auto 14px; border-radius:50%; background:#eff6ff; display:flex; align-items:center; justify-content:center; font-size:26px; color:#1d4ed8;">
+                    <i class="fa-solid fa-file-circle-exclamation"></i>
+                </div>
+                <h1 style="text-align:center; color:#06143a; font-size:1.7rem; font-weight:800;">Abrir Sinistro</h1>
+                <p style="text-align:center; color:#64748b; font-size:0.92rem;">Preencha os dados do ocorrido para registrar sua solicitação</p>
+            </div>
+
+            <form id="formAbrirSinistro">
+                <div style="margin-bottom:18px;">
+                    <label style="display:block; font-weight:700; color:#06143a; margin-bottom:8px;">Nº da Apólice</label>
+                    <select style="width:100%; padding:13px 14px; border:2px solid #e2e8f0; border-radius:12px; font-size:0.95rem; background:#f8fafc;">
+                        <option value="">Selecione uma apólice</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom:18px;">
+                    <label style="display:block; font-weight:700; color:#06143a; margin-bottom:8px;">Tipo de Sinistro</label>
+                    <select style="width:100%; padding:13px 14px; border:2px solid #e2e8f0; border-radius:12px; font-size:0.95rem; background:#f8fafc;">
+                        <option value="">Selecione o tipo</option>
+                        <option value="roubo">Roubo</option>
+                        <option value="acidente">Acidente</option>
+                        <option value="dano">Dano</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom:18px;">
+                    <label style="display:block; font-weight:700; color:#06143a; margin-bottom:8px;">Data do ocorrido</label>
+                    <input type="date" style="width:100%; padding:13px 14px; border:2px solid #e2e8f0; border-radius:12px; font-size:0.95rem; background:#f8fafc;">
+                </div>
+
+                <div style="margin-bottom:18px;">
+                    <label style="display:block; font-weight:700; color:#06143a; margin-bottom:8px;">Descrição do ocorrido</label>
+                    <textarea rows="5" minlength="20" maxlength="500" placeholder="Descreva detalhadamente o que aconteceu (mínimo de 20 caracteres)" style="width:100%; padding:13px 14px; border:2px solid #e2e8f0; border-radius:12px; font-size:0.95rem; background:#f8fafc; resize:vertical;"></textarea>
+                </div>
+
+                <div style="margin-bottom:24px;">
+                    <label style="display:block; font-weight:700; color:#06143a; margin-bottom:8px;">Anexar documentos <span style="font-weight:400; color:#94a3b8;">(opcional)</span></label>
+                    <input type="file" multiple style="width:100%; padding:12px 14px; border:2px dashed #cbd5e1; border-radius:12px; font-size:0.9rem; background:#f8fafc;">
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width:100%;">
+                    <i class="fa-solid fa-paper-plane"></i> Enviar sinistro
+                </button>
+            </form>
+
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <div class="footer-logo"><i class="fa-solid fa-shield-halved"></i><span>Insurance</span></div>
+                    <p class="footer-about">Segurança, confiança e tranquilidade para proteger você, sua família e seu patrimônio.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4>Planos de Vida</h4>
+                    <ul>
+                        <li><a href="seguro-vida.html">Seguro de Vida</a></li>
+                        <li><a href="seguro-prestamista.html">Prestamista</a></li>
+                        <li><a href="seguro-invalidez.html">Invalidez</a></li>
+                        <li><a href="seguro-funeral.html">Funeral</a></li>
+                        <li><a href="seguro-doencas.html">Doenças Graves</a></li>
+                        <li><a href="seguro-acidentes.html">Acidentes</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Planos para Bens</h4>
+                    <ul>
+                        <li><a href="seguro-automovel.html">Seguro Auto</a></li>
+                        <li><a href="seguro-residencial.html">Seguro Residencial</a></li>
+                        <li><a href="seguro-celular.html">Seguro Celular</a></li>
+                        <li><a href="garantia-estendida.html">Garantia Estendida</a></li>
+                        <li><a href="seguro-maquinarios.html">Seguro Maquinários</a></li>
+                        <li><a href="seguro-eletronicos.html">Seguro Eletrônicos</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Contato</h4>
+                    <ul class="footer-contact">
+                        <li><i class="fa-solid fa-phone"></i> (11) 99999-9999</li>
+                        <li><i class="fa-solid fa-envelope"></i> contato@insurance.com.br</li>
+                        <li><i class="fa-solid fa-location-dot"></i> São Paulo - SP</li>
+                        <li><i class="fa-solid fa-clock"></i> Atendimento 24 horas</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 Insurance. Todos os direitos reservados.</p>
+                <p>Desenvolvido para o TCC.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

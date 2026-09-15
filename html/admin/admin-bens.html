@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bens Segurados - Insurance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="../../css/stylefuncionario.css">
+</head>
+<body>
+
+    <aside class="admin-sidebar" id="sidebarBens">
+        <div class="admin-logo"><i class="fa-solid fa-shield-halved"></i><span>Insurance</span></div>
+        <nav class="admin-nav">
+            <a href="admin.html"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+            <a href="admin-clientes.html"><i class="fa-solid fa-users"></i> Clientes</a>
+            <a href="admin-apolices.html"><i class="fa-solid fa-file-contract"></i> Apólices</a>
+            <a href="admin-sinistros.html"><i class="fa-solid fa-triangle-exclamation"></i> Sinistros</a>
+            <a href="admin-pagamentos.html"><i class="fa-solid fa-money-bill"></i> Pagamentos</a>
+            <a href="admin-bens.html" class="active"><i class="fa-solid fa-box-open"></i> Bens</a>
+            <a href="admin-usuarios.html"><i class="fa-solid fa-user-gear"></i> Usuários</a>
+        </nav>
+        <div class="admin-sidebar-footer">
+            <a href="../index.html"><i class="fa-solid fa-arrow-left"></i> Voltar ao site</a>
+            <a href="../login.html" class="sair"><i class="fa-solid fa-right-from-bracket"></i> Sair</a>
+        </div>
+    </aside>
+
+    <main class="admin-main">
+        <div class="admin-topbar">
+            <div style="display:flex; align-items:center; gap:14px;">
+                <button class="admin-menu-toggle" onclick="document.getElementById('sidebarBens').classList.toggle('open');" aria-label="Abrir menu"><i class="fa-solid fa-bars"></i></button>
+                <div>
+                    <h1>Bens Segurados</h1>
+                    <p class="admin-subtitle">Gerencie os bens vinculados às apólices</p>
+                </div>
+            </div>
+            <div class="admin-user">
+                <img src="../../images/default-avatar.png" alt="Avatar">
+                <span>Admin</span>
+            </div>
+        </div>
+        <div class="admin-content">
+            <div class="admin-filters">
+                <div class="admin-filter">
+                    <label>Tipo de bem</label>
+                    <select>
+                        <option>Todos</option>
+                        <option>Automóvel</option>
+                        <option>Imóvel</option>
+                        <option>Eletrônico</option>
+                        <option>Maquinário</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="admin-panel">
+                <div class="admin-panel-header">
+                    <h2><i class="fa-solid fa-box-open"></i> Bens segurados</h2>
+                    <button class="admin-btn admin-btn-primary"><i class="fa-solid fa-plus"></i> Cadastrar bem</button>
+                </div>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Tipo</th>
+                                <th>Descrição</th>
+                                <th>Valor</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#B-001</td>
+                                <td class="cliente-nome">João Pereira</td>
+                                <td>Automóvel</td>
+                                <td>Honda Civic 2020</td>
+                                <td>R$ 110.000,00</td>
+                                <td>
+                                    <div class="admin-table-actions">
+                                        <button class="admin-action-btn ver" title="Ver"><i class="fa-solid fa-eye"></i></button>
+                                        <button class="admin-action-btn editar" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                                        <button class="admin-action-btn remover" title="Remover"><i class="fa-solid fa-trash"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#B-002</td>
+                                <td class="cliente-nome">Maria Souza</td>
+                                <td>Eletrônico</td>
+                                <td>iPhone 14 Pro</td>
+                                <td>R$ 7.500,00</td>
+                                <td>
+                                    <div class="admin-table-actions">
+                                        <button class="admin-action-btn ver" title="Ver"><i class="fa-solid fa-eye"></i></button>
+                                        <button class="admin-action-btn editar" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                                        <button class="admin-action-btn remover" title="Remover"><i class="fa-solid fa-trash"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>
