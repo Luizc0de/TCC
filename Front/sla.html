@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Teste API</title>
+</head>
+
+<body>
+
+    <h1>Testar rota user_PF</h1>
+
+    <button onclick="enviarUsuario()">
+        Enviar JSON
+    </button>
+
+    <h2>JSON enviado:</h2>
+    <pre id="jsonEnviado"></pre>
+
+    <h2>Resposta da API:</h2>
+    <pre id="resultado"></pre>
+
+
+    <script>
+
+        const API_URL = "https://api.insurance.dev.br";
+
+        function gerarNomeAleatorio() {
+
+            const nomes = [
+                "Carlos",
+                "Joao",
+                "Maria",
+                "Lucas",
+                "Ana",
+                "Pedro",
+                "Gabriel",
+                "Julia",
+                "Marcos",
+                "Fernanda"
+            ];
+
+            const nome = nomes[
+                Math.floor(Math.random() * nomes.length)
+            ];
+
+            const numero =
+                Math.floor(Math.random() * 10000);
+
+            return nome + numero;
+        }
+
+
+        async function enviarUsuario() {
+
+            const resultado =
+                document.getElementById("resultado");
+
+            const jsonEnviado =
+                document.getElementById("jsonEnviado");
+
+
+            // Gera nome aleatório
+            const nomeAleatorio =
+                gerarNomeAleatorio();
+
+
+            // JSON que será enviado
+            const dados = {
+                name: nomeAleatorio
+            };
+
+
+            jsonEnviado.textContent =
+                JSON.stringify(dados, null, 2);
+
+
+            resultado.textContent =
+                "Enviando...";
+
+
+            try {
+
+                const response = await fetch(
+                    API_URL + "/users_PF",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify(dados)
+                    }
+                );
+
+
+                const texto =
+                    await response.text();
+
+
+                console.log(
+                    "Status:",
+                    response.status
+                );
+
+                console.log(
+                    "Resposta:",
+                    texto
+                );
+
+
+                resultado.textContent =
+                    "HTTP " +
+                    response.status +
+                    "\n\n" +
+                    texto;
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                resultado.textContent =
+                    "Erro ao conectar com a API:\n\n" +
+                    error.message;
+            }
+        }
+
+    </script>
+
+</body>
+</html>
