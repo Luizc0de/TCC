@@ -13,15 +13,15 @@ class ApoliceService
     {
         try {
             $apolice = new Apolice(
-                $fields['numeroApolice'],
-                $fields['dataAssinatura'],
-                $fields['dataVencimento'],
-                $fields['status'],
-                $fields['tipoApolice'],
-                $fields['valorTotal'],
-                $fields['quantidadeParcelas'] === null ? null : (int) $fields['quantidadeParcelas'],
-                (int) $fields['idCliente'],
-                $fields['idFuncionario']
+                numeroApolice: "AP-" . uniqid(10),
+                dataAssinatura: $fields['dataAssinatura'],
+                dataVencimento: $fields['dataVencimento'],
+                status: $fields['status'],
+                tipoApolice: $fields['tipoApolice'],
+                valorTotal: $fields['valorTotal'],
+                quantidadeParcelas: $fields['quantidadeParcelas'] === null ? null : (int) $fields['quantidadeParcelas'],
+                idCliente: (int) $fields['idCliente'],
+                idFuncionario: $fields['idFuncionario']
             );
             $bem = new Bem(
                 $fields['tipoBem'],
@@ -54,6 +54,6 @@ class ApoliceService
     public static function getAllApolices(): void
     {
 
-    
+
     }
 }
