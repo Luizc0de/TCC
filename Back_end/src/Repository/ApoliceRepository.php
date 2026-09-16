@@ -83,4 +83,24 @@ class ApoliceRepository
             throw new \Exception('Erro ao criar apólice: ' . $e->getMessage(), 500);
         }
     }
+    public static function getAllApolices()
+    {
+        $db = self::getConnection();
+
+        $stmt = $db->prepare("
+            SELECT
+                a.idApolice AS id,
+                c.name AS cliente,
+                a.tipoApolice AS tipo,
+                a.valorTotal AS valor,
+                a.status AS status,
+                a.dataAssinatura AS data
+            FROM apolice a
+            LEFT JOIN cliente c ON c.idCliente = a.idCliente
+        ");
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
 }

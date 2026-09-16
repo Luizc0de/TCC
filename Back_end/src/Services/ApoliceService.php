@@ -51,9 +51,9 @@ class ApoliceService
             Response::json(['error' => $e->getMessage()], $status);
         }
     }
-    public static function getAllApolices(): void
+    public static function getAllApolices()
     {
-
-
+        $aplices = ApoliceRepository::getAllApolices();
+        Response::json($aplices, 200);
     }
 }

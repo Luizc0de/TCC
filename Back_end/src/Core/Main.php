@@ -18,6 +18,8 @@ Routes::post('/profile/change_password', 'UserController@ChangePassword', true);
 
 // policesrou
 
+Routes::get('/apolices/get_all', 'ApoliceController@Index', true);
+
 Routes::get('/getclientes', 'UserController@Index', true);
 
 Routes::get('/test/private', 'TestController@privateRoute', true);
