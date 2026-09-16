@@ -4,7 +4,7 @@ namespace App\Core;
 
 use App\Utils\Request;
 use App\Utils\Response;
-use App\Core\JWTService;
+use App\Core\JwtService;
 
 
 Class Router {
