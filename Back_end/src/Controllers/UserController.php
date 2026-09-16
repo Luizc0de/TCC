@@ -31,6 +31,9 @@ class UserController
 
         UserServices::getProfile($user->sub);
     }
+    public function Index(){
+        UserServices::index();
+    }   
 
     public function ChangePassword(Request $request){
         $user = $request->user();

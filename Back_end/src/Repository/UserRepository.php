@@ -129,6 +129,24 @@ class UserRepository
         }
 
 
+        
+        
+        public static function getAllUsers()
+        {
+            $db = self::getConnection();
+
+            $stmt = $db->prepare("
+                SELECT 
+                    idCliente AS id,
+                    name,
+                    email
+                FROM cliente
+            ");
+
+            $stmt->execute();
+
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        }
     }
 
 ?>

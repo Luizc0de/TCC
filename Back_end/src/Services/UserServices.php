@@ -86,6 +86,16 @@ class UserServices
             Response::json(['error' => $e->getMessage()], $status);
         }
     }
-    
+    public static function index()
+    {
+        try {
+            $users = UserRepository::getAllUsers();
+
+            Response::json($users, 200);
+        } catch (\Exception $e) {
+            $status = $e->getCode() ?: 500;
+            Response::json(['error' => $e->getMessage()], $status);
+        }
+    }
 
 }
