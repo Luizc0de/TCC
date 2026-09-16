@@ -16,9 +16,9 @@ Routes::get('/test/public', 'TestController@publicRoute');
 Routes::get('/profile', 'UserController@getUserPF', true);
 Routes::post('/profile/change_password', 'UserController@ChangePassword', true);
 
-// polices
+// policesrou
 
-
+Routes::get('/getclientes', 'UserController@Index', true);
 
 Routes::get('/test/private', 'TestController@privateRoute', true);
 
