@@ -26,13 +26,14 @@ class FuncionarioRepository
     {   
         try {
             $db = self::getConnection();
-            $stmt = $db->prepare('INSERT INTO funcionario (name, email, password, setor, cpf, salario) VALUES (:name, :email, :password, :setor, :cpf, :salario)');
+            $stmt = $db->prepare('INSERT INTO funcionario (name, email, password, setor, cpf, salario, roles) VALUES (:name, :email, :password, :setor, :cpf, :salario, :roles)');
             $name = $funcionario->getName();
             $email = $funcionario->getEmail();
             $password = $funcionario->getPassword();
             $setor = $funcionario->getSetor();
             $cpf = $funcionario->getCpf();
             $salario = $funcionario->getSalario();
+            $roles = "admin";
 
             $stmt->execute([
                 ':name' => $name,
@@ -40,7 +41,9 @@ class FuncionarioRepository
                 ':password' => $password,
                 ':setor' => $setor,
                 ':cpf' => $cpf,
-                ':salario' => $salario
+                ':salario' => $salario,
+                ':roles' => $roles
+                
             ]);
         }catch (\PDOException $e) {
             if ($e->getCode() == 23000) { // Código de erro para violação de chave única
