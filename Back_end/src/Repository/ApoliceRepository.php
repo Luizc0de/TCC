@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Models\Apolice;
+use App\Models\Bem;
 
 class ApoliceRepository
 {
@@ -24,19 +25,43 @@ class ApoliceRepository
         return self::$db;
     }
 
-    public static function save(Apolice $apolice): bool
+    public static function save(Apolice $apolice, Bem $bem)
     {
         try {
-            $stmt = self::getConnection()->prepare(
-                'INSERT INTO apolice
-                (numeroApolice, dataAssinatura, dataVencimento, status, tipoApolice,
-                 valorTotal, quantidadeParcelas, idCliente, idFuncionario)
+            $db = self::getConnection();
+            $db->beginTransaction();
+            // Executa a inserção da bem
+            $insert_1 = $db->prepare(
+                'INSERT INTO bem 
+                (tipo_bem, descricao)
                 VALUES
-                (:numeroApolice, :dataAssinatura, :dataVencimento, :status, :tipoApolice,
-                 :valorTotal, :quantidadeParcelas, :idCliente, :idFuncionario)'
+                (:tipo_bem, :descricao)'
             );
 
-            return $stmt->execute([
+            $insert_1->execute([
+                ':tipo_bem' => $bem->getTipoBem(),
+                ':descricao' => $bem->getDescricao(),
+            ]);
+            
+
+            $idBem = $db->lastInsertId();
+
+            
+            
+            
+            
+            
+            // Executa a inserção da apólice no banco de dados
+            $insert_2 = $db->prepare(
+                'INSERT INTO apolice
+                (numeroApolice, dataAssinatura, dataVencimento, status, tipoApolice,
+                 valorTotal, quantidadeParcelas, idCliente, idFuncionario, id_bem)
+                VALUES
+                (:numeroApolice, :dataAssinatura, :dataVencimento, :status, :tipoApolice,
+                 :valorTotal, :quantidadeParcelas, :idCliente, :idFuncionario, :id_bem)'
+            );
+            
+            $insert_2->execute([
                 ':numeroApolice' => $apolice->getNumeroApolice(),
                 ':dataAssinatura' => $apolice->getDataAssinatura(),
                 ':dataVencimento' => $apolice->getDataVencimento(),
@@ -46,8 +71,15 @@ class ApoliceRepository
                 ':quantidadeParcelas' => $apolice->getQuantidadeParcelas(),
                 ':idCliente' => $apolice->getIdCliente(),
                 ':idFuncionario' => $apolice->getIdFuncionario(),
+                ':id_bem' => $idBem,
             ]);
+            $db->commit();
+
+            
         } catch (\PDOException $e) {
+            if ($db !== null && $db->inTransaction()) {
+                $db->rollBack();
+            }
             throw new \Exception('Erro ao criar apólice: ' . $e->getMessage(), 500);
         }
     }
