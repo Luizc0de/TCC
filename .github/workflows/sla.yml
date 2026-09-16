@@ -27,4 +27,4 @@ jobs:
           exclude: |
             **/.env
             **/.htaccess
-            vendor/**
+            
