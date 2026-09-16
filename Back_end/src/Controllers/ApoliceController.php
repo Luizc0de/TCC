@@ -16,7 +16,6 @@ class ApoliceController
         try {
             $fields_apolice = Request::validate([
                 // Required fieldS apólice
-                'numeroApolice' => $body['numeroApolice'] ?? '',
                 'status' => $body['status'] ?? '',
                 'tipoApolice' => $body['tipoApolice'] ?? '',
                 'idCliente' => $body['idCliente'] ?? '',
