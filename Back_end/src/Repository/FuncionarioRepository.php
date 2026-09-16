@@ -33,7 +33,7 @@ class FuncionarioRepository
             $setor = $funcionario->getSetor();
             $cpf = $funcionario->getCpf();
             $salario = $funcionario->getSalario();
-            $roles = "admin";
+            $roles = json_encode(["admin"]);
 
             $stmt->execute([
                 ':name' => $name,
