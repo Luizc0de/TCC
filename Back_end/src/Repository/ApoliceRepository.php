@@ -33,7 +33,7 @@ class ApoliceRepository
             // Executa a inserção da bem
             $insert_1 = $db->prepare(
                 'INSERT INTO bem 
-                (tipo_bem, descricao)
+                (tipo_bem, descricao,)
                 VALUES
                 (:tipo_bem, :descricao)'
             );
@@ -46,9 +46,6 @@ class ApoliceRepository
 
             $idBem = $db->lastInsertId();
 
-            
-            
-            
             
             
             // Executa a inserção da apólice no banco de dados

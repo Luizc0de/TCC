@@ -40,9 +40,6 @@ class ApoliceController
 
         // Optional fields bem
         $fields_bem['valorAvaliacao'] = $bem['valorAvaliacao'] ?? null;
-        $fields_bem['areaConstruida'] = $bem['areaConstruida'] ?? null;
-        $fields_bem['tipoImovel'] = $bem['tipoImovel'] ?? null;
-        $fields_bem['inscricaoImobiliaria'] = $bem['inscricaoImobiliaria'] ?? null;
         $fields_bem['placa'] = $bem['placa'] ?? null;
         $fields_bem['chassi'] = $bem['chassi'] ?? null;
         $fields_bem['marca'] = $bem['marca'] ?? null;
@@ -50,10 +47,7 @@ class ApoliceController
         $fields_bem['dataFabricacao'] = $bem['dataFabricacao'] ?? null;
         $fields_bem['numeroSerie'] = $bem['numeroSerie'] ?? null;
         $fields_bem['modelo'] = $bem['modelo'] ?? null;
-        $fields_bem['tipoMaquinario'] = $bem['tipoMaquinario'] ?? null;
-        $fields_bem['tipoEletronico'] = $bem['tipoEletronico'] ?? null;
-        $fields_bem['nomeSegurado'] = $bem['nomeSegurado'] ?? null;
-        $fields_bem['cpf'] = $bem['cpf'] ?? null;
+        $fields_bem['imei'] = $bem['imei'] ?? null;
 
         ApoliceService::createApolice(array_merge($fields_apolice, $fields_bem));
     }
@@ -62,4 +56,6 @@ class ApoliceController
         return ApoliceService::getAllApolices();
         
     }
+    
+    
 }

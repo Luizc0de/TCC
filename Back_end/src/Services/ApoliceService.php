@@ -28,9 +28,6 @@ class ApoliceService
                 $fields['finalidade'],
                 $fields['descricao'],
                 $fields['valorAvaliacao'],
-                $fields['areaConstruida'] === null ? null : (int) $fields['areaConstruida'],
-                $fields['tipoImovel'],
-                $fields['inscricaoImobiliaria'],
                 $fields['placa'],
                 $fields['chassi'],
                 $fields['marca'],
@@ -38,11 +35,25 @@ class ApoliceService
                 $fields['dataFabricacao'],
                 $fields['numeroSerie'],
                 $fields['modelo'],
-                $fields['tipoMaquinario'],
-                $fields['tipoEletronico'],
-                $fields['nomeSegurado'],
-                $fields['cpf']
+                $fields['imei']
             );
+
+            if ($fields['tipoBem'] === "VEICULO") {
+                if (empty($fields['placa']) || empty($fields['chassi']) || empty($fields['marca']) || empty($fields['modeloVeiculo'])) {
+                    throw new \Exception('Campos obrigatórios para veículo não preenchidos.', 400);
+                }
+                
+            }
+            else if ($fields['tipoBem'] === "TELEFONE") {
+                if (empty($fields['numeroSerie'])|| empty($fields['modelo']) || empty($fields['imei'])) {
+                    throw new \Exception('Campos obrigatórios para telefone não preenchidos.', 400);
+                }
+            }
+            else{
+                if (empty($fields['numeroSerie']) || empty($fields['modelo'])) {
+                    throw new \Exception('Campos obrigatórios para notebook não preenchidos.', 400);
+                }
+            }
 
             ApoliceRepository::save($apolice, $bem);
             Response::json(['message' => 'Apolice criada com sucesso.'], 201);
