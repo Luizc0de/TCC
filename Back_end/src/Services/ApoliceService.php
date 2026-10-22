@@ -24,18 +24,18 @@ class ApoliceService
                 idFuncionario: $fields['idFuncionario']
             );
             $bem = new Bem(
-                $fields['tipoBem'],
-                $fields['finalidade'],
-                $fields['descricao'],
-                $fields['valorAvaliacao'],
-                $fields['placa'],
-                $fields['chassi'],
-                $fields['marca'],
-                $fields['modeloVeiculo'],
-                $fields['dataFabricacao'],
-                $fields['numeroSerie'],
-                $fields['modelo'],
-                $fields['imei']
+                tipoBem: $fields['tipoBem'],
+                finalidade: $fields['finalidade'],
+                descricao: $fields['descricao'],
+                valorAvaliacao: $fields['valorAvaliacao'],
+                placa: $fields['placa'],
+                chassi: $fields['chassi'],
+                marca: $fields['marca'],
+                modeloVeiculo: $fields['modeloVeiculo'],
+                dataFabricacao: $fields['dataFabricacao'],
+                numeroSerie: $fields['numeroSerie'],
+                modelo: $fields['modelo'],
+                imei: $fields['imei']
             );
 
             if ($fields['tipoBem'] === "VEICULO") {

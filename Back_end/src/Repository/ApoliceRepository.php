@@ -30,19 +30,59 @@ class ApoliceRepository
         try {
             $db = self::getConnection();
             $db->beginTransaction();
-            // Executa a inserção da bem
-            $insert_1 = $db->prepare(
-                'INSERT INTO bem 
-                (tipo_bem, descricao,)
-                VALUES
-                (:tipo_bem, :descricao)'
-            );
-
-            $insert_1->execute([
-                ':tipo_bem' => $bem->getTipoBem(),
-                ':descricao' => $bem->getDescricao(),
-            ]);
             
+            if ($bem->getTipoBem() ===  "VEICULO") {
+
+                $insert_1 = $db->prepare(
+                    'INSERT INTO bem (tipo_bem, finalidade, descricao, valor_avaliacao, marca, placa, chassi, modelo_veiculo, data_fabricacao)
+                    VALUES (:tipo_bem, :finalidade, :descricao, :valor_avaliacao, :marca, :placa, :chassi, :modelo_veiculo, :data_fabricacao)',
+                );
+                
+                $insert_1->execute([
+                    ':tipo_bem' => $bem->getTipoBem(),
+                    ':finalidade' => $bem->getFinalidade(),
+                    ':descricao' => $bem->getDescricao(),
+                    ':valor_avaliacao' => $bem->getValorAvaliacao(),
+                    ':marca' => $bem->getMarca(),
+                    ':placa' => $bem->getPlaca(),
+                    ':chassi' => $bem->getChassi(),
+                    ':modelo_veiculo' => $bem->getModeloVeiculo(),
+                    ':data_fabricacao' => $bem->getDataFabricacao(),
+                ]);
+            }
+            if ($bem->getTipoBem() ===  "TELEFONE") {
+                $insert_1 = $db->prepare(
+                    'INSERT INTO bem (tipo_bem, finalidade, descricao, valor_avaliacao, marca, modelo, numero_serie, imei)
+                    VALUES (:tipo_bem, :finalidade, :descricao, :valor_avaliacao, :marca, :modelo, :numero_serie, :imei)',
+                );
+
+                $insert_1->execute([
+                    ':tipo_bem' => $bem->getTipoBem(),
+                    ':finalidade' => $bem->getFinalidade(),
+                    ':descricao' => $bem->getDescricao(),
+                    ':valor_avaliacao' => $bem->getValorAvaliacao(),
+                    ':marca' => $bem->getMarca(),
+                    ':modelo' => $bem->getModelo(),
+                    ':numero_serie' => $bem->getNumeroSerie(),
+                    ':imei' => $bem->getImei(),
+                ]);
+            }
+            if ($bem->getTipoBem() ===  "NOTEBOOK") {
+
+                $insert_1 = $db->prepare(
+                    'INSERT INTO bem (tipo_bem, finalidade, descricao, valor_avaliacao, marca, modelo, numero_serie)
+                    VALUES (:tipo_bem, :finalidade, :descricao, :valor_avaliacao, :marca, :modelo, :numero_serie)',
+                );
+                $insert_1->execute([
+                    ':tipo_bem' => $bem->getTipoBem(),
+                    ':finalidade' => $bem->getFinalidade(),
+                    ':descricao' => $bem->getDescricao(),
+                    ':valor_avaliacao' => $bem->getValorAvaliacao(),
+                    ':marca' => $bem->getMarca(),
+                    ':modelo' => $bem->getModelo(),
+                    ':numero_serie' => $bem->getNumeroSerie(),
+                ]);
+            }
 
             $idBem = $db->lastInsertId();
 

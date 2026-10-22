@@ -18,6 +18,7 @@ class Bem
 	private ?string $modelo;
 	private ?string $createdAt;
 	private ?string $updatedAt;
+	private ?string $imei;
 
 	public function __construct(
 		string $tipoBem,
@@ -33,7 +34,8 @@ class Bem
 		?string $modelo = null,
 		?int $idBem = null,
 		?string $createdAt = null,
-		?string $updatedAt = null
+		?string $updatedAt = null,
+		?string $imei = null
 	) {
 		$this->idBem = $idBem;
 		$this->tipoBem = $tipoBem;
@@ -49,6 +51,7 @@ class Bem
 		$this->modelo = $modelo;
 		$this->createdAt = $createdAt;
 		$this->updatedAt = $updatedAt;
+		$this->imei = $imei;
 	}
 
 	public function getIdBem(): ?int
@@ -119,5 +122,10 @@ class Bem
 	public function getUpdatedAt(): ?string
 	{
 		return $this->updatedAt;
+	}
+
+	public function getImei(): ?string
+	{
+		return $this->imei;
 	}
 }
