@@ -489,14 +489,26 @@ notificações implementado. Não presumir retorno automático do Stripe para o 
 
 ## 6. Consultas de apólices e clientes
 
-Estas rotas existem, mas, diferentemente de parcelas, **não filtram o dono pelo
-token** no código atual. São referências para uma área administrativa. Não usar
-a listagem global como “minhas apólices” de um cliente e não confiar em ocultar
-botões para restringir dados: o backend precisa da autorização correspondente.
+A listagem `/apolices/get_all` filtra as apólices pelo usuário autenticado.
+A consulta individual por número e a listagem de clientes ainda não aplicam
+esse filtro; não presumir que tenham a mesma autorização da listagem de apólices.
 
 ### GET `/apolices/get_all`
 
-Privada. Retorna um array global, sem paginação:
+Privada. Retorna um array, sem paginação, com as apólices vinculadas ao usuário:
+
+- Cliente, role `user`: filtra `idCliente` pelo `sub` do JWT.
+- Funcionário, role `funcionario`: filtra `idFuncionario` pelo `sub` do JWT.
+- A role `admin` também usa o vínculo de funcionário; não libera uma lista global.
+- Perfil sem uma dessas roles retorna 403; sem vínculos, retorna `[]` com 200.
+
+O app envia somente o token. Parâmetros `idCliente`, `idFuncionario` ou `roles`
+na URL não alteram o escopo. IDs iguais nas tabelas de cliente e funcionário
+não misturam resultados: o filtro usa apenas a coluna correspondente à role.
+Se o token contiver role de funcionário/admin junto de `user`, prevalece
+o vínculo de funcionário.
+
+Exemplo de resposta:
 
 ```json
 [
@@ -866,9 +878,9 @@ cadastro PJ, verificação de código, notificações, estorno, Pix nativo,
 coleta de cartão no app, criação de checkout próprio ou chamada ao webhook.
 Se o app exigir essas funções, solicitar implementação no backend antes.
 
-O aplicativo cliente não deve listar todos os clientes, cadastrar funcionários
-ou usar a listagem global de apólices. As restrições visuais do app não corrigem
-a falta de autorização dessas rotas no servidor.
+O aplicativo cliente pode usar `/apolices/get_all` para listar suas próprias
+apólices. Não deve listar todos os clientes ou cadastrar funcionários. As
+restrições visuais não corrigem a falta de autorização dessas outras rotas.
 
 ## 12. Pendências verificadas no backend atual
 
@@ -884,7 +896,7 @@ como prontas para consumo.
 | `GET /test/private` e `GET /test/admin` | Apontam para `TestController`, que não foi encontrado. Não são endpoints úteis ao app. |
 | Troca de senha de cliente | SQL atual usa `cliente.id`; o esquema consultado tem `cliente.idCliente`. |
 | Perfil de funcionário | `/profile` consulta clientes, não funcionários. |
-| Listagem e consulta de apólices, listagem de clientes e cadastro de funcionário | Exigem JWT, mas não aplicam os limites por dono/role necessários para exposição a clientes externos. |
+| Consulta individual de apólice, listagem de clientes e cadastro de funcionário | Exigem JWT, mas ainda não aplicam os limites por dono/role necessários. A listagem `/apolices/get_all` já filtra por vínculo de cliente ou funcionário. |
 | Confirmação de cadastro por e-mail | Envio usa sandbox SMTP; rota de validação está incorreta. |
 | Sessão | Não há renovação de token, revogação ou logout no servidor. |
 | Configuração de segredos | A assinatura JWT e configurações SMTP estão no código; mover para configuração privada do servidor antes de publicar. Não copiar seus valores para este documento ou para o mobile. |
@@ -901,8 +913,9 @@ será configurada separadamente; não antecipar essa troca de ambiente no app.
 ## 13. Mapa completo das rotas cadastradas
 
 "Implementada" indica existência da ação no código; consulte as limitações
-acima para as funções com pendências. As rotas de parcelas aplicam escopo
-por cliente; as demais rotas privadas abaixo não devem ser presumidas como
+acima para as funções com pendências. A listagem de apólices aplica o vínculo
+de cliente/funcionário, e parcelas aplicam seu próprio escopo por cliente.
+As demais rotas privadas abaixo não devem ser presumidas como
 restritas por dono ou por role apenas por exigirem JWT.
 
 | Método | Rota lógica | Autenticação cadastrada | Disponibilidade |
@@ -919,7 +932,7 @@ restritas por dono ou por role apenas por exigirem JWT.
 | GET | `/test/admin` | JWT com role `admin` | Controller ausente. |
 | POST | `/funcionario` | JWT | Implementada; sucesso sem JSON. |
 | POST | `/apolice` | JWT | Implementada; usa `sub` como funcionário. |
-| GET | `/apolices/get_all` | JWT | Lista global. |
+| GET | `/apolices/get_all` | JWT | Lista apenas apólices vinculadas ao cliente ou funcionário autenticado. |
 | GET | `/apolices/get/{numeroApolice}` | JWT | Busca por número textual; não aplica dono. |
 | GET | `/parcelas/get_all` | JWT | Implementada; filtro opcional `idApolice`. |
 | GET | `/parcelas/get/{id}` | JWT | Implementada; ID numérico da parcela. |

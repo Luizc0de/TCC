@@ -138,9 +138,12 @@ class ApoliceRepository
             throw new \Exception('Erro ao criar apólice: ' . $e->getMessage(), 500);
         }
     }
-    public static function getAllApolices()
+    public static function getAllApolices(int $idUsuario, bool $funcionario): array
     {
         $db = self::getConnection();
+        // Cliente e funcionário têm IDs em tabelas diferentes; filtrar apenas
+        // a coluna correspondente ao perfil para não misturar IDs coincidentes.
+        $colunaVinculo = $funcionario ? 'a.idFuncionario' : 'a.idCliente';
 
         $stmt = $db->prepare("
             SELECT
@@ -152,9 +155,10 @@ class ApoliceRepository
                 a.dataAssinatura AS data
             FROM apolice a
             LEFT JOIN cliente c ON c.idCliente = a.idCliente
+            WHERE {$colunaVinculo} = :idUsuario
         ");
 
-        $stmt->execute();
+        $stmt->execute([':idUsuario' => $idUsuario]);
 
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }

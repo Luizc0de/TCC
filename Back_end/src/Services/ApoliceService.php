@@ -137,10 +137,14 @@ class ApoliceService
         );
     }
 
-    public static function getAllApolices()
+    public static function getAllApolices(int $idUsuario, bool $funcionario): void
     {
-        $aplices = ApoliceRepository::getAllApolices();
-        Response::json($aplices, 200);
+        try {
+            $apolices = ApoliceRepository::getAllApolices($idUsuario, $funcionario);
+            Response::json($apolices, 200);
+        } catch (\Throwable $e) {
+            Response::json(['error' => 'Não foi possível listar as apólices.'], 500);
+        }
     }
     public static function getApoliceByNumero($numeroApolice): void
     {

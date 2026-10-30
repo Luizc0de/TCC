@@ -71,10 +71,23 @@ class ApoliceController
 
         ApoliceService::createApolice(array_merge($fields_apolice, $fields_bem));
     }
-    public function Index()
+    public function Index(Request $request): void
     {
-        return ApoliceService::getAllApolices();
-        
+        $user = $request->user();
+        $idUsuario = filter_var($user->sub ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if ($idUsuario === false) {
+            Response::json(['error' => 'Usuário não autenticado.'], 401);
+            return;
+        }
+
+        $roles = (array) ($user->roles ?? []);
+        $funcionario = array_intersect(['funcionario', 'admin'], $roles) !== [];
+        if (!$funcionario && !in_array('user', $roles, true)) {
+            Response::json(['error' => 'Perfil sem permissão para listar apólices.'], 403);
+            return;
+        }
+
+        ApoliceService::getAllApolices($idUsuario, $funcionario);
     }
     public function Show(Request $request, Response $response, array $params): void
     {
