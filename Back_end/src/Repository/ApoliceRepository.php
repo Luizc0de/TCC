@@ -9,7 +9,7 @@ class ApoliceRepository
 {
     private static $db = null;
 
-    private static function getConnection(): \PDO
+    public static function getConnection(): \PDO
     {
         if (self::$db === null) {
             $dsn = sprintf(
@@ -25,30 +25,68 @@ class ApoliceRepository
         return self::$db;
     }
 
-    public static function save(Apolice $apolice, Bem $bem)
+    public static function save(Apolice $apolice, Bem $bem, array $parcelas = []): int
     {
+        $db = null;
         try {
             $db = self::getConnection();
             $db->beginTransaction();
-            // Executa a inserção da bem
-            $insert_1 = $db->prepare(
-                'INSERT INTO bem 
-                (tipo_bem, descricao)
-                VALUES
-                (:tipo_bem, :descricao)'
-            );
-
-            $insert_1->execute([
-                ':tipo_bem' => $bem->getTipoBem(),
-                ':descricao' => $bem->getDescricao(),
-            ]);
             
+            if ($bem->getTipoBem() ===  "VEICULO") {
+
+                $insert_1 = $db->prepare(
+                    'INSERT INTO bem (tipo_bem, finalidade, descricao, valor_avaliacao, marca, placa, chassi, modelo_veiculo, data_fabricacao)
+                    VALUES (:tipo_bem, :finalidade, :descricao, :valor_avaliacao, :marca, :placa, :chassi, :modelo_veiculo, :data_fabricacao)',
+                );
+                
+                $insert_1->execute([
+                    ':tipo_bem' => $bem->getTipoBem(),
+                    ':finalidade' => $bem->getFinalidade(),
+                    ':descricao' => $bem->getDescricao(),
+                    ':valor_avaliacao' => $bem->getValorAvaliacao(),
+                    ':marca' => $bem->getMarca(),
+                    ':placa' => $bem->getPlaca(),
+                    ':chassi' => $bem->getChassi(),
+                    ':modelo_veiculo' => $bem->getModeloVeiculo(),
+                    ':data_fabricacao' => $bem->getDataFabricacao(),
+                ]);
+            }
+            if ($bem->getTipoBem() ===  "TELEFONE") {
+                $insert_1 = $db->prepare(
+                    'INSERT INTO bem (tipo_bem, finalidade, descricao, valor_avaliacao, marca, modelo, numero_serie, imei)
+                    VALUES (:tipo_bem, :finalidade, :descricao, :valor_avaliacao, :marca, :modelo, :numero_serie, :imei)',
+                );
+
+                $insert_1->execute([
+                    ':tipo_bem' => $bem->getTipoBem(),
+                    ':finalidade' => $bem->getFinalidade(),
+                    ':descricao' => $bem->getDescricao(),
+                    ':valor_avaliacao' => $bem->getValorAvaliacao(),
+                    ':marca' => $bem->getMarca(),
+                    ':modelo' => $bem->getModelo(),
+                    ':numero_serie' => $bem->getNumeroSerie(),
+                    ':imei' => $bem->getImei(),
+                ]);
+            }
+            if ($bem->getTipoBem() ===  "NOTEBOOK") {
+
+                $insert_1 = $db->prepare(
+                    'INSERT INTO bem (tipo_bem, finalidade, descricao, valor_avaliacao, marca, modelo, numero_serie)
+                    VALUES (:tipo_bem, :finalidade, :descricao, :valor_avaliacao, :marca, :modelo, :numero_serie)',
+                );
+                $insert_1->execute([
+                    ':tipo_bem' => $bem->getTipoBem(),
+                    ':finalidade' => $bem->getFinalidade(),
+                    ':descricao' => $bem->getDescricao(),
+                    ':valor_avaliacao' => $bem->getValorAvaliacao(),
+                    ':marca' => $bem->getMarca(),
+                    ':modelo' => $bem->getModelo(),
+                    ':numero_serie' => $bem->getNumeroSerie(),
+                ]);
+            }
 
             $idBem = $db->lastInsertId();
 
-            
-            
-            
             
             
             // Executa a inserção da apólice no banco de dados
@@ -73,9 +111,26 @@ class ApoliceRepository
                 ':idFuncionario' => $apolice->getIdFuncionario(),
                 ':id_bem' => $idBem,
             ]);
+            $idApolice = $db->lastInsertId();
+
+            $insertParcela = $db->prepare(
+                'INSERT INTO parcela (idApolice, numeroParcela, valorCentavos, dataVencimento)
+                VALUES (:idApolice, :numeroParcela, :valorCentavos, :dataVencimento)'
+            );
+
+            foreach ($parcelas as $parcela) {
+                $insertParcela->execute([
+                    ':idApolice' => $idApolice,
+                    ':numeroParcela' => $parcela['numeroParcela'],
+                    ':valorCentavos' => $parcela['valorCentavos'],
+                    ':dataVencimento' => $parcela['dataVencimento'],
+                ]);
+            }
+
             $db->commit();
 
-            
+            return (int) $idApolice;
+
         } catch (\PDOException $e) {
             if ($db !== null && $db->inTransaction()) {
                 $db->rollBack();
@@ -83,9 +138,12 @@ class ApoliceRepository
             throw new \Exception('Erro ao criar apólice: ' . $e->getMessage(), 500);
         }
     }
-    public static function getAllApolices()
+    public static function getAllApolices(int $idUsuario, bool $funcionario): array
     {
         $db = self::getConnection();
+        // Cliente e funcionário têm IDs em tabelas diferentes; filtrar apenas
+        // a coluna correspondente ao perfil para não misturar IDs coincidentes.
+        $colunaVinculo = $funcionario ? 'a.idFuncionario' : 'a.idCliente';
 
         $stmt = $db->prepare("
             SELECT
@@ -97,10 +155,62 @@ class ApoliceRepository
                 a.dataAssinatura AS data
             FROM apolice a
             LEFT JOIN cliente c ON c.idCliente = a.idCliente
+            WHERE {$colunaVinculo} = :idUsuario
         ");
 
-        $stmt->execute();
+        $stmt->execute([':idUsuario' => $idUsuario]);
 
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+    public static function getApoliceByNumero($numeroApolice)
+    {
+        $db = self::getConnection();
+
+        $stmt = $db->prepare("
+            SELECT
+                a.idApolice AS id,
+                a.numeroApolice AS numeroApolice,
+                a.id_bem AS idBem,
+                c.name AS cliente,
+                a.tipoApolice AS tipo,
+                a.valorTotal AS valor,
+                a.status AS status,
+                a.dataAssinatura AS data
+            FROM apolice a
+            LEFT JOIN cliente c ON c.idCliente = a.idCliente
+            WHERE a.numeroApolice = :numeroApolice
+        ");
+
+        $stmt->execute([':numeroApolice' => $numeroApolice]);
+        $apolice = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if ($apolice === false) {
+            return false;
+        }
+
+        $stmtBem = $db->prepare("
+            SELECT
+                id_bem AS id,
+                tipo_bem AS tipo,
+                finalidade,
+                descricao,
+                valor_avaliacao AS valorAvaliacao,
+                marca,
+                placa,
+                chassi,
+                modelo_veiculo AS modeloVeiculo,
+                data_fabricacao AS dataFabricacao,
+                modelo,
+                numero_serie AS numeroSerie,
+                imei
+            FROM bem
+            WHERE id_bem = :id_bem
+        ");
+        $stmtBem->execute([':id_bem' => $apolice['idBem']]);
+
+        unset($apolice['idBem']);
+        $apolice['bem'] = $stmtBem->fetch(\PDO::FETCH_ASSOC) ?: null;
+
+        return $apolice;
     }
 }

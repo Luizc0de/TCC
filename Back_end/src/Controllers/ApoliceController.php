@@ -13,20 +13,38 @@ class ApoliceController
         $body = Request::getBody();
         $bem = $body['bem'] ?? [];
 
+        $firstParcelNow = filter_var($body['FirstParcelNow'] ?? false, FILTER_VALIDATE_BOOLEAN);
+
         try {
             $fields_apolice = Request::validate([
                 // Required fieldS apólice
                 'status' => $body['status'] ?? '',
                 'tipoApolice' => $body['tipoApolice'] ?? '',
                 'idCliente' => $body['idCliente'] ?? '',
-                
+                'valorTotal' => $body['valorTotal'] ?? '',
+                'quantidadeParcelas' => $body['quantidadeParcelas'] ?? '',
+                'diaVencimento' => $body['diaVencimento'] ?? '',
             ]);
+
+            $dia = filter_var($fields_apolice['diaVencimento'], FILTER_VALIDATE_INT);
+            if ($dia === false || $dia < 1 || $dia > 21) {
+                throw new \Exception('O campo (diaVencimento) deve ser um dia entre 1 e 21.');
+            }
+            $fields_apolice['diaVencimento'] = $dia;
+
             $fields_bem = Request::validate([
                 // Required fields bem
                 'tipoBem' => $bem['tipo'] ?? '',
                 'finalidade' => $bem['finalidade'] ?? '',
                 'descricao' => $bem['descricao'] ?? '',
             ]);
+
+            // Parâmetros das parcelas: sem pagar a primeira agora, é preciso informar o prazo
+            if (!$firstParcelNow) {
+                Request::validate([
+                    'daysfromfirstparcel' => $body['daysfromfirstparcel'] ?? '',
+                ]);
+            }
         } catch (\Exception $e) {
             Response::json(['error' => $e->getMessage()], 400);
             return;
@@ -34,15 +52,14 @@ class ApoliceController
         // Optional fields apólice
         $fields_apolice['dataAssinatura'] = $body['dataEmissao'] ?? null;
         $fields_apolice['dataVencimento'] = $body['dataVencimento'] ?? null;
-        $fields_apolice['valorTotal'] = $body['valorTotal'] ?? null;
-        $fields_apolice['quantidadeParcelas'] = $body['quantidadeParcelas'] ?? null;
+        $fields_apolice['FirstParcelNow'] = $firstParcelNow;
+        $fields_apolice['daysfromfirstparcel'] = $body['daysfromfirstparcel'] ?? null;
+
         $fields_apolice['idFuncionario'] = (int) $request->user()->sub;
+        
 
         // Optional fields bem
         $fields_bem['valorAvaliacao'] = $bem['valorAvaliacao'] ?? null;
-        $fields_bem['areaConstruida'] = $bem['areaConstruida'] ?? null;
-        $fields_bem['tipoImovel'] = $bem['tipoImovel'] ?? null;
-        $fields_bem['inscricaoImobiliaria'] = $bem['inscricaoImobiliaria'] ?? null;
         $fields_bem['placa'] = $bem['placa'] ?? null;
         $fields_bem['chassi'] = $bem['chassi'] ?? null;
         $fields_bem['marca'] = $bem['marca'] ?? null;
@@ -50,16 +67,31 @@ class ApoliceController
         $fields_bem['dataFabricacao'] = $bem['dataFabricacao'] ?? null;
         $fields_bem['numeroSerie'] = $bem['numeroSerie'] ?? null;
         $fields_bem['modelo'] = $bem['modelo'] ?? null;
-        $fields_bem['tipoMaquinario'] = $bem['tipoMaquinario'] ?? null;
-        $fields_bem['tipoEletronico'] = $bem['tipoEletronico'] ?? null;
-        $fields_bem['nomeSegurado'] = $bem['nomeSegurado'] ?? null;
-        $fields_bem['cpf'] = $bem['cpf'] ?? null;
+        $fields_bem['imei'] = $bem['imei'] ?? null;
 
         ApoliceService::createApolice(array_merge($fields_apolice, $fields_bem));
     }
-    public function Index()
+    public function Index(Request $request): void
     {
-        return ApoliceService::getAllApolices();
-        
+        $user = $request->user();
+        $idUsuario = filter_var($user->sub ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if ($idUsuario === false) {
+            Response::json(['error' => 'Usuário não autenticado.'], 401);
+            return;
+        }
+
+        $roles = (array) ($user->roles ?? []);
+        $funcionario = array_intersect(['funcionario', 'admin'], $roles) !== [];
+        if (!$funcionario && !in_array('user', $roles, true)) {
+            Response::json(['error' => 'Perfil sem permissão para listar apólices.'], 403);
+            return;
+        }
+
+        ApoliceService::getAllApolices($idUsuario, $funcionario);
     }
+    public function Show(Request $request, Response $response, array $params): void
+    {
+        ApoliceService::getApoliceByNumero($params[0]);
+    }
+    
 }
