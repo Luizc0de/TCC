@@ -9,7 +9,7 @@ class ApoliceRepository
 {
     private static $db = null;
 
-    private static function getConnection(): \PDO
+    public static function getConnection(): \PDO
     {
         if (self::$db === null) {
             $dsn = sprintf(
@@ -25,8 +25,9 @@ class ApoliceRepository
         return self::$db;
     }
 
-    public static function save(Apolice $apolice, Bem $bem)
+    public static function save(Apolice $apolice, Bem $bem, array $parcelas = []): int
     {
+        $db = null;
         try {
             $db = self::getConnection();
             $db->beginTransaction();
@@ -110,9 +111,26 @@ class ApoliceRepository
                 ':idFuncionario' => $apolice->getIdFuncionario(),
                 ':id_bem' => $idBem,
             ]);
+            $idApolice = $db->lastInsertId();
+
+            $insertParcela = $db->prepare(
+                'INSERT INTO parcela (idApolice, numeroParcela, valorCentavos, dataVencimento)
+                VALUES (:idApolice, :numeroParcela, :valorCentavos, :dataVencimento)'
+            );
+
+            foreach ($parcelas as $parcela) {
+                $insertParcela->execute([
+                    ':idApolice' => $idApolice,
+                    ':numeroParcela' => $parcela['numeroParcela'],
+                    ':valorCentavos' => $parcela['valorCentavos'],
+                    ':dataVencimento' => $parcela['dataVencimento'],
+                ]);
+            }
+
             $db->commit();
 
-            
+            return (int) $idApolice;
+
         } catch (\PDOException $e) {
             if ($db !== null && $db->inTransaction()) {
                 $db->rollBack();
@@ -139,5 +157,56 @@ class ApoliceRepository
         $stmt->execute();
 
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+    public static function getApoliceByNumero($numeroApolice)
+    {
+        $db = self::getConnection();
+
+        $stmt = $db->prepare("
+            SELECT
+                a.idApolice AS id,
+                a.numeroApolice AS numeroApolice,
+                a.id_bem AS idBem,
+                c.name AS cliente,
+                a.tipoApolice AS tipo,
+                a.valorTotal AS valor,
+                a.status AS status,
+                a.dataAssinatura AS data
+            FROM apolice a
+            LEFT JOIN cliente c ON c.idCliente = a.idCliente
+            WHERE a.numeroApolice = :numeroApolice
+        ");
+
+        $stmt->execute([':numeroApolice' => $numeroApolice]);
+        $apolice = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if ($apolice === false) {
+            return false;
+        }
+
+        $stmtBem = $db->prepare("
+            SELECT
+                id_bem AS id,
+                tipo_bem AS tipo,
+                finalidade,
+                descricao,
+                valor_avaliacao AS valorAvaliacao,
+                marca,
+                placa,
+                chassi,
+                modelo_veiculo AS modeloVeiculo,
+                data_fabricacao AS dataFabricacao,
+                modelo,
+                numero_serie AS numeroSerie,
+                imei
+            FROM bem
+            WHERE id_bem = :id_bem
+        ");
+        $stmtBem->execute([':id_bem' => $apolice['idBem']]);
+
+        unset($apolice['idBem']);
+        $apolice['bem'] = $stmtBem->fetch(\PDO::FETCH_ASSOC) ?: null;
+
+        return $apolice;
     }
 }

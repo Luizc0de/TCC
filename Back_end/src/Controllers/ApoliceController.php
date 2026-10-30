@@ -13,20 +13,38 @@ class ApoliceController
         $body = Request::getBody();
         $bem = $body['bem'] ?? [];
 
+        $firstParcelNow = filter_var($body['FirstParcelNow'] ?? false, FILTER_VALIDATE_BOOLEAN);
+
         try {
             $fields_apolice = Request::validate([
                 // Required fieldS apólice
                 'status' => $body['status'] ?? '',
                 'tipoApolice' => $body['tipoApolice'] ?? '',
                 'idCliente' => $body['idCliente'] ?? '',
-                
+                'valorTotal' => $body['valorTotal'] ?? '',
+                'quantidadeParcelas' => $body['quantidadeParcelas'] ?? '',
+                'diaVencimento' => $body['diaVencimento'] ?? '',
             ]);
+
+            $dia = filter_var($fields_apolice['diaVencimento'], FILTER_VALIDATE_INT);
+            if ($dia === false || $dia < 1 || $dia > 21) {
+                throw new \Exception('O campo (diaVencimento) deve ser um dia entre 1 e 21.');
+            }
+            $fields_apolice['diaVencimento'] = $dia;
+
             $fields_bem = Request::validate([
                 // Required fields bem
                 'tipoBem' => $bem['tipo'] ?? '',
                 'finalidade' => $bem['finalidade'] ?? '',
                 'descricao' => $bem['descricao'] ?? '',
             ]);
+
+            // Parâmetros das parcelas: sem pagar a primeira agora, é preciso informar o prazo
+            if (!$firstParcelNow) {
+                Request::validate([
+                    'daysfromfirstparcel' => $body['daysfromfirstparcel'] ?? '',
+                ]);
+            }
         } catch (\Exception $e) {
             Response::json(['error' => $e->getMessage()], 400);
             return;
@@ -34,9 +52,11 @@ class ApoliceController
         // Optional fields apólice
         $fields_apolice['dataAssinatura'] = $body['dataEmissao'] ?? null;
         $fields_apolice['dataVencimento'] = $body['dataVencimento'] ?? null;
-        $fields_apolice['valorTotal'] = $body['valorTotal'] ?? null;
-        $fields_apolice['quantidadeParcelas'] = $body['quantidadeParcelas'] ?? null;
+        $fields_apolice['FirstParcelNow'] = $firstParcelNow;
+        $fields_apolice['daysfromfirstparcel'] = $body['daysfromfirstparcel'] ?? null;
+
         $fields_apolice['idFuncionario'] = (int) $request->user()->sub;
+        
 
         // Optional fields bem
         $fields_bem['valorAvaliacao'] = $bem['valorAvaliacao'] ?? null;
@@ -56,6 +76,9 @@ class ApoliceController
         return ApoliceService::getAllApolices();
         
     }
-    
+    public function Show(Request $request, Response $response, array $params): void
+    {
+        ApoliceService::getApoliceByNumero($params[0]);
+    }
     
 }

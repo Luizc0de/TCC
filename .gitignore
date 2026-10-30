@@ -1,5 +1,2 @@
-# Ignora o .env dentro da pasta Back_end
-/Back_end/.env
-
-# Ignora o .env dentro da pasta Back_end
-/Back_end/.htaccess
+# Arquivos de ambiente
+.env
