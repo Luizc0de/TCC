@@ -122,7 +122,7 @@ class UserRepository
         public static function updatePassword($userId, $newHashedPassword)
         {
             $db = self::getConnection();
-            $stmt = $db->prepare("UPDATE cliente SET password = :password WHERE id = :id");
+            $stmt = $db->prepare("UPDATE cliente SET password = :password WHERE idCliente = :id");
             $stmt->bindParam(':password', $newHashedPassword);
             $stmt->bindParam(':id', $userId);
             return $stmt->execute();
