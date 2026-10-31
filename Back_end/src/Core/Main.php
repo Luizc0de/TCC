@@ -38,5 +38,11 @@ Routes::get('/parcelas/get/{id}', 'ParcelaController@Show', true);
 Routes::post('/parcelas/pagar/{id}', 'ParcelaController@Pagar', true);
 Routes::post('/parcelas/atualizar_pagamento/{id}', 'ParcelaController@atualizarPagamento', true);
 
+// sinistros
+Routes::post('/sinistro', 'SinistroController@criar', true);
+Routes::get('/sinistros/get_all', 'SinistroController@Index', true);
+Routes::get('/sinistros/get/{id}', 'SinistroController@Show', true);
+Routes::get('/sinistros/imagem/{id}', 'SinistroController@imagem', true);
+
 
 ?>

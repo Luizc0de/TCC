@@ -1,2 +1,7 @@
 # Arquivos de ambiente
 .env
+
+# Evidências de sinistros são arquivos privados do servidor.
+/Back_end/storage/sinistros/*
+!/Back_end/storage/sinistros/.gitkeep
+/Back_end/tests/.tmp/
