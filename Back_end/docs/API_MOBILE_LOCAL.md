@@ -278,9 +278,14 @@ Resposta prevista pelo serviço, **200**:
 Senha atual incorreta retorna **400**, com
 `error: "Current password is incorrect"`. Usuário ausente retorna **404**.
 
-**Pendência atual:** a atualização SQL usa a coluna `id`, mas a tabela de
-clientes usa `idCliente`. A troca pode falhar com 500 no esquema atual. Deixar
-essa função desativada até corrigir e validar o backend; não simular sucesso.
+A troca atualiza somente o cliente autenticado, usando `idCliente`, e salva
+a nova senha como hash. Uma falha interna/banco retorna **500** com JSON:
+
+```json
+{
+  "error": "Não foi possível alterar a senha."
+}
+```
 
 ## 5. Parcelas — principal recurso do aplicativo cliente
 
@@ -863,8 +868,8 @@ mobile fica a critério do projeto; não altere o contrato para se adequar a uma
 biblioteca ou invente endpoints REST que não existam.
 
 Implemente as telas de login, cadastro PF, perfil, lista de parcelas, detalhe
-da parcela e acompanhamento de pagamento. A troca de senha deve ficar
-condicionada à correção indicada. Use dados reais da API depois de configurar
+da parcela, acompanhamento de pagamento e troca de senha do cliente. Use
+dados reais da API depois de configurar
 a URL; não substituir falhas por respostas falsas de sucesso.
 
 Concentre a URL local e o tratamento de autenticação em um cliente HTTP.
@@ -894,7 +899,7 @@ como prontas para consumo.
 | `POST /auth/verify_code` | Aponta para `UserController@verifyCode`, método ausente. Há um método em `AuthController`, mas a rota não aponta para ele. |
 | `POST /stripe/webhook` | Rota cadastrada; `StripeWebhookController` e `StripeWebhookService` não encontrados nesta cópia. Não depender da baixa automática até restaurar e testar. |
 | `GET /test/private` e `GET /test/admin` | Apontam para `TestController`, que não foi encontrado. Não são endpoints úteis ao app. |
-| Troca de senha de cliente | SQL atual usa `cliente.id`; o esquema consultado tem `cliente.idCliente`. |
+| Troca de senha de cliente | Corrigida para usar `idCliente`; valida a senha atual, salva hash e retorna 500 JSON em falha interna. |
 | Perfil de funcionário | `/profile` consulta clientes, não funcionários. |
 | Consulta individual de apólice, listagem de clientes e cadastro de funcionário | Exigem JWT, mas ainda não aplicam os limites por dono/role necessários. A listagem `/apolices/get_all` já filtra por vínculo de cliente ou funcionário. |
 | Confirmação de cadastro por e-mail | Envio usa sandbox SMTP; rota de validação está incorreta. |
@@ -926,7 +931,7 @@ restritas por dono ou por role apenas por exigirem JWT.
 | POST | `/auth/login` | Pública | Implementada. |
 | POST | `/stripe/webhook` | Assinatura Stripe prevista; sem JWT | Controller ausente nesta cópia. Não é chamada mobile. |
 | GET | `/profile` | JWT | Implementada para cliente. |
-| POST | `/profile/change_password` | JWT | Implementada com pendência no SQL. |
+| POST | `/profile/change_password` | JWT | Implementada para cliente; senha atual obrigatória. |
 | GET | `/getclientes` | JWT | Lista global; referência administrativa. |
 | GET | `/test/private` | JWT | Controller ausente. |
 | GET | `/test/admin` | JWT com role `admin` | Controller ausente. |

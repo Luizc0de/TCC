@@ -81,9 +81,10 @@ class UserServices
             UserRepository::updatePassword($userId, $newHashedPassword);
 
             Response::json(['message' => 'Password changed successfully'], 200);
-        } catch (\Exception $e) {
-            $status = $e->getCode() ?: 500;
-            Response::json(['error' => $e->getMessage()], $status);
+        } catch (\Throwable $e) {
+            // SQLSTATE (por exemplo 42S22) não é um status HTTP.
+            error_log('Falha ao alterar senha: ' . get_class($e));
+            Response::json(['error' => 'Não foi possível alterar a senha.'], 500);
         }
     }
     public static function index()
