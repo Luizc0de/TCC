@@ -27,7 +27,9 @@ O fluxo principal para o cliente é:
 4. Listar suas parcelas e consultar os detalhes de uma parcela.
 5. Abrir o link de pagamento hospedado no Stripe.
 6. Ao voltar ao aplicativo, consultar a confirmação e atualizar a listagem.
-7. Sair removendo o token salvo no dispositivo.
+7. Abrir um sinistro selecionando uma apólice própria, descrevendo o ocorrido e anexando uma imagem.
+8. Consultar seus sinistros e suas imagens.
+9. Sair removendo o token salvo no dispositivo.
 
 Não é necessário integrar um SDK de pagamento no app para esse fluxo. A API
 retorna `linkPagamento`; os dados do cartão são preenchidos na página do Stripe.
@@ -108,7 +110,8 @@ troque o host de todas as requisições pela configuração local escolhida.
 
 ### 2.2 Headers e corpo
 
-Envie JSON em UTF-8 nos POST que têm corpo:
+Envie JSON em UTF-8 nos POST que têm corpo, exceto a abertura de sinistro,
+que recebe `multipart/form-data` com arquivo (seção 14):
 
 ```http
 Accept: application/json
@@ -766,6 +769,8 @@ O roteador também pode retornar:
 | 404 | Rota/recurso inexistente ou parcela fora do escopo do usuário. |
 | 405 | Método HTTP incorreto. |
 | 409 | Conflito de pagamento; atualizar a parcela e apresentar a situação. |
+| 413 | Envio de sinistro acima do limite de tamanho. |
+| 415 | Imagem do sinistro em formato não aceito. |
 | 500 | Falha interna; mostrar mensagem geral e permitir nova tentativa apropriada. |
 | 502 | Falha de integração/cobrança Stripe nas rotas de parcelas. |
 
@@ -868,7 +873,8 @@ mobile fica a critério do projeto; não altere o contrato para se adequar a uma
 biblioteca ou invente endpoints REST que não existam.
 
 Implemente as telas de login, cadastro PF, perfil, lista de parcelas, detalhe
-da parcela, acompanhamento de pagamento e troca de senha do cliente. Use
+da parcela, acompanhamento de pagamento, troca de senha do cliente, abertura
+de sinistro com seleção de apólice e imagem, listagem e detalhe de sinistros. Use
 dados reais da API depois de configurar
 a URL; não substituir falhas por respostas falsas de sucesso.
 
@@ -878,7 +884,7 @@ pagamento em aberto e pagamento confirmado. Mantenha valores em centavos
 durante cálculos de parcelas e formate em reais apenas para apresentação.
 
 Não implementar, por falta de contrato disponível: refresh token, recuperação
-de senha por e-mail, edição de perfil, upload de foto, exclusão de conta,
+de senha por e-mail, edição de perfil, upload de foto de perfil, exclusão de conta,
 cadastro PJ, verificação de código, notificações, estorno, Pix nativo,
 coleta de cartão no app, criação de checkout próprio ou chamada ao webhook.
 Se o app exigir essas funções, solicitar implementação no backend antes.
@@ -943,3 +949,89 @@ restritas por dono ou por role apenas por exigirem JWT.
 | GET | `/parcelas/get/{id}` | JWT | Implementada; ID numérico da parcela. |
 | POST | `/parcelas/pagar/{id}` | JWT | Implementada; retorna link Stripe. |
 | POST | `/parcelas/atualizar_pagamento/{id}` | JWT | Implementada; sincronização manual. |
+| POST | `/sinistro` | JWT de cliente | Abre sinistro com apólice própria, descrição e imagem multipart. |
+| GET | `/sinistros/get_all` | JWT | Lista sinistros vinculados ao cliente ou funcionário autenticado. |
+| GET | `/sinistros/get/{id}` | JWT | Consulta sinistro com verificação de vínculo. |
+| GET | `/sinistros/imagem/{id}` | JWT | Retorna imagem privada com verificação de vínculo. |
+
+## 14. Sinistros
+
+O cliente abre um sinistro em uma de suas próprias apólices. Funcionários e
+administradores consultam os sinistros das apólices em que são o `idFuncionario`;
+não existe acesso global para essas roles. Cliente e funcionário com o mesmo
+ID numérico continuam com escopos diferentes.
+
+### Selecionar apólice e abrir o sinistro
+
+1. Faça `GET /apolices/get_all` com o token do cliente para preencher a seleção.
+2. Envie o campo `id` da apólice escolhida como `idApolice`.
+3. Faça **`POST /sinistro`** com `Authorization: Bearer TOKEN` e corpo multipart:
+
+   | Campo | Tipo | Regra |
+   | --- | --- | --- |
+   | `idApolice` | Text | Inteiro positivo; precisa pertencer ao cliente autenticado. |
+   | `descricao` | Text | Entre 1 e 5000 caracteres, após remover espaços nas pontas. |
+   | `imagem` | File | Uma imagem JPEG, PNG ou WebP, obrigatória, até 5 MiB. |
+
+No Postman, use **Body → form-data** e selecione **File** na chave `imagem`.
+Não enviar base64/JSON nem definir manualmente `Content-Type`: o transporte
+deve gerar o boundary do multipart. No mobile, use o mecanismo de arquivos da
+plataforma. O helper JSON da seção 10 precisa de um método separado para esse envio.
+
+O backend confere o conteúdo real da imagem e não usa o nome recebido como
+nome de armazenamento. Limites de dimensões: 10000 pixels por lado e 40 milhões
+de pixels no total. O corpo inteiro da requisição tem limite de 6 MiB.
+
+Resposta **201**:
+
+```json
+{
+  "message": "Sinistro criado com sucesso.",
+  "sinistro": {
+    "idSinistro": 1,
+    "idApolice": 7,
+    "descricao": "O veículo sofreu uma colisão na lateral direita.",
+    "status": "ABERTO",
+    "dataAbertura": "2026-10-30 18:00:00",
+    "numeroApolice": "AP-EXEMPLO123",
+    "idCliente": 3,
+    "idFuncionario": 2,
+    "imagemUrl": "index.php?url=sinistros/imagem/1"
+  }
+}
+```
+
+IDs são inteiros; `idFuncionario` pode ser `null`. A data usa o horário do
+banco, sem fuso na string. `idCliente`, `idFuncionario` e `status` enviados
+pelo app não controlam a criação. A apólice determina os vínculos, e o status
+inicial sempre é `ABERTO`. Funcionário/admin tentando abrir sinistro recebe 403.
+Apólice de outro cliente ou inexistente retorna 404.
+
+### Listagem, detalhe e imagem
+
+- **`GET /sinistros/get_all`**: array direto dos objetos acima, sem envelope.
+  Sem resultados retorna `[]`. Filtro opcional `idApolice` usa a query string
+  da mesma forma que parcelas, sem permitir acesso a apólices alheias.
+- **`GET /sinistros/get/{id}`**: um objeto direto, pelo ID numérico do sinistro.
+- **`GET /sinistros/imagem/{id}`**: conteúdo binário da imagem; enviar Bearer
+  Token e tratar como arquivo/bytes, não como JSON.
+
+Resolva `imagemUrl` em relação a `API_ENDPOINT`, por exemplo
+`new URL(sinistro.imagemUrl, API_ENDPOINT)`. Para mostrar no navegador, faça
+fetch autenticado e exiba o Blob; no mobile, use uma requisição ou componente
+de imagem que aceite o header `Authorization`. Não colocar JWT na URL.
+Um `<img src>` sem o token não autentica. O diretório de arquivos não é público.
+
+Sinistro e imagem fora do vínculo retornam 404. Descrição/imagem ausente,
+ID inválido ou dimensões excessivas retornam 400; tamanho excessivo, 413;
+formato diferente de JPEG/PNG/WebP, 415; falha interna, 500 JSON.
+
+O responsável é o funcionário atualmente vinculado à apólice. Não há edição,
+exclusão, análise de cobertura ou alteração de status neste contrato. Uma
+apólice pode ter vários sinistros. O app deve implementar abertura, consulta
+e exibição de imagem sem simular aprovação ou indenização.
+
+Instalação em outro servidor requer aplicar a migração com
+`php Back_end/database/migrate_sinistro.php` e disponibilizar armazenamento
+privado gravável pelo PHP. O banco local já recebeu a migração. Consulte
+[sinistros.md](sinistros.md) para exemplos de upload, imagem e hospedagem.
