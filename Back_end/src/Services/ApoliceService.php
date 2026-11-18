@@ -146,18 +146,19 @@ class ApoliceService
             Response::json(['error' => 'Não foi possível listar as apólices.'], 500);
         }
     }
-    public static function getApoliceByNumero($numeroApolice): void
+    public static function getApoliceByNumero(string $numeroApolice, int $idUsuario, bool $funcionario): void
     {
-        $apolice = ApoliceRepository::getApoliceByNumero($numeroApolice);
-
-        if ($apolice === false) {
-            Response::json(['error' => 'Apólice não encontrada.'], 404);
-            return;
+        try {
+            $apolice = ApoliceRepository::getApoliceByNumero($numeroApolice, $idUsuario, $funcionario);
+            if ($apolice === false) {
+                Response::json(['error' => 'Apólice não encontrada.'], 404);
+                return;
+            }
+            $apolice['bem'] = self::formatBem($apolice['bem']);
+            Response::json($apolice, 200);
+        } catch (\Throwable $e) {
+            Response::json(['error' => 'Não foi possível consultar a apólice.'], 500);
         }
-
-        $apolice['bem'] = self::formatBem($apolice['bem']);
-
-        Response::json($apolice, 200);
     }
 
     // Mantém apenas os campos que pertencem ao tipo do bem

@@ -45,7 +45,7 @@
       try { sessionStorage.setItem(sessionKey, data.token); }
       catch { throw new Error('Permita o armazenamento da sess\u00e3o neste navegador para entrar.'); }
       password.value = '';
-      location.assign('../perfil/index.html');
+      location.assign('../../cliente/home/index.html');
     } catch (error) {
       message(error.name === 'AbortError' ? 'O servidor demorou para responder. Tente novamente.'
         : error instanceof TypeError ? 'N\u00e3o foi poss\u00edvel conectar \u00e0 API. Verifique o Apache e o MySQL no XAMPP.' : error.message);

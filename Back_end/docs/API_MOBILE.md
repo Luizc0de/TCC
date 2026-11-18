@@ -457,8 +457,8 @@ notificações implementado. Não presumir retorno automático do Stripe para o 
 ## 6. Consultas de apólices e clientes
 
 A listagem `/apolices/get_all` filtra as apólices pelo usuário autenticado.
-A consulta individual por número e a listagem de clientes ainda não aplicam
-esse filtro; não presumir que tenham a mesma autorização da listagem de apólices.
+A consulta individual por número aplica o mesmo vínculo da listagem.
+A listagem global de clientes continua fora da interface do cliente.
 
 ### GET `/apolices/get_all`
 
@@ -491,8 +491,9 @@ Exemplo de resposta:
 ```
 
 `cliente`, `valor` e `data` podem ser `null` conforme os registros.
-Esta resposta **não inclui `numeroApolice`**. Não tente usar `id` no endpoint
-de detalhes abaixo: ele procura pelo número textual da apólice.
+A listagem agora inclui `numeroApolice`, `dataVencimento`, `quantidadeParcelas`,
+`bemDescricao`, `bemTipo` e `bemMarca`. Use `numeroApolice` nos detalhes;
+o campo `id` continua sendo numérico e é usado nos filtros de parcelas e sinistros.
 
 Para agrupar as parcelas do próprio cliente em cartões de apólice, é possível
 agrupar o array de `/parcelas/get_all` por `idApolice` e usar seu `numeroApolice`.
@@ -994,3 +995,7 @@ Instalação em outro servidor requer aplicar a migração com
 `php Back_end/database/migrate_sinistro.php` e disponibilizar armazenamento
 privado gravável pelo PHP. O banco local já recebeu a migração. Consulte
 [sinistros.md](sinistros.md) para exemplos de upload, imagem e hospedagem.
+
+## Atualizacao da area web - 18/11/2026
+
+GET apolices/get_all inclui numeroApolice e o resumo do bem, alem de dataVencimento e quantidadeParcelas. GET apolices/get/{numeroApolice} verifica idCliente ou idFuncionario conforme a role e responde 404 para apolices sem vinculo, sem revelar seus dados. O detalhe inclui vencimento e quantidade de parcelas. O teste Back_end/tests/ApoliceClientAccessTest.php valida o contrato usando somente tabelas temporarias.

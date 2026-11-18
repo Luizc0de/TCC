@@ -42,3 +42,13 @@ Edite Front/config.js e defina apiBaseUrl com o endpoint completo da API. O padr
 A mesma configuracao vale abrindo o index.html pelo computador (file://), Live Server ou Apache. A API continua sendo um servidor HTTP/HTTPS ativo; no ambiente local, Apache e MySQL precisam estar ligados. O frontend envia a rota no parametro url, conforme o roteador PHP existente.
 
 Se frontend e API estiverem em origens diferentes, a API deve autorizar CORS para a origem do frontend, POST/GET/OPTIONS e os cabecalhos Content-Type e Authorization. O backend local ja permite essas chamadas, inclusive a origem null usada por arquivos locais. Em producao, paginas HTTPS devem chamar uma API HTTPS.
+
+## Area do cliente
+
+Depois do login, o cliente entra em pages/cliente/home/index.html. As telas apolices, apolices/detalhes, parcelas e sinistro ficam em subpastas de pages/cliente, cada uma com index.html, CSS e JavaScript locais. Todas usam Front/config.js e o token insurance.authToken em sessionStorage, inclusive abrindo os arquivos diretamente.
+
+Home consulta perfil, apolices, parcelas e sinistros. Apolices permitem busca e detalhes pelo numero textual. A API local agora inclui numeroApolice e resumo do bem na listagem e verifica o vinculo no detalhe. Publique os ajustes de ApoliceController, ApoliceService e ApoliceRepository ao atualizar a API de producao.
+
+Parcelas mostram reais a partir de valorCentavos, preservam as datas de calendario e oferecem filtros. Pagar chama parcelas/pagar/{id} e abre exatamente o link Stripe retornado. O retorno por foco ou historico consulta atualizar_pagamento/{id}; o cliente so mostra PAGA depois da confirmacao da API. Ha atualizacao manual e nenhuma coleta de cartao no site.
+
+Sinistro envia FormData com idApolice, descricao e imagem. A data da ocorrencia e incluida no texto da descricao, pois a API atual nao tem campo separado para ela. A imagem deve ser JPEG/PNG/WebP, ate 5 MiB, com os limites de dimensao do backend. A listagem e as imagens privadas usam autenticacao por header; nunca se inclui token na URL. O navegador mostra previa e protocolo sem simular aprovacao ou indenizacao.

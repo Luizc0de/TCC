@@ -148,6 +148,12 @@ class ApoliceRepository
         $stmt = $db->prepare("
             SELECT
                 a.idApolice AS id,
+                a.numeroApolice,
+                a.dataVencimento,
+                a.quantidadeParcelas,
+                b.descricao AS bemDescricao,
+                b.tipo_bem AS bemTipo,
+                b.marca AS bemMarca,
                 c.name AS cliente,
                 a.tipoApolice AS tipo,
                 a.valorTotal AS valor,
@@ -155,6 +161,7 @@ class ApoliceRepository
                 a.dataAssinatura AS data
             FROM apolice a
             LEFT JOIN cliente c ON c.idCliente = a.idCliente
+            LEFT JOIN bem b ON b.id_bem = a.id_bem
             WHERE {$colunaVinculo} = :idUsuario
         ");
 
@@ -162,14 +169,17 @@ class ApoliceRepository
 
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
-    public static function getApoliceByNumero($numeroApolice)
+    public static function getApoliceByNumero(string $numeroApolice, int $idUsuario, bool $funcionario)
     {
         $db = self::getConnection();
+        $colunaVinculo = $funcionario ? 'a.idFuncionario' : 'a.idCliente';
 
         $stmt = $db->prepare("
             SELECT
                 a.idApolice AS id,
                 a.numeroApolice AS numeroApolice,
+                a.dataVencimento,
+                a.quantidadeParcelas,
                 a.id_bem AS idBem,
                 c.name AS cliente,
                 a.tipoApolice AS tipo,
@@ -178,10 +188,10 @@ class ApoliceRepository
                 a.dataAssinatura AS data
             FROM apolice a
             LEFT JOIN cliente c ON c.idCliente = a.idCliente
-            WHERE a.numeroApolice = :numeroApolice
+            WHERE a.numeroApolice = :numeroApolice AND {$colunaVinculo} = :idUsuario
         ");
 
-        $stmt->execute([':numeroApolice' => $numeroApolice]);
+        $stmt->execute([':numeroApolice' => $numeroApolice, ':idUsuario' => $idUsuario]);
         $apolice = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if ($apolice === false) {
