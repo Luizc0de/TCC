@@ -1,5 +1,9 @@
 RewriteEngine On
 
+<FilesMatch "^\.env($|\.)">
+    Require all denied
+</FilesMatch>
+
 RewriteCond %{HTTP:Authorization} ^(.*)
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
 

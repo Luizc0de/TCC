@@ -28,10 +28,8 @@ class UserServices
 
             UserRepository::createUserPF($user);
 
-            $result = Email::sendEmail(
-                $fields['email'],
-                'Cadastro realizado',
-                'Olá, seu cadastro foi criado com sucesso. ' . "\n" . "Seu código de autenticação é: " . $code
+            $result = Email::sendVerificationCode(
+                $fields['email'], $code
             );
 
             Response::json($result, 201);
@@ -93,9 +91,8 @@ class UserServices
             $users = UserRepository::getAllUsers();
 
             Response::json($users, 200);
-        } catch (\Exception $e) {
-            $status = $e->getCode() ?: 500;
-            Response::json(['error' => $e->getMessage()], $status);
+        } catch (\Throwable $e) {
+            Response::json(['error' => 'Não foi possível listar os clientes.'], 500);
         }
     }
 

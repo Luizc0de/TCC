@@ -1,0 +1,9 @@
+@import url('../../cliente/home/home.css');
+
+.form-subtitle { margin: 28px 0 0; padding-top: 22px; border-top: 1px solid var(--line); }
+.field textarea { min-height: 85px; }
+.panel details summary { cursor: pointer; font-weight: 600; }
+.panel .info-grid { margin-bottom: 24px; }
+.panel .table-scroll { margin-top: 20px; }
+.panel .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.panel .section-header { margin-bottom: 16px; }

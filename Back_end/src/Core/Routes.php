@@ -11,7 +11,7 @@ class Routes {
             'method' => 'GET',
             'path' => $path,
             'action' => $action,
-            'auth' => $auth, // false = pública | true = privada | 'admin' etc = privada + role específica
+            'auth' => $auth, // false = pública, true = autenticada, string/lista = todas as roles exigidas
         ];
     }
 

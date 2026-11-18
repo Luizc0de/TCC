@@ -31,6 +31,11 @@ class ApoliceRepository
         try {
             $db = self::getConnection();
             $db->beginTransaction();
+            $cliente = $db->prepare('SELECT idCliente FROM cliente WHERE idCliente = ?');
+            $cliente->execute([$apolice->getIdCliente()]);
+            if (!$cliente->fetchColumn()) {
+                throw new \DomainException('Cliente não encontrado.', 404);
+            }
             
             if ($bem->getTipoBem() ===  "VEICULO") {
 
@@ -86,9 +91,15 @@ class ApoliceRepository
             }
 
             $idBem = $db->lastInsertId();
+            $tipoApolice = $apolice->getTipoApolice();
+            if ($tipoApolice === 'NOTEBOOK') {
+                // O enum anterior do XAMPP agrupava notebooks em ELETRONICO.
+                $coluna = $db->query("SHOW COLUMNS FROM apolice LIKE 'tipoApolice'")->fetch(\PDO::FETCH_ASSOC);
+                if (str_starts_with($coluna['Type'], 'enum(') && !str_contains($coluna['Type'], "'NOTEBOOK'")) {
+                    $tipoApolice = 'ELETRONICO';
+                }
+            }
 
-            
-            
             // Executa a inserção da apólice no banco de dados
             $insert_2 = $db->prepare(
                 'INSERT INTO apolice
@@ -104,7 +115,7 @@ class ApoliceRepository
                 ':dataAssinatura' => $apolice->getDataAssinatura(),
                 ':dataVencimento' => $apolice->getDataVencimento(),
                 ':status' => $apolice->getStatus(),
-                ':tipoApolice' => $apolice->getTipoApolice(),
+                ':tipoApolice' => $tipoApolice,
                 ':valorTotal' => $apolice->getValorTotal(),
                 ':quantidadeParcelas' => $apolice->getQuantidadeParcelas(),
                 ':idCliente' => $apolice->getIdCliente(),
@@ -131,11 +142,54 @@ class ApoliceRepository
 
             return (int) $idApolice;
 
-        } catch (\PDOException $e) {
+        } catch (\Throwable $e) {
             if ($db !== null && $db->inTransaction()) {
                 $db->rollBack();
             }
-            throw new \Exception('Erro ao criar apólice: ' . $e->getMessage(), 500);
+            throw $e;
+        }
+    }
+
+    public static function emAnalise(): array
+    {
+        $stmt = self::getConnection()->query("
+            SELECT a.idApolice AS id, a.numeroApolice, a.tipoApolice AS tipo, a.valorTotal AS valor,
+                a.status, a.dataAssinatura AS data, a.dataVencimento, a.quantidadeParcelas, c.name AS cliente,
+                b.tipo_bem AS bemTipo, b.finalidade, b.descricao AS bemDescricao,
+                b.valor_avaliacao AS valorAvaliacao, b.marca, b.modelo, b.modelo_veiculo AS modeloVeiculo,
+                b.data_fabricacao AS dataFabricacao, b.placa, b.chassi, b.numero_serie AS numeroSerie, b.imei
+            FROM apolice a JOIN cliente c ON c.idCliente = a.idCliente JOIN bem b ON b.id_bem = a.id_bem
+            WHERE a.status = 'EM_ANALISE' ORDER BY a.idApolice
+        ");
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public static function decidirAnalise(int $id, string $status): int
+    {
+        $db = self::getConnection();
+        $db->beginTransaction();
+        try {
+            $stmt = $db->prepare('SELECT status, idCliente FROM apolice WHERE idApolice = ? FOR UPDATE');
+            $stmt->execute([$id]);
+            $apolice = $stmt->fetch(\PDO::FETCH_ASSOC);
+            if (!$apolice) {
+                throw new \DomainException('Apólice não encontrada.', 404);
+            }
+            if ($apolice['status'] !== 'EM_ANALISE') {
+                throw new \DomainException('Esta apólice já saiu da fila de análise.', 409);
+            }
+            $db->prepare('UPDATE apolice SET status = ? WHERE idApolice = ?')->execute([$status, $id]);
+            if ($status === 'RECUSADA') {
+                $db->prepare("UPDATE parcela SET status = 'CANCELADA' WHERE idApolice = ? AND status = 'PENDENTE'")
+                    ->execute([$id]);
+            }
+            $db->commit();
+            return (int) $apolice['idCliente'];
+        } catch (\Throwable $e) {
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
+            throw $e;
         }
     }
     public static function getAllApolices(int $idUsuario, bool $funcionario): array
@@ -148,6 +202,12 @@ class ApoliceRepository
         $stmt = $db->prepare("
             SELECT
                 a.idApolice AS id,
+                a.numeroApolice,
+                a.dataVencimento,
+                a.quantidadeParcelas,
+                b.descricao AS bemDescricao,
+                b.tipo_bem AS bemTipo,
+                b.marca AS bemMarca,
                 c.name AS cliente,
                 a.tipoApolice AS tipo,
                 a.valorTotal AS valor,
@@ -155,6 +215,7 @@ class ApoliceRepository
                 a.dataAssinatura AS data
             FROM apolice a
             LEFT JOIN cliente c ON c.idCliente = a.idCliente
+            LEFT JOIN bem b ON b.id_bem = a.id_bem
             WHERE {$colunaVinculo} = :idUsuario
         ");
 
@@ -162,14 +223,17 @@ class ApoliceRepository
 
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
-    public static function getApoliceByNumero($numeroApolice)
+    public static function getApoliceByNumero(string $numeroApolice, int $idUsuario, bool $funcionario)
     {
         $db = self::getConnection();
+        $colunaVinculo = $funcionario ? 'a.idFuncionario' : 'a.idCliente';
 
         $stmt = $db->prepare("
             SELECT
                 a.idApolice AS id,
                 a.numeroApolice AS numeroApolice,
+                a.dataVencimento,
+                a.quantidadeParcelas,
                 a.id_bem AS idBem,
                 c.name AS cliente,
                 a.tipoApolice AS tipo,
@@ -178,10 +242,10 @@ class ApoliceRepository
                 a.dataAssinatura AS data
             FROM apolice a
             LEFT JOIN cliente c ON c.idCliente = a.idCliente
-            WHERE a.numeroApolice = :numeroApolice
+            WHERE a.numeroApolice = :numeroApolice AND {$colunaVinculo} = :idUsuario
         ");
 
-        $stmt->execute([':numeroApolice' => $numeroApolice]);
+        $stmt->execute([':numeroApolice' => $numeroApolice, ':idUsuario' => $idUsuario]);
         $apolice = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if ($apolice === false) {

@@ -5,10 +5,18 @@ namespace App\Core;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Exception;
+use App\Utils\Response;
 
 class JwtService
 {
-    private static string $secret = 'a1f9c8e2b7d4f6a0c3e5b8d1f2a4c6e9b3d7f0a2c5e8b1d4f7a0c3e6b9d2f5a8';
+    private static function secret(): string
+    {
+        $secret = $_ENV['JWT_SECRET'] ?? '';
+        if (strlen($secret) < 32) {
+            throw new \RuntimeException('Configure JWT_SECRET com pelo menos 32 bytes.');
+        }
+        return $secret;
+    }
 
     public static function generate(string $email, int $userId, array $roles): string {
 
@@ -28,7 +36,7 @@ class JwtService
 
         return JWT::encode(
             $payload,
-            self::$secret,
+            self::secret(),
             'HS256'
         );
     }
@@ -38,7 +46,7 @@ class JwtService
     {
         return JWT::decode(
             $token,
-            new Key(self::$secret, 'HS256')
+            new Key(self::secret(), 'HS256')
         );
     }
 
@@ -69,33 +77,33 @@ class JwtService
 
     private static function unauthorized(string $message): never
     {
-        http_response_code(401);
-
-        echo json_encode([
-            'error' => $message
-        ]);
+        Response::json(['error' => $message], 401);
 
         exit;
     }
-    public static function requireRole(string $role): object
+    public static function requireRole(string|array $roles): object
     {
-    $user = self::authenticate();
+        $user = self::authenticate();
+        if (!self::hasRoles($user, $roles)) {
+            Response::json(['error' => 'Você não possui permissão para acessar este recurso'], 403);
+            exit;
+        }
 
-    if (
-        !isset($user->roles) ||
-        !in_array($role, $user->roles)
-    ) {
-
-        http_response_code(403);
-
-        echo json_encode([
-            'error' => 'Você não possui permissão para acessar este recurso'
-        ]);
-
-        exit;
+        return $user;
     }
 
-    return $user;
+    public static function hasRoles(object $user, string|array $roles): bool
+    {
+        $required = (array) $roles;
+        if (!$required || !is_array($user->roles ?? null)) {
+            return false;
+        }
+        foreach ($required as $role) {
+            if (!in_array($role, $user->roles, true)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
 

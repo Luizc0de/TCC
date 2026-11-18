@@ -7,7 +7,8 @@ class ParcelaRepository
     private const SELECT = 'SELECT p.idParcela, p.idApolice, p.numeroParcela,
         p.valorCentavos, p.dataVencimento, p.status, p.stripeInvoiceId, p.linkPagamento,
         a.numeroApolice, a.idCliente, a.status AS statusApolice
-        FROM parcela p INNER JOIN apolice a ON a.idApolice = p.idApolice';
+        FROM parcela p INNER JOIN apolice a ON a.idApolice = p.idApolice
+        AND a.status NOT IN (\'EM_ANALISE\', \'RECUSADA\')';
 
     public static function getAllParcelas(?int $idCliente, ?int $idApolice = null): array
     {

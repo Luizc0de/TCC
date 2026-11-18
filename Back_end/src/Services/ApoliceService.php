@@ -17,7 +17,7 @@ class ApoliceService
                 numeroApolice: "AP-" . uniqid(10),
                 dataAssinatura: $fields['dataAssinatura'],
                 dataVencimento: $fields['dataVencimento'],
-                status: $fields['status'],
+                status: 'EM_ANALISE',
                 tipoApolice: $fields['tipoApolice'],
                 valorTotal: $fields['valorTotal'],
                 quantidadeParcelas: $fields['quantidadeParcelas'] === null ? null : (int) $fields['quantidadeParcelas'],
@@ -41,18 +41,18 @@ class ApoliceService
 
             if ($fields['tipoBem'] === "VEICULO") {
                 if (empty($fields['placa']) || empty($fields['chassi']) || empty($fields['marca']) || empty($fields['modeloVeiculo'])) {
-                    throw new \Exception('Campos obrigatórios para veículo não preenchidos.', 400);
+                    throw new \DomainException('Campos obrigatórios para veículo não preenchidos.', 400);
                 }
                 
             }
             else if ($fields['tipoBem'] === "TELEFONE") {
                 if (empty($fields['numeroSerie'])|| empty($fields['modelo']) || empty($fields['imei'])) {
-                    throw new \Exception('Campos obrigatórios para telefone não preenchidos.', 400);
+                    throw new \DomainException('Campos obrigatórios para telefone não preenchidos.', 400);
                 }
             }
             else{
                 if (empty($fields['numeroSerie']) || empty($fields['modelo'])) {
-                    throw new \Exception('Campos obrigatórios para notebook não preenchidos.', 400);
+                    throw new \DomainException('Campos obrigatórios para notebook não preenchidos.', 400);
                 }
             }
 
@@ -60,31 +60,48 @@ class ApoliceService
 
             $idApolice = ApoliceRepository::save($apolice, $bem, $parcelas);
 
-            // A apólice e as parcelas já estão salvas; falhas no Stripe não as desfazem
-            $falhasStripe = [];
-            if ($parcelas !== []) {
-                try {
-                    $falhasStripe = StripeControl::emitirParcelasApolice(
-                        ApoliceRepository::getConnection(),
-                        $idApolice,
-                        $apolice->getIdCliente()
-                    );
-                } catch (\Throwable $e) {
-                    $falhasStripe = [$e->getMessage()];
-                }
-            }
-
-            $resposta = ['message' => 'Apolice criada com sucesso.'];
-            if ($falhasStripe !== []) {
-                $resposta['avisoStripe'] = 'Algumas parcelas não foram geradas no Stripe e permanecem PENDENTES.';
-                $resposta['falhasStripe'] = $falhasStripe;
-            }
-
-            Response::json($resposta, 201);
-        } catch (\Exception $e) {
-            $status = $e->getCode() ?: 500;
-            Response::json(['error' => $e->getMessage()], $status);
+            Response::json(['message' => 'Apólice enviada para análise de risco.', 'idApolice' => $idApolice,
+                'numeroApolice' => $apolice->getNumeroApolice(), 'status' => $apolice->getStatus()], 201);
+        } catch (\DomainException $e) {
+            Response::json(['error' => $e->getMessage()], $e->getCode());
+        } catch (\Throwable $e) {
+            Response::json(['error' => 'Não foi possível criar a apólice.'], 500);
         }
+    }
+
+    public static function emAnalise(): void
+    {
+        try {
+            Response::json(ApoliceRepository::emAnalise(), 200);
+        } catch (\Throwable $e) {
+            Response::json(['error' => 'Não foi possível consultar a fila de análise.'], 500);
+        }
+    }
+
+    public static function analisar(int $id, string $status): void
+    {
+        try {
+            $idCliente = ApoliceRepository::decidirAnalise($id, $status);
+        } catch (\DomainException $e) {
+            Response::json(['error' => $e->getMessage()], $e->getCode());
+            return;
+        } catch (\Throwable $e) {
+            Response::json(['error' => 'Não foi possível registrar a análise.'], 500);
+            return;
+        }
+        $resposta = ['status' => $status, 'message' => $status === 'APROVADA' ? 'Apólice aprovada.' : 'Apólice recusada.'];
+        if ($status === 'APROVADA') {
+            try {
+                $falhas = StripeControl::emitirParcelasApolice(ApoliceRepository::getConnection(), $id, $idCliente);
+                $pendente = $falhas !== [];
+            } catch (\Throwable $e) {
+                $pendente = true;
+            }
+            if ($pendente) {
+                $resposta['avisoStripe'] = 'Há cobranças pendentes de emissão. Elas podem ser emitidas ao abrir o pagamento.';
+            }
+        }
+        Response::json($resposta, 200);
     }
     // Divide o valor total (em centavos) em parcelas mensais; a diferença do arredondamento vai para a última
     private static function gerarParcelas(array $fields): array
@@ -97,12 +114,20 @@ class ApoliceService
         $quantidade = max(1, (int) ($fields['quantidadeParcelas'] ?? 1));
 
         if ($totalCentavos < $quantidade) {
-            throw new \Exception('Valor total insuficiente para a quantidade de parcelas.', 400);
+            throw new \DomainException('Valor total insuficiente para a quantidade de parcelas.', 400);
         }
 
         $base = new \DateTimeImmutable($fields['dataAssinatura'] ?: 'today');
         $diasPrimeiraParcela = empty($fields['FirstParcelNow']) ? (int) ($fields['daysfromfirstparcel'] ?? 30) : 0;
         $primeiroVencimento = $base->modify("+{$diasPrimeiraParcela} days");
+
+        if ($primeiroVencimento > new \DateTimeImmutable('9999-12-31 23:59:59')
+            || $quantidade > (9999 - (int) $primeiroVencimento->format('Y')) * 12 + 13 - (int) $primeiroVencimento->format('n')) {
+            throw new \DomainException('O prazo das parcelas excede o intervalo de datas permitido.', 400);
+        }
+        if (intdiv($totalCentavos, $quantidade) + $totalCentavos % $quantidade > 2147483647) {
+            throw new \DomainException('O valor de uma parcela excede o limite em centavos.', 400);
+        }
 
         $valorParcela = intdiv($totalCentavos, $quantidade);
         $parcelas = [];
@@ -146,18 +171,19 @@ class ApoliceService
             Response::json(['error' => 'Não foi possível listar as apólices.'], 500);
         }
     }
-    public static function getApoliceByNumero($numeroApolice): void
+    public static function getApoliceByNumero(string $numeroApolice, int $idUsuario, bool $funcionario): void
     {
-        $apolice = ApoliceRepository::getApoliceByNumero($numeroApolice);
-
-        if ($apolice === false) {
-            Response::json(['error' => 'Apólice não encontrada.'], 404);
-            return;
+        try {
+            $apolice = ApoliceRepository::getApoliceByNumero($numeroApolice, $idUsuario, $funcionario);
+            if ($apolice === false) {
+                Response::json(['error' => 'Apólice não encontrada.'], 404);
+                return;
+            }
+            $apolice['bem'] = self::formatBem($apolice['bem']);
+            Response::json($apolice, 200);
+        } catch (\Throwable $e) {
+            Response::json(['error' => 'Não foi possível consultar a apólice.'], 500);
         }
-
-        $apolice['bem'] = self::formatBem($apolice['bem']);
-
-        Response::json($apolice, 200);
     }
 
     // Mantém apenas os campos que pertencem ao tipo do bem

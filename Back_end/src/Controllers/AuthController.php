@@ -31,7 +31,7 @@ class AuthController
         $roles = is_array($user->roles) ? $user->roles : [$user->roles];
         $token = JwtService::generate($user->getEmail(), $user->getId(), $roles);
 
-        Response::json(['message' => 'Login successful.', 'token' => $token], 200);
+        Response::json(['message' => 'Login successful.', 'token' => $token, 'roles' => $roles], 200);
     }
     
     public function verifyCode()

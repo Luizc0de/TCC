@@ -32,8 +32,15 @@ class FuncionarioRepository
             $password = $funcionario->getPassword();
             $setor = $funcionario->getSetor();
             $cpf = $funcionario->getCpf();
+            // O cadastro anterior aceitava CPFs com pontuação.
+            $duplicado = $db->prepare("SELECT 1 FROM funcionario WHERE cpf IN (?, ?) LIMIT 1");
+            $formatado = preg_replace('/^(\d{3})(\d{3})(\d{3})(\d{2})$/', '$1.$2.$3-$4', $cpf);
+            $duplicado->execute([$cpf, $formatado]);
+            if ($duplicado->fetchColumn()) {
+                throw new \DomainException('E-mail ou CPF já cadastrado.', 400);
+            }
             $salario = $funcionario->getSalario();
-            $roles = json_encode(["admin"]);
+            $roles = json_encode($funcionario->roles);
 
             $stmt->execute([
                 ':name' => $name,
@@ -47,16 +54,17 @@ class FuncionarioRepository
             ]);
         }catch (\PDOException $e) {
             if ($e->getCode() == 23000) { // Código de erro para violação de chave única
-                throw new \Exception('Email ou CPF já cadastrado.', 400);
-            } else {
-                throw new \Exception('Erro ao criar usuário: ' . $e->getMessage(), 500);
+                throw new \DomainException('E-mail ou CPF já cadastrado.', 400);
             }
+            throw $e;
         }
     }
 
     public static function findById($id)
     {
-        
+        $stmt = self::getConnection()->prepare('SELECT name AS nome, email, setor FROM funcionario WHERE idFuncionario = ?');
+        $stmt->execute([$id]);
+        return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
     }
 
     public static function updatePassword($id, $password)
@@ -81,18 +89,17 @@ class FuncionarioRepository
             return null;
         }
 
-        $funcionario = new Funcionario(
+        $roles = json_decode($funcionarioData['roles'] ?? 'null', true);
+        return new Funcionario(
             $funcionarioData['name'],
             $funcionarioData['email'],
             $funcionarioData['password'],
             $funcionarioData['setor'],
             $funcionarioData['cpf'],
             $funcionarioData['salario'],
-            $funcionarioData['id']
+            $funcionarioData['id'],
+            is_array($roles) ? $roles : null
         );
-        $funcionario->roles = ['funcionario'];
-
-        return $funcionario;
     }
 }
 
