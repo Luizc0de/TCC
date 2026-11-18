@@ -1,17 +1,7 @@
 (function () {
   'use strict';
   const $ = selector => document.querySelector(selector);
-  const apiBase = window.INSURANCE_CONFIG?.apiBaseUrl || 'http://localhost/TCC/Back_end/index.php';
-  const sessionKey = 'insurance.authToken';
-  const setores = {
-    vendas: ['Vendas', 'Cadastre uma apólice e acompanhe a decisão da análise de risco.'],
-    analise_risco: ['Análise de risco', 'Consulte os dados do bem e decida sobre as apólices em análise.'],
-    rh: ['Recursos humanos', 'Cadastre funcionários e defina o setor de acesso.'],
-    financeiro: ['Financeiro', 'Acompanhe os valores, vencimentos e pagamentos das parcelas.'],
-    atendimento: ['Atendimento', 'Consulte as ocorrências das apólices sob sua responsabilidade.']
-  };
-  const tipos = { VEICULO: 'Automóvel', NOTEBOOK: 'Notebook', TELEFONE: 'Celular' };
-  const moeda = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+  const { setores, tipos, request, notice, el, date, money, badge, listaCoberturas, carregarPerfil } = window.PainelFuncionario;
   const policyForm = $('#policy-form');
   const coverageOptions = $('#coverage-options');
   let catalogo;
@@ -19,63 +9,6 @@
   let setorAtual;
   let versao = 0;
 
-  function signOut() {
-    try { sessionStorage.removeItem(sessionKey); sessionStorage.removeItem('insurance.pendingInstallment'); } catch {}
-    location.replace('../../conta/entrar/index.html');
-  }
-  $('[data-logout]').addEventListener('click', signOut);
-
-  async function request(route, method = 'GET', payload) {
-    let token;
-    try { token = sessionStorage.getItem(sessionKey); } catch {}
-    if (!token) { signOut(); throw new Error('Entre novamente para continuar.'); }
-    const url = new URL(apiBase);
-    url.searchParams.set('url', route);
-    const headers = { Accept: 'application/json', Authorization: 'Bearer ' + token };
-    if (payload) headers['Content-Type'] = 'application/json';
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 30000);
-    try {
-      const res = await fetch(url, { method, headers, body: JSON.stringify(payload), signal: controller.signal, cache: 'no-store' });
-      if (res.status === 401) { signOut(); throw new Error('Sua sessão expirou.'); }
-      const data = await res.json().catch(() => null);
-      if (!res.ok || data === null) {
-        const error = new Error(data?.error || 'Não foi possível concluir a solicitação.');
-        error.status = res.status;
-        throw error;
-      }
-      return data;
-    } catch (error) {
-      if (error.name === 'AbortError') throw new Error('O servidor demorou para responder. Atualize o painel para conferir a situação.');
-      if (error instanceof TypeError) throw new Error('Não foi possível conectar à API.');
-      throw error;
-    } finally { clearTimeout(timeout); }
-  }
-
-  function notice(text, type = '') {
-    const target = $('#page-feedback');
-    target.textContent = text;
-    target.className = 'status-message ' + type;
-    target.hidden = !text;
-    if (text) target.scrollIntoView({ block: 'nearest' });
-  }
-  function el(tag, text, className) {
-    const node = document.createElement(tag);
-    if (text != null) node.textContent = text;
-    if (className) node.className = className;
-    return node;
-  }
-  function date(value) {
-    return value ? value.slice(0, 10).split('-').reverse().join('/') : '—';
-  }
-  function money(value) { return value == null ? '—' : moeda.format(value); }
-  function badge(value) {
-    const status = { EM_ANALISE: 'Em análise', APROVADA: 'Aprovada', RECUSADA: 'Recusada',
-      PAGA: 'Paga', ABERTA: 'Em aberto', PENDENTE: 'Pendente' };
-    const color = ['APROVADA', 'ATIVA', 'PAGA'].includes(value) ? 'green'
-      : ['RECUSADA', 'CANCELADA'].includes(value) ? 'red' : 'blue';
-    return el('span', status[value] || String(value || '—').replaceAll('_', ' ').toLowerCase(), 'badge ' + color);
-  }
   function tabela(target, headers, rows, empty) {
     if (!rows.length) { target.replaceChildren(el('p', empty, 'state')); return; }
     const table = el('table');
@@ -87,18 +20,6 @@
       values.forEach(value => row.insertCell().append(value ?? '—'));
     });
     target.replaceChildren(table);
-  }
-  function listaCoberturas(coberturas, resumir = false) {
-    if (!Array.isArray(coberturas) || !coberturas.length) {
-      return coberturas === null ? 'Registro de coberturas ilegível.' : 'Nenhuma cobertura registrada.';
-    }
-    const lista = el('ul', null, 'coverage-list');
-    coberturas.forEach(cobertura => lista.append(el('li', cobertura.descricao)));
-    if (!resumir) return lista;
-    const details = el('details');
-    const quantidade = coberturas.length;
-    details.append(el('summary', quantidade === 1 ? '1 cobertura' : quantidade + ' coberturas'), lista);
-    return details;
   }
   function risco(lista) {
     const target = $('#risk-queue');
@@ -181,11 +102,7 @@
           cliente.replaceChildren(new Option(items.length ? 'Selecione um cliente' : 'Nenhum cliente cadastrado', ''));
           items.forEach(item => cliente.add(new Option(item.name + ' · ' + item.email, item.id)));
           cliente.value = anterior;
-        }, atual),
-        listar('apolices/get_all', $('#sales-policies'), items => tabela($('#sales-policies'),
-          ['Apólice', 'Cliente', 'Coberturas', 'Valor total', 'Situação'], items.map(p =>
-            [p.numeroApolice, p.cliente, listaCoberturas(p.coberturas, true), money(p.valor), badge(p.status)]),
-          'Você ainda não enviou apólices.'), atual)
+        }, atual)
       ]);
     } else if (setorAtual === 'financeiro') {
       await listar('parcelas/get_all', $('#finance-list'), items => tabela($('#finance-list'),
@@ -219,15 +136,9 @@
   }
   async function iniciar() {
     try {
-      const perfil = await request('profile');
-      if (!perfil.roles?.includes('funcionario')) { location.replace('../../cliente/home/index.html'); return; }
-      $('#employee-name').textContent = perfil.nome;
-      $('#initials').textContent = perfil.nome.trim().split(/\s+/).slice(0, 2).map(p => p[0]).join('').toUpperCase();
-      permitidos = Object.keys(setores).filter(key => perfil.roles.includes(key));
-      document.querySelectorAll('[data-setores]').forEach(nav => {
-        nav.replaceChildren();
-        permitidos.forEach(key => { const link = el('a', setores[key][0]); link.href = '#' + key; nav.append(link); });
-      });
+      const setoresDoPerfil = await carregarPerfil('home');
+      if (!setoresDoPerfil) return;
+      permitidos = setoresDoPerfil;
       mostrarSetor();
     } catch (error) { notice(error.message, 'error'); }
   }

@@ -173,10 +173,10 @@ class ApoliceService
             Response::json(['error' => 'Não foi possível listar as apólices.'], 500);
         }
     }
-    public static function getApoliceByNumero(string $numeroApolice, int $idUsuario, bool $funcionario): void
+    public static function getApolice(string|int $identificador, int $idUsuario, bool $funcionario): void
     {
         try {
-            $apolice = ApoliceRepository::getApoliceByNumero($numeroApolice, $idUsuario, $funcionario);
+            $apolice = ApoliceRepository::getApolice($identificador, $idUsuario, $funcionario);
             if ($apolice === false) {
                 Response::json(['error' => 'Apólice não encontrada.'], 404);
                 return;

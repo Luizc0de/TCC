@@ -151,7 +151,23 @@ class ApoliceController
             Response::json(['error' => 'Perfil sem permissão para consultar apólices.'], 403);
             return;
         }
-        ApoliceService::getApoliceByNumero((string) ($params[0] ?? ''), $idUsuario, $funcionario);
+        ApoliceService::getApolice((string) ($params[0] ?? ''), $idUsuario, $funcionario);
     }
-    
+
+    public function detalheVenda(Request $request, Response $response, array $params): void
+    {
+        $idVendedor = filter_var($request->user()->sub ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if ($idVendedor === false) {
+            Response::json(['error' => 'Usuário não autenticado.'], 401);
+            return;
+        }
+        try {
+            $id = $this->inteiro($params[0] ?? null, 'idApolice');
+        } catch (\DomainException $e) {
+            Response::json(['error' => $e->getMessage()], 400);
+            return;
+        }
+        ApoliceService::getApolice($id, $idVendedor, true);
+    }
+
 }

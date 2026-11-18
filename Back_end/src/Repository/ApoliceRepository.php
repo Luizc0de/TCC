@@ -225,9 +225,11 @@ class ApoliceRepository
 
         return array_map([self::class, 'comCoberturas'], $stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
-    public static function getApoliceByNumero(string $numeroApolice, int $idUsuario, bool $funcionario)
+    public static function getApolice(string|int $identificador, int $idUsuario, bool $funcionario): array|false
     {
         $db = self::getConnection();
+        // Um número de apólice só com dígitos continua sendo uma string. O ID interno é inteiro.
+        $colunaApolice = is_int($identificador) ? 'a.idApolice' : 'a.numeroApolice';
         $colunaVinculo = $funcionario ? 'a.idFuncionario' : 'a.idCliente';
 
         $stmt = $db->prepare("
@@ -245,10 +247,10 @@ class ApoliceRepository
                 a.dataAssinatura AS data
             FROM apolice a
             LEFT JOIN cliente c ON c.idCliente = a.idCliente
-            WHERE a.numeroApolice = :numeroApolice AND {$colunaVinculo} = :idUsuario
+            WHERE {$colunaApolice} = :identificador AND {$colunaVinculo} = :idUsuario
         ");
 
-        $stmt->execute([':numeroApolice' => $numeroApolice, ':idUsuario' => $idUsuario]);
+        $stmt->execute([':identificador' => $identificador, ':idUsuario' => $idUsuario]);
         $apolice = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if ($apolice === false) {

@@ -37,7 +37,7 @@ Cadastro HTTP 201 significa conta criada, mesmo quando o backend informa falha n
 
 ## Configuracao unica da API
 
-Edite Front/config.js e defina apiBaseUrl com o endpoint completo da API. O padrao local e http://localhost/TCC/Back_end/index.php. Para producao, troque esse valor por https://seu-dominio/Back_end/index.php (ajuste ao caminho real). Todas as tres telas carregam essa configuracao antes do seu proprio script. Nao coloque senhas ou chaves secretas nesse arquivo publico.
+Edite Front/config.js para ajustar os endpoints em `urls` (local e producao: https://api.insurance.dev.br/index.php). Nas telas de entrar e criar conta ha um seletor "API: Local | Produção" que grava a escolha em localStorage e vale para todas as telas. Sem escolha salva, usa Local em localhost e Produção nos demais hosts. Nao coloque senhas ou chaves secretas nesse arquivo publico.
 
 A mesma configuracao vale abrindo o index.html pelo computador (file://), Live Server ou Apache. A API continua sendo um servidor HTTP/HTTPS ativo; no ambiente local, Apache e MySQL precisam estar ligados. O frontend envia a rota no parametro url, conforme o roteador PHP existente.
 
