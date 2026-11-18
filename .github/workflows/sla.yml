@@ -15,8 +15,46 @@ jobs:
       - name: Baixar código
         uses: actions/checkout@v4
 
+<<<<<<< HEAD
+      - name: Conferir os nomes dos arquivos no Linux antes do envio
+        run: |
+          for arquivo in src/Models/Funcionario.php src/Core/JwtService.php src/Models/Apolice.php; do
+            if [[ ! -f "Back_end/$arquivo" ]]; then
+              echo "::error::Arquivo ausente com o nome exigido pelo autoload: Back_end/$arquivo"
+              exit 1
+            fi
+          done
+
+      - name: Verificar se dependências mudaram
+        id: check_deps
+        uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            Back_end/vendor/**
+            Back_end/composer.json
+            Back_end/composer.lock
+
+      - name: Definir exclusões do FTP
+        id: set_exclude
+        run: |
+          if [ "${{ steps.check_deps.outputs.any_changed }}" == "true" ]; then
+            echo "Dependências alteradas! Enviando vendor e composer para o FTP."
+            echo "exclude_list=" >> $GITHUB_OUTPUT
+          else
+            echo "Sem alterações de dependências. Excluindo vendor e composer do FTP."
+            echo "exclude_list<<EOF" >> $GITHUB_OUTPUT
+            echo "vendor/**" >> $GITHUB_OUTPUT
+            echo "composer.json" >> $GITHUB_OUTPUT
+            echo "composer.lock" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Sync files via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+=======
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+>>>>>>> 91edcbcd6c9dc09d804d58bcd7247bfe4f52f10c
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
