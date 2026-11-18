@@ -1,23 +1,21 @@
-name: Deploy Back-end
+name: Deploy Back-end via FTP
 
 on:
   push:
     branches:
       - main
     paths:
-      # Monitora qualquer alteração na pasta Back_end
       - "Back_end/**"
 
 jobs:
-  web-deploy:
-    name: Deploy Back-end
+  deploy:
     runs-on: ubuntu-latest
-    steps:
-      - name: Get latest code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Baixa o histórico para comparar alterações do commit
 
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+<<<<<<< HEAD
       - name: Conferir os nomes dos arquivos no Linux antes do envio
         run: |
           for arquivo in src/Models/Funcionario.php src/Core/JwtService.php src/Models/Apolice.php; do
@@ -53,10 +51,18 @@ jobs:
 
       - name: Sync files via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+=======
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+>>>>>>> 91edcbcd6c9dc09d804d58bcd7247bfe4f52f10c
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
+
           local-dir: ./Back_end/
           server-dir: ./
-          exclude: ${{ steps.set_exclude.outputs.exclude_list }}
+          exclude: |
+            **/.env
+            **/.htaccess
+            

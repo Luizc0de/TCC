@@ -60,7 +60,7 @@ class UserController
 
         UserServices::changePassword($user->sub, $fields);
     }
-
+//
 
 }
 ?>
