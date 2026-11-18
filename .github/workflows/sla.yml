@@ -15,7 +15,6 @@ jobs:
       - name: Baixar código
         uses: actions/checkout@v4
 
-<<<<<<< HEAD
       - name: Conferir os nomes dos arquivos no Linux antes do envio
         run: |
           for arquivo in src/Models/Funcionario.php src/Core/JwtService.php src/Models/Apolice.php; do
@@ -51,10 +50,6 @@ jobs:
 
       - name: Sync files via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-=======
-      - name: Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
->>>>>>> 91edcbcd6c9dc09d804d58bcd7247bfe4f52f10c
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}

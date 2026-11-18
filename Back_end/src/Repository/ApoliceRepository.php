@@ -103,10 +103,10 @@ class ApoliceRepository
             // Executa a inserção da apólice no banco de dados
             $insert_2 = $db->prepare(
                 'INSERT INTO apolice
-                (numeroApolice, dataAssinatura, dataVencimento, status, tipoApolice,
+                (numeroApolice, dataAssinatura, dataVencimento, status, tipoApolice, coberturas,
                  valorTotal, quantidadeParcelas, idCliente, idFuncionario, id_bem)
                 VALUES
-                (:numeroApolice, :dataAssinatura, :dataVencimento, :status, :tipoApolice,
+                (:numeroApolice, :dataAssinatura, :dataVencimento, :status, :tipoApolice, :coberturas,
                  :valorTotal, :quantidadeParcelas, :idCliente, :idFuncionario, :id_bem)'
             );
             
@@ -116,6 +116,7 @@ class ApoliceRepository
                 ':dataVencimento' => $apolice->getDataVencimento(),
                 ':status' => $apolice->getStatus(),
                 ':tipoApolice' => $tipoApolice,
+                ':coberturas' => json_encode($apolice->getCoberturas(), JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
                 ':valorTotal' => $apolice->getValorTotal(),
                 ':quantidadeParcelas' => $apolice->getQuantidadeParcelas(),
                 ':idCliente' => $apolice->getIdCliente(),
@@ -154,14 +155,14 @@ class ApoliceRepository
     {
         $stmt = self::getConnection()->query("
             SELECT a.idApolice AS id, a.numeroApolice, a.tipoApolice AS tipo, a.valorTotal AS valor,
-                a.status, a.dataAssinatura AS data, a.dataVencimento, a.quantidadeParcelas, c.name AS cliente,
+                a.status, a.coberturas, a.dataAssinatura AS data, a.dataVencimento, a.quantidadeParcelas, c.name AS cliente,
                 b.tipo_bem AS bemTipo, b.finalidade, b.descricao AS bemDescricao,
                 b.valor_avaliacao AS valorAvaliacao, b.marca, b.modelo, b.modelo_veiculo AS modeloVeiculo,
                 b.data_fabricacao AS dataFabricacao, b.placa, b.chassi, b.numero_serie AS numeroSerie, b.imei
             FROM apolice a JOIN cliente c ON c.idCliente = a.idCliente JOIN bem b ON b.id_bem = a.id_bem
             WHERE a.status = 'EM_ANALISE' ORDER BY a.idApolice
         ");
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return array_map([self::class, 'comCoberturas'], $stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
 
     public static function decidirAnalise(int $id, string $status): int
@@ -203,6 +204,7 @@ class ApoliceRepository
             SELECT
                 a.idApolice AS id,
                 a.numeroApolice,
+                a.coberturas,
                 a.dataVencimento,
                 a.quantidadeParcelas,
                 b.descricao AS bemDescricao,
@@ -221,7 +223,7 @@ class ApoliceRepository
 
         $stmt->execute([':idUsuario' => $idUsuario]);
 
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return array_map([self::class, 'comCoberturas'], $stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
     public static function getApoliceByNumero(string $numeroApolice, int $idUsuario, bool $funcionario)
     {
@@ -232,6 +234,7 @@ class ApoliceRepository
             SELECT
                 a.idApolice AS id,
                 a.numeroApolice AS numeroApolice,
+                a.coberturas,
                 a.dataVencimento,
                 a.quantidadeParcelas,
                 a.id_bem AS idBem,
@@ -275,6 +278,28 @@ class ApoliceRepository
         unset($apolice['idBem']);
         $apolice['bem'] = $stmtBem->fetch(\PDO::FETCH_ASSOC) ?: null;
 
+        return self::comCoberturas($apolice);
+    }
+
+    private static function comCoberturas(array $apolice): array
+    {
+        $texto = trim($apolice['coberturas'] ?? '');
+        $lista = $texto === '' ? [] : json_decode($texto);
+        $apolice['coberturas'] = null;
+        if (!is_array($lista)) {
+            return $apolice;
+        }
+        $coberturas = [];
+        foreach ($lista as $item) {
+            // Registros anteriores também podem conter uma lista simples de descrições.
+            $descricao = is_string($item) ? $item : ($item->descricao ?? null);
+            $codigo = $item->codigo ?? null;
+            if (!is_string($descricao) || trim($descricao) === '' || ($codigo !== null && !is_string($codigo))) {
+                return $apolice;
+            }
+            $coberturas[] = ['codigo' => $codigo, 'descricao' => $descricao];
+        }
+        $apolice['coberturas'] = $coberturas;
         return $apolice;
     }
 }

@@ -168,6 +168,26 @@
 
   const target = $('#policy-detail');
   const number = new URLSearchParams(location.search).get('numero');
+  function mostrarCoberturas(painel, coberturas) {
+    const titulo = document.createElement('h3');
+    titulo.textContent = 'Coberturas da apólice';
+    titulo.className = 'coverage-title';
+    painel.append(titulo);
+    if (!Array.isArray(coberturas) || !coberturas.length) {
+      const aviso = document.createElement('p');
+      aviso.textContent = coberturas === null ? 'Registro de coberturas ilegível.' : 'Nenhuma cobertura registrada.';
+      painel.append(aviso);
+      return;
+    }
+    const lista = document.createElement('ul');
+    lista.className = 'coverage-list';
+    coberturas.forEach(cobertura => {
+      const item = document.createElement('li');
+      item.textContent = cobertura.descricao;
+      lista.append(item);
+    });
+    painel.append(lista);
+  }
   function info(label,value,wide=false) { return '<div' + (wide ? ' class="full"' : '') + '><dt>' + esc(label) + '</dt><dd>' + esc(value === null || value === undefined || value === '' ? 'Não informado' : value) + '</dd></div>'; }
   async function load() {
     if (!number || !/^[-\w]+$/.test(number)) { state(target,'Apólice não informada','Volte à lista de apólices e selecione um dos seus seguros.'); return; }
@@ -179,6 +199,7 @@
       const bem = policy.bem;
       const keys = {tipo:'Tipo de bem',finalidade:'Finalidade',descricao:'Descrição',valorAvaliacao:'Valor avaliado',marca:'Marca',placa:'Placa',chassi:'Chassi',modeloVeiculo:'Modelo do veículo',dataFabricacao:'Data de fabricação',modelo:'Modelo',numeroSerie:'Número de série',imei:'IMEI'};
       target.innerHTML = '<section class="panel"><div class="section-header"><div class="detail-heading"><span class="product-symbol">' + icon(symbol) + '</span><div><h2>Seguro ' + esc(label) + '</h2><span class="policy-number">' + esc(policy.numeroApolice) + '</span></div></div>' + badge(policy.status) + '</div><dl class="info-grid">' + info('Número da apólice',policy.numeroApolice) + info('Titular',policy.cliente) + info('Tipo de seguro',policy.tipo) + info('Valor total',money(policy.valor)) + info('Data de assinatura',date(policy.data)) + info('Vencimento da apólice',date(policy.dataVencimento)) + info('Quantidade de parcelas',policy.quantidadeParcelas) + info('Situação',labels[upper(policy.status)] || policy.status) + '</dl></section><div class="detail-grid"><section class="panel"><h2>Bem protegido</h2>' + (bem ? '<dl class="info-grid">' + Object.entries(keys).filter(([key]) => Object.hasOwn(bem,key)).map(([key,title]) => info(title,key === 'valorAvaliacao' ? money(bem[key]) : key === 'dataFabricacao' ? date(bem[key]) : bem[key],key === 'descricao')).join('') + '</dl>' : '<p class="policy-number">Não há informações do bem disponíveis nesta apólice.</p>') + '</section><aside><section class="quick-action"><span class="product-symbol">' + icon('wallet') + '</span><h2>Cuide das suas parcelas.</h2><p>Veja os vencimentos e o status dos pagamentos desta apólice.</p><a class="button button-primary" href="' + esc(pageUrl('parcelas',{idApolice:policy.id})) + '">Ver parcelas ' + icon('arrow') + '</a></section><section class="panel"><h2>Precisa comunicar um imprevisto?</h2><p class="policy-number">Registre uma ocorrência para o bem desta apólice.</p><a class="text-link" href="' + esc(pageUrl('sinistro',{idApolice:policy.id})) + '">Abrir sinistro ' + icon('arrow') + '</a></section></aside></div>';
+      mostrarCoberturas(target.querySelector('.panel'), policy.coberturas);
     } catch(error) { fail(target,error,load); }
   }
   $('#refresh-page').addEventListener('click',load);

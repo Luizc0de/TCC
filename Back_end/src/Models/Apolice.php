@@ -10,6 +10,7 @@ class Apolice
 	private ?string $dataVencimento;
 	private string $status;
 	private string $tipoApolice;
+	private array $coberturas;
 	private ?string $valorTotal;
 	private ?int $quantidadeParcelas;
 	private int $idCliente;
@@ -25,13 +26,15 @@ class Apolice
 		?int $quantidadeParcelas,
 		int $idCliente,
 		?int $idFuncionario = null,
-		?int $idApolice = null
+		?int $idApolice = null,
+		array $coberturas = []
 	) {
 		$this->numeroApolice = $numeroApolice;
 		$this->dataAssinatura = $dataAssinatura;
 		$this->dataVencimento = $dataVencimento;
 		$this->status = $status;
 		$this->tipoApolice = $tipoApolice;
+		$this->coberturas = $coberturas;
 		$this->valorTotal = $valorTotal;
 		$this->quantidadeParcelas = $quantidadeParcelas;
 		$this->idCliente = $idCliente;
@@ -72,6 +75,11 @@ class Apolice
 	public function getValorTotal(): ?string
 	{
 		return $this->valorTotal;
+	}
+
+	public function getCoberturas(): array
+	{
+		return $this->coberturas;
 	}
 
 	public function getQuantidadeParcelas(): ?int

@@ -29,6 +29,7 @@ Routes::post('/funcionario', 'FuncionarioController@createFuncionario', ['funcio
 
 // apolices
 Routes::post('/apolice', 'ApoliceController@createApolice', ['funcionario', 'vendas']);
+Routes::get('/apolices/coberturas', 'ApoliceController@coberturas', ['funcionario', 'vendas']);
 Routes::get('/apolices/em_analise', 'ApoliceController@emAnalise', ['funcionario', 'analise_risco']);
 Routes::put('/apolices/analisar/{id}', 'ApoliceController@analisar', ['funcionario', 'analise_risco']);
 Routes::get('/apolices/get_all', 'ApoliceController@Index', true);
