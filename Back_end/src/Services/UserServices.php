@@ -28,10 +28,8 @@ class UserServices
 
             UserRepository::createUserPF($user);
 
-            $result = Email::sendEmail(
-                $fields['email'],
-                'Cadastro realizado',
-                'Olá, seu cadastro foi criado com sucesso. ' . "\n" . "Seu código de autenticação é: " . $code
+            $result = Email::sendVerificationCode(
+                $fields['email'], $code
             );
 
             Response::json($result, 201);

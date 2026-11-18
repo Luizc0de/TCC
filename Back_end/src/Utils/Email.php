@@ -11,24 +11,66 @@ class Email extends PHPMailer
     {
         parent::__construct(true);
 
+        // ADICIONE ESTA LINHA PARA VER O ERRO DETALHADO:
+        //$this->SMTPDebug = 2;
+
         $this->isSMTP();
-        $this->Host = 'sandbox.smtp.mailtrap.io';
+        $this->Host = 'smtp.gmail.com';
         $this->SMTPAuth = true;
-        $this->Username = '746b3e8c23eb66';
-        $this->Password = '077b2b554c4091';
+        $this->Username = '244078.aluno@iserj.edu.br';
+        $this->Password = 'stivanalgweeeepd';
         $this->SMTPSecure = 'tls';
-        $this->Port = 2525;
+        $this->Port = 587;
         $this->CharSet = 'UTF-8';
     }
 
-    public static function sendEmail($to = 'luizmiquel3628@gmail.com', $subject = 'Test Email', $body = 'This is a test email sent from PHPMailer.')
+public static function sendVerificationCode($to, $code)
     {
         $mail = new self();
 
+        // Template HTML embutido na própria classe
+        $body = '
+        <!DOCTYPE html>
+        <html lang="pt-BR">
+        <head><meta charset="UTF-8"></head>
+        <body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: \'Segoe UI\', Tahoma, sans-serif;">
+            <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #f1f5f9; padding: 40px 0;">
+                <tr>
+                    <td>
+                        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
+                            <tr>
+                                <td align="center" style="background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%); padding: 35px 20px;">
+                                    <span style="color: #ffffff; font-size: 24px; font-weight: bold;">🛡️ Insurance</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 40px 30px; color: #334155;">
+                                    <h2 style="margin-top: 0; color: #0f172a; font-size: 22px;">Olá, seja bem-vindo(a)!</h2>
+                                    <p style="font-size: 16px; line-height: 1.6; color: #475569;">Seu cadastro na <strong>Insurance</strong> foi realizado com sucesso.</p>
+                                    <p style="font-size: 15px; color: #475569;">Seu código de autenticação é:</p>
+                                    <div style="text-align: center; margin: 25px 0;">
+                                        <span style="display: inline-block; background-color: #eff6ff; border: 2px dashed #3b82f6; border-radius: 8px; padding: 15px 30px; font-size: 32px; font-weight: bold; color: #1e3a8a; letter-spacing: 4px;">' . $code . '</span>
+                                    </div>
+                                    <p style="font-size: 14px; color: #64748b; margin-top: 25px;">Se você não solicitou este cadastro, ignore esta mensagem.</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" style="background-color: #f8fafc; padding: 20px 30px; border-top: 1px solid #e2e8f0;">
+                                    <p style="font-size: 12px; color: #94a3b8; margin: 0;">© 2026 Insurance. Proteção completa para você e sua família.</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </body>
+        </html>';
+
         try {
-            $mail->setFrom('luizmiguelofficer@gmail.com', 'luiz miguel');
+            $mail->setFrom('244078.aluno@iserj.edu.br', 'Insurance - Suporte');
             $mail->addAddress($to);
-            $mail->Subject = $subject;
+            $mail->Subject = 'Cadastro realizado - Insurance';
+            $mail->isHTML(true);
             $mail->Body = $body;
 
             $mail->send();
