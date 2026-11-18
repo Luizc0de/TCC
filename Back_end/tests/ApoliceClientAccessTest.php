@@ -21,15 +21,31 @@ check($client[0]['numeroApolice'] === 'AP-OWN' && $client[0]['bemDescricao'] ===
 $staff = ApoliceRepository::getAllApolices(1, true);
 check(count($staff) === 1 && (int)$staff[0]['id'] === 8, 'Staff scope does not mix coincident IDs');
 check($staff[0]['coberturas'] === [['codigo' => null, 'descricao' => 'Proteção de vidros']], 'Descrições importadas');
-$own = ApoliceRepository::getApoliceByNumero('AP-OWN',1,false);
+$own = ApoliceRepository::getApolice('AP-OWN',1,false);
 check(is_array($own) && $own['bem']['tipo'] === 'VEICULO' && (int)$own['quantidadeParcelas'] === 12, 'Own details');
-check(ApoliceRepository::getApoliceByNumero('AP-OTHER',1,false) === false, 'Other client denied');
-check(ApoliceRepository::getApoliceByNumero('AP-OWN',1,true) === false, 'Other staff denied');
-check(is_array(ApoliceRepository::getApoliceByNumero('AP-OTHER',1,true)), 'Own staff details');
+check(ApoliceRepository::getApolice('AP-OTHER',1,false) === false, 'Other client denied');
+check(ApoliceRepository::getApolice('AP-OWN',1,true) === false, 'Other staff denied');
+check(is_array(ApoliceRepository::getApolice('AP-OTHER',1,true)), 'Own staff details');
 $request = new Request(); $request->setUser((object)['sub'=>1,'roles'=>['user']]);
 ob_start(); (new ApoliceController())->Show($request,new Response(),['AP-OTHER']); $body=json_decode(ob_get_clean(),true);
 check(http_response_code() === 404 && isset($body['error']), 'HTTP detail ownership');
 $request->setUser((object)['sub'=>1,'roles'=>['unknown']]);
 ob_start(); (new ApoliceController())->Show($request,new Response(),['AP-OWN']); ob_end_clean();
 check(http_response_code() === 403, 'Unsupported role denied');
+$db->exec("UPDATE apolice SET numeroApolice = NULL WHERE idApolice = 8");
+$db->exec("UPDATE apolice SET numeroApolice = '8' WHERE idApolice = 7");
+check((int) ApoliceRepository::getApolice('8', 1, false)['id'] === 7, 'Número textual preservado mesmo quando coincide com outro ID');
+$request->setUser((object)['sub'=>1,'roles'=>['funcionario','vendas']]);
+$controller = new ApoliceController();
+foreach ([['8', 200], ['7', 404], ['invalido', 400]] as [$id, $status]) {
+    ob_start();
+    $controller->detalheVenda($request, new Response(), [$id]);
+    $body = json_decode(ob_get_clean(), true, 512, JSON_THROW_ON_ERROR);
+    check(http_response_code() === $status, 'Consulta do vendedor retorna HTTP ' . $status);
+    if ($status === 200) {
+        check($body['numeroApolice'] === null && $body['cliente'] === 'Cliente B' && $body['bem']['tipo'] === 'VEICULO', 'Detalhe de apólice sem número');
+    } else {
+        check(isset($body['error']) && !isset($body['cliente']), 'Consulta recusada sem dados da apólice');
+    }
+}
 echo "OK: policy list, detail ownership, role scope and response fields. Temporary tables only.\n";

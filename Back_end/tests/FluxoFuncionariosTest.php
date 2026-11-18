@@ -112,7 +112,7 @@ $consulta = $db->prepare('SELECT coberturas FROM apolice WHERE idApolice = ?');
 $consulta->execute([$aprovacao['idApolice']]);
 conferir(json_decode($consulta->fetchColumn(), true, 512, JSON_THROW_ON_ERROR) === $aprovacao['coberturas'], 'JSON gravado em LONGTEXT');
 conferir(ApoliceRepository::emAnalise()[0]['coberturas'] === $aprovacao['coberturas'], 'Coberturas exibidas ao risco');
-$detalhe = ApoliceRepository::getApoliceByNumero($aprovacao['numeroApolice'], $cliente, false);
+$detalhe = ApoliceRepository::getApolice($aprovacao['numeroApolice'], $cliente, false);
 conferir($detalhe['coberturas'] === $aprovacao['coberturas'], 'Coberturas visíveis ao titular');
 conferir($aprovacao['status'] === 'EM_ANALISE' && count(StripeDeTeste::$emissoes) === 0, 'Criação sem cobrança');
 conferir(count(ApoliceRepository::getAllApolices($vendas->sub, true)) === 2, 'Vínculo com vendedor autenticado');
@@ -153,4 +153,8 @@ foreach ([
     $criacao = resposta(fn() => Router::dispatch(Routes::routes()), 201);
     conferir(array_column($criacao['coberturas'], 'codigo') === $codigos, 'Coberturas para ' . $bem['tipo']);
 }
+$_SERVER['REQUEST_METHOD'] = 'GET';
+$_GET['url'] = 'apolices/vendas/' . $recusa['idApolice'];
+$detalheVenda = resposta(fn() => Router::dispatch(Routes::routes()), 200);
+conferir($detalheVenda['status'] === 'RECUSADA' && $detalheVenda['coberturas'] === $recusa['coberturas'], 'Vendedor acompanha a apólice após a decisão');
 echo "OK: cadastro, login, setores, vendas com múltiplas coberturas, fila, decisões e cobranças em tabelas temporárias.\n";

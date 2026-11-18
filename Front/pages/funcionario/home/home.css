@@ -15,3 +15,5 @@
 .coverage-option { display: flex; align-items: baseline; gap: 10px; padding: 5px 0; cursor: pointer; }
 .coverage-option input { flex: none; accent-color: var(--blue); }
 .coverage-list { padding-left: 18px; margin: 6px 0; }
+.policy-card h2 { font-size: 17px; overflow-wrap: anywhere; }
+a.policy-card:hover, a.policy-card:focus-visible { border-color: var(--blue); }

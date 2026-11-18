@@ -1,9 +1,12 @@
 (function () {
   'use strict';
   // A API e configurada em Front/config.js, independentemente de como o HTML abriu.
-  const apiBase = window.INSURANCE_CONFIG?.apiBaseUrl || 'http://localhost/TCC/Back_end/index.php';
-  const endpoint = new URL(apiBase);
-  endpoint.searchParams.set('url', 'users_PF');
+  // Lido a cada envio para respeitar o ambiente escolhido no seletor.
+  function registerEndpoint() {
+    const endpoint = new URL(window.INSURANCE_CONFIG?.apiBaseUrl || 'http://localhost/TCC/Back_end/index.php');
+    endpoint.searchParams.set('url', 'users_PF');
+    return endpoint;
+  }
   const form = document.getElementById('register-form');
   const button = form.querySelector('[type="submit"]');
   const feedback = document.getElementById('auth-feedback');
@@ -54,7 +57,7 @@
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 30000);
     try {
-      const response = await fetch(endpoint, {
+      const response = await fetch(registerEndpoint(), {
         method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({ name: name.value.trim(), email: email.value.trim(),
           password: password.value, cpf: cpf.value.replace(/\D/g, '') }),

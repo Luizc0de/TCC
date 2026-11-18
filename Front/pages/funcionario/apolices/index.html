@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#285fe8">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Minhas apólices | Vendas Insurance</title>
+  <link rel="icon" href="../../../assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../home/home.css">
+  <script src="../../../config.js" defer></script>
+  <script src="../painel.js" defer></script>
+  <script src="apolices.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+<aside class="sidebar" aria-label="Área do funcionário">
+  <a class="brand" href="../home/index.html"><span class="brand-symbol"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 3 6.5v5c0 4.5 4 8 9 10 5-2 9-5.5 9-10v-5L12 3Z"/><path d="m8 12 3 3 5-6"/></svg></span>Insurance</a>
+  <span class="nav-caption">Meus setores</span>
+  <nav class="client-nav" data-setores aria-label="Setores"></nav>
+  <div class="sidebar-bottom"><nav class="client-nav" aria-label="Site"><a href="../../home/index.html">Ir para o site</a></nav></div>
+</aside>
+<div class="workspace">
+  <header class="topbar">
+    <span class="topbar-label">Área do funcionário <span>/</span> Vendas</span>
+    <details class="mobile-navigation"><summary>☰ Insurance</summary><nav class="client-nav" data-setores aria-label="Setores no celular"></nav></details>
+    <div class="account-menu"><span class="avatar" id="initials">F</span><span class="account-name"><span id="employee-name">Minha conta</span><small>Funcionário Insurance</small></span><button class="logout" type="button" data-logout>Sair</button></div>
+  </header>
+  <main id="conteudo">
+    <nav class="breadcrumb" id="voltar" aria-label="Navegação da apólice" hidden><a href="index.html">← Voltar para minhas apólices</a></nav>
+    <div class="page-heading"><div><span class="eyebrow">Vendas</span><h1 id="page-title">Minhas apólices</h1></div><button class="button button-outline" id="refresh-page" type="button">Atualizar</button></div>
+    <div id="page-feedback" class="status-message" role="status" hidden></div>
+    <div id="sales-policies" aria-live="polite"><p class="state">Carregando…</p></div>
+  </main>
+  <footer class="client-footer"><span>© 2026 Insurance. Todos os direitos reservados.</span></footer>
+</div>
+<noscript>Ative o JavaScript para consultar suas apólices.</noscript>
+</body>
+</html>
