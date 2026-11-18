@@ -18,6 +18,15 @@ jobs:
         with:
           fetch-depth: 0 # Baixa o histórico para comparar alterações do commit
 
+      - name: Conferir os nomes dos arquivos no Linux antes do envio
+        run: |
+          for arquivo in src/Models/Funcionario.php src/Core/JwtService.php src/Models/Apolice.php; do
+            if [[ ! -f "Back_end/$arquivo" ]]; then
+              echo "::error::Arquivo ausente com o nome exigido pelo autoload: Back_end/$arquivo"
+              exit 1
+            fi
+          done
+
       - name: Verificar se dependências mudaram
         id: check_deps
         uses: tj-actions/changed-files@v45

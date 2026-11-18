@@ -21,7 +21,12 @@ try {
     Dotenv::createImmutable(__DIR__)->load();
     Router::dispatch(Routes::routes());
 } catch (\Throwable $e) {
-    error_log('Falha na API: ' . get_class($e));
+    $origem = basename($e->getFile()) . ':' . $e->getLine();
+    $detalhe = get_class($e);
+    if ($e instanceof \Error && preg_match('~^(?:Class "[\w\\\\]+" not found|Call to undefined (?:function|method) [\w:\\\\]+\(\))$~D', $e->getMessage())) {
+        $detalhe .= ' - ' . $e->getMessage();
+    }
+    error_log("Falha na API: $detalhe em $origem");
     \App\Utils\Response::json(['error' => 'Não foi possível processar a solicitação.'], 500);
 }
 
