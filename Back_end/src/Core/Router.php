@@ -44,7 +44,7 @@ Class Router {
                 if ($auth === true) {
                     $user = JwtService::authenticate();
                     $request->setUser($user);
-                } elseif (is_string($auth) && $auth !== '') {
+                } elseif (is_string($auth) || is_array($auth)) {
                     $user = JwtService::requireRole($auth);
                     $request->setUser($user);
                 }

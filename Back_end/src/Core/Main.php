@@ -15,20 +15,22 @@ Routes::post('/stripe/webhook', 'StripeWebhookController@receber');
 
 //privadas
 Routes::get('/profile', 'UserController@getUserPF', true);
-Routes::post('/profile/change_password', 'UserController@ChangePassword', true);
+Routes::post('/profile/change_password', 'UserController@ChangePassword', 'user');
 
 // policesrou
 
-Routes::get('/getclientes', 'UserController@Index', true);
+Routes::get('/getclientes', 'UserController@Index', ['funcionario', 'vendas']);
 
 Routes::get('/test/private', 'TestController@privateRoute', true);
 
 Routes::get('/test/admin', 'TestController@adminRoute', 'admin');
 
-Routes::post('/funcionario', 'FuncionarioController@CreateFuncionario', true);
+Routes::post('/funcionario', 'FuncionarioController@createFuncionario', ['funcionario', 'rh']);
 
 // apolices
-Routes::post('/apolice', 'ApoliceController@createApolice', true);
+Routes::post('/apolice', 'ApoliceController@createApolice', ['funcionario', 'vendas']);
+Routes::get('/apolices/em_analise', 'ApoliceController@emAnalise', ['funcionario', 'analise_risco']);
+Routes::put('/apolices/analisar/{id}', 'ApoliceController@analisar', ['funcionario', 'analise_risco']);
 Routes::get('/apolices/get_all', 'ApoliceController@Index', true);
 Routes::get('/apolices/get/{id}', 'ApoliceController@Show', true);
 

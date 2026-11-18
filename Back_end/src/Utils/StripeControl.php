@@ -110,8 +110,11 @@
                             new \DateTimeZone('America/Sao_Paulo')
                         ))->setTime(23, 59, 59)->getTimestamp();
 
+                        // A análise pode terminar após o vencimento contratado da parcela.
+                        // Nesse caso o Stripe recebe uma fatura pagável a partir da emissão.
                         if ($timestamp <= time()) {
-                            throw new \RuntimeException('O vencimento deve estar no futuro.');
+                            $timestamp = (new \DateTimeImmutable('tomorrow', new \DateTimeZone('America/Sao_Paulo')))
+                                ->setTime(23, 59, 59)->getTimestamp();
                         }
 
                         // Sem payment_method_types, o Stripe usa os métodos habilitados no Dashboard

@@ -13,7 +13,7 @@ class Request
     public static function validate(array $fields)
     {
         foreach ($fields as $field => $value) {
-            if (empty(trim($value))) {
+            if ((!is_string($value) && !is_int($value) && !is_float($value)) || trim((string) $value) === '') {
                 throw new \Exception("The field ($field) is required.");
             }
         }

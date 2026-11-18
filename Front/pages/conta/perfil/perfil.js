@@ -28,6 +28,10 @@
       });
       if (response.status === 401 || response.status === 403) return signOut();
       const data = await response.json().catch(() => null);
+      if (response.ok && data?.roles?.includes('funcionario')) {
+        location.replace('../../funcionario/home/index.html');
+        return;
+      }
       if (!response.ok || !data || typeof data.nome !== 'string' || typeof data.email !== 'string') {
         throw new Error('Profile unavailable');
       }

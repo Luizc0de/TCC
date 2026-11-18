@@ -1,7 +1,9 @@
 # API de parcelas
 
 Todas as rotas exigem `Authorization: Bearer <token>`. Clientes consultam e pagam
-somente as próprias parcelas. As roles `admin` e `funcionario` têm acesso a todas.
+somente as próprias parcelas. O administrador e o funcionário com as duas roles
+`funcionario` e `financeiro` têm acesso a todas as parcelas disponíveis.
+Apólices em análise ou recusadas ficam fora da consulta e do pagamento.
 
 | Método | Rota | Função |
 | --- | --- | --- |

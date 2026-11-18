@@ -109,7 +109,8 @@ Resposta **200**:
 ```json
 {
   "message": "Login successful.",
-  "token": "JWT_RETORNADO_PELO_SERVIDOR"
+  "token": "JWT_RETORNADO_PELO_SERVIDOR",
+  "roles": ["user"]
 }
 ```
 
@@ -215,8 +216,7 @@ Observe a diferença: o cadastro recebe **`name`**, mas o perfil retorna **`nome
 O perfil não retorna `id` nem `roles`. Usuário não encontrado retorna **404**
 com `error: "User not found"`.
 
-Esse endpoint procura na tabela de clientes. Não é um perfil de funcionário:
-um token de funcionário não garante um perfil correto aqui, mesmo que seja válido.
+Para funcionários, o perfil retorna `nome`, `email`, `setor` e as `roles` da sessão.
 
 ### POST `/profile/change_password` — trocar senha
 
@@ -255,7 +255,7 @@ Todas as rotas desta seção exigem JWT.
 
 O servidor aplica o vínculo com o usuário autenticado:
 
-- Roles `admin` ou `funcionario`: podem consultar todas as parcelas.
+- O administrador e o funcionário com role `financeiro` podem consultar todas as parcelas disponíveis.
 - Demais usuários autenticados: apenas parcelas de seu próprio `idCliente`.
 - Acesso direto à parcela de outro cliente retorna **404**.
 
@@ -563,23 +563,18 @@ Privada. Retorna a lista global de clientes:
 ]
 ```
 
-Não há filtros nem paginação. No servidor atual, basta um JWT válido; não há
-checagem de role nesta rota. Não incluir a lista de todos os clientes no app cliente.
+A listagem exige as duas roles `funcionario` e `vendas`.
 
 ## 7. Criar apólice — referência para aplicativo de funcionário
 
 ### POST `/apolice`
 
-Privada. O controller usa o `sub` do token como `idFuncionario`; por isso,
-o uso coerente deste endpoint é com uma conta de funcionário existente.
-Embora a rota esteja marcada apenas com autenticação, o aplicativo de cliente
-não deve implementar essa chamada como contratação direta sem ajustar o backend.
+Exige `funcionario` e `vendas`. A API usa o `sub` do token como `idFuncionario` e define o status inicial como `EM_ANALISE`.
 
 Exemplo de corpo para um veículo:
 
 ```json
 {
-  "status": "SOLICITADA",
   "tipoApolice": "VEICULO",
   "idCliente": 3,
   "valorTotal": "1800.00",
@@ -605,7 +600,7 @@ Exemplo de corpo para um veículo:
 
 | Campo | Obrigatoriedade e significado |
 | --- | --- |
-| `status` | Obrigatório; status da apólice no enum abaixo. |
+| `status` | Definido pelo servidor como `EM_ANALISE`. Omitir na criação. |
 | `tipoApolice` | Obrigatório; tipo da apólice no enum abaixo. |
 | `idCliente` | Obrigatório; cliente existente. |
 | `valorTotal` | Obrigatório; valor em reais, preferencialmente string decimal com ponto. |
@@ -621,7 +616,7 @@ Exemplo de corpo para um veículo:
 isso não debita a primeira parcela automaticamente. As demais parcelas usam
 o dia de vencimento nos meses seguintes. Se `dataEmissao` for omitida, o cálculo
 usa o dia atual do servidor. A diferença de arredondamento vai para a última parcela.
-Datas que já passaram podem impedir a emissão da cobrança no Stripe.
+A emissão no Stripe ocorre após a aprovação. Para parcelas já vencidas, a nova fatura vence ao fim do dia seguinte à emissão, preservando a data contratual no banco.
 
 Campos de `bem`:
 
@@ -637,65 +632,41 @@ Campos de `bem`:
 | `marca` | Opcional para telefone/notebook. |
 | `dataFabricacao` | Opcional; data para veículo. |
 
-Tipos de apólice no banco: `VEICULO`, `IMOVEL`, `VIDA`, `MAQUINARIO`, `ELETRONICO`.
-Os únicos tipos de **bem** implementados são os três da tabela acima. Não
-presumir que exista um cadastro completo de bens de imóvel, vida ou maquinário.
+Use `VEICULO` para automóvel, `NOTEBOOK` para notebook e `ELETRONICO` para telefone. Em bancos antigos cujo enum agrupa notebooks em `ELETRONICO`, a API usa esse valor na apólice e conserva `NOTEBOOK` no bem.
 
-Status de apólice no banco: `SOLICITADA`, `EM_ANALISE`, `AGUARDANDO_DADOS`,
-`APROVADA`, `RECUSADA`, `ATIVA`, `INADIMPLENTE`, `SUSPENSA`, `CANCELADA`, `ENCERRADA`.
-Não há rotas para editar esse status no contrato atual.
+A criação retorna **201** com `message`, `idApolice`, `numeroApolice` e `status`. A API grava o cronograma de parcelas junto com a apólice e aguarda a decisão de risco para disponibilizar cobrança.
 
-Resposta **201**:
+### Análise de risco
 
-```json
-{
-  "message": "Apolice criada com sucesso."
-}
-```
+As duas rotas exigem as roles `funcionario` e `analise_risco`.
 
-Se a apólice foi salva, mas houve falha ao emitir cobranças no Stripe,
-a resposta ainda é **201**, acrescentando:
+| Método e rota | Resultado |
+| --- | --- |
+| `GET /apolices/em_analise` | Fila de todos os vendedores, com cliente, dados do bem, valores e datas. |
+| `PUT /apolices/analisar/{id}` | Recebe `{"status":"APROVADA"}` ou `{"status":"RECUSADA"}` e retorna **200** com a decisão. |
 
-```json
-{
-  "message": "Apolice criada com sucesso.",
-  "avisoStripe": "Algumas parcelas não foram geradas no Stripe e permanecem PENDENTES.",
-  "falhasStripe": [
-    "Detalhe variável da falha de emissão"
-  ]
-}
-```
-
-Não repetir a criação inteira nesse caso: ela já foi persistida e isso pode
-duplicar apólices. O POST de pagamento pode tentar reemitir uma parcela pendente.
-A resposta de criação não retorna `idApolice`, `numeroApolice` ou as parcelas;
-não inventar esses campos na tela ou nos modelos do aplicativo.
+Um ID ou decisão inválidos retornam **400**, uma apólice inexistente retorna **404** e uma decisão já registrada retorna **409**. A aprovação é definitiva mesmo se o Stripe estiver indisponível. Nesse caso, `avisoStripe` informa que o pagamento poderá retomar a emissão pendente. A recusa cancela as parcelas pendentes.
 
 ## 8. Criar funcionário — referência administrativa
 
 ### POST `/funcionario`
 
-Privada. Corpo com todos os campos obrigatórios:
+Exige as roles `funcionario` e `rh`. Todos os campos são obrigatórios.
 
 ```json
 {
   "name": "Funcionário Exemplo",
   "email": "funcionario@example.com",
   "password": "senha-do-funcionario",
-  "setor": "ATENDIMENTO",
-  "cpf": "12345678900",
+  "setor": "vendas",
+  "cpf": "52998224725",
   "salario": "2500.00"
 }
 ```
 
-No sucesso, o serviço atual não emite JSON nem define 201: a resposta tende a
-ser **200 com corpo vazio**. Um consumidor desta rota deve aceitar corpo vazio.
-Duplicidade de e-mail/CPF pode retornar **400** e falha interna, **500**.
+O RH escolhe um dos setores `vendas`, `analise_risco`, `rh`, `financeiro` ou `atendimento`. O servidor grava a role `funcionario` e a do setor escolhido. O cadastro retorna **201** com `message`. Campos inválidos e duplicidade de e-mail ou CPF retornam **400**.
 
-A rota não verifica role administrativa no servidor atual, apenas JWT. O login
-de funcionário atribui `roles: ["funcionario"]`. Não presumir que cadastrar um
-funcionário permita ao app escolher uma role ou produzir automaticamente um token `admin`.
-Não expor esta função no aplicativo de clientes.
+Para criar o primeiro funcionário de RH, execute `php Back_end/scripts/cadastrar-rh.php` no terminal a partir da raiz do projeto. Informe nome, e-mail, CPF e salário. O comando mostra a senha gerada após salvar o cadastro. Entre no site com essas credenciais e use **Recursos humanos → Cadastrar funcionário** para criar uma conta por setor. Para cadastros antigos com apenas `admin` ou sem roles, o login usa o setor reconhecido no registro.
 
 ## 9. Erros e cliente HTTP
 
@@ -847,8 +818,7 @@ coleta de cartão no app, criação de checkout próprio ou chamada ao webhook.
 Se o app exigir essas funções, solicitar implementação no backend antes.
 
 O aplicativo cliente pode usar `/apolices/get_all` para listar suas próprias
-apólices. Não deve listar todos os clientes ou cadastrar funcionários. As
-restrições visuais não corrigem a falta de autorização dessas outras rotas.
+apólices. A listagem global de clientes é restrita a Vendas e o cadastro de funcionários ao RH.
 
 ## 12. Pendências verificadas antes de publicar
 
@@ -863,11 +833,9 @@ como prontas para consumo.
 | `POST /stripe/webhook` | Rota cadastrada; `StripeWebhookController` e `StripeWebhookService` não encontrados nesta cópia. Não depender da baixa automática até restaurar e testar. |
 | `GET /test/private` e `GET /test/admin` | Apontam para `TestController`, que não foi encontrado. Não são endpoints úteis ao app. |
 | Troca de senha de cliente | Corrigida para usar `idCliente`; valida a senha atual, salva hash e retorna 500 JSON em falha interna. |
-| Perfil de funcionário | `/profile` consulta clientes, não funcionários. |
-| Consulta individual de apólice, listagem de clientes e cadastro de funcionário | Exigem JWT, mas ainda não aplicam os limites por dono/role necessários. A listagem `/apolices/get_all` já filtra por vínculo de cliente ou funcionário. |
 | Confirmação de cadastro por e-mail | Envio usa sandbox SMTP; rota de validação está incorreta. |
 | Sessão | Não há renovação de token, revogação ou logout no servidor. |
-| Configuração de segredos | A assinatura JWT e configurações SMTP estão no código; mover para configuração privada do servidor antes de publicar. Não copiar seus valores para este documento ou para o mobile. |
+| Configuração de segredos | Configure `JWT_SECRET` com uma chave aleatória privada de pelo menos 32 bytes no `.env` do servidor. Configurações SMTP também devem permanecer privadas. |
 
 Para disponibilizar o backend na hospedagem: configure o domínio/HTTPS,
 o MySQL e as variáveis privadas; preserve `Authorization` no servidor;
@@ -896,15 +864,17 @@ restritas por dono ou por role apenas por exigirem JWT.
 | POST | `/auth/verify_code` | Pública | Método ausente no controller indicado. |
 | POST | `/auth/login` | Pública | Implementada. |
 | POST | `/stripe/webhook` | Assinatura Stripe prevista; sem JWT | Controller ausente nesta cópia. Não é chamada mobile. |
-| GET | `/profile` | JWT | Implementada para cliente. |
+| GET | `/profile` | JWT | Perfil do cliente ou funcionário autenticado. |
 | POST | `/profile/change_password` | JWT | Implementada para cliente; senha atual obrigatória. |
-| GET | `/getclientes` | JWT | Lista global; referência administrativa. |
+| GET | `/getclientes` | `funcionario` e `vendas` | Clientes para o cadastro de apólice. |
 | GET | `/test/private` | JWT | Controller ausente. |
 | GET | `/test/admin` | JWT com role `admin` | Controller ausente. |
-| POST | `/funcionario` | JWT | Implementada; sucesso sem JSON. |
-| POST | `/apolice` | JWT | Implementada; usa `sub` como funcionário. |
+| POST | `/funcionario` | `funcionario` e `rh` | Cadastro com resposta JSON 201. |
+| POST | `/apolice` | `funcionario` e `vendas` | Envia a apólice para análise. |
+| GET | `/apolices/em_analise` | `funcionario` e `analise_risco` | Lista a fila de análise. |
+| PUT | `/apolices/analisar/{id}` | `funcionario` e `analise_risco` | Registra a aprovação ou recusa. |
 | GET | `/apolices/get_all` | JWT | Lista apenas apólices vinculadas ao cliente ou funcionário autenticado. |
-| GET | `/apolices/get/{numeroApolice}` | JWT | Busca por número textual; não aplica dono. |
+| GET | `/apolices/get/{numeroApolice}` | JWT | Busca por número textual e vínculo com o usuário. |
 | GET | `/parcelas/get_all` | JWT | Implementada; filtro opcional `idApolice`. |
 | GET | `/parcelas/get/{id}` | JWT | Implementada; ID numérico da parcela. |
 | POST | `/parcelas/pagar/{id}` | JWT | Implementada; retorna link Stripe. |

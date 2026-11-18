@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Core\JwtService;
 use App\Services\ParcelaService;
 use App\Utils\Request;
 use App\Utils\Response;
@@ -60,7 +61,11 @@ class ParcelaController
             }
 
             $roles = (array) ($user->roles ?? []);
-            $podeVerTodas = array_intersect(['admin', 'funcionario'], $roles) !== [];
+            $podeVerTodas = in_array('admin', $roles, true)
+                || JwtService::hasRoles($user, ['funcionario', 'financeiro']);
+            if (!$podeVerTodas && (!in_array('user', $roles, true) || in_array('funcionario', $roles, true))) {
+                throw new \DomainException('Perfil sem permissão para consultar parcelas.', 403);
+            }
             Response::json($acao($podeVerTodas ? null : $id), 200);
         } catch (\DomainException $e) {
             Response::json(['error' => $e->getMessage()], $e->getCode());

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#285fe8">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Painel do funcionário | Insurance</title>
+  <link rel="icon" href="../../../assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="home.css">
+  <script src="../../../config.js" defer></script>
+  <script src="home.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+<aside class="sidebar" aria-label="Área do funcionário">
+  <a class="brand" href="index.html"><span class="brand-symbol"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 3 6.5v5c0 4.5 4 8 9 10 5-2 9-5.5 9-10v-5L12 3Z"/><path d="m8 12 3 3 5-6"/></svg></span>Insurance</a>
+  <span class="nav-caption">Meus setores</span>
+  <nav class="client-nav" data-setores aria-label="Setores"></nav>
+  <div class="sidebar-bottom"><nav class="client-nav" aria-label="Site"><a href="../../home/index.html">Ir para o site</a></nav></div>
+</aside>
+<div class="workspace">
+  <header class="topbar">
+    <span class="topbar-label">Área do funcionário <span>/</span> Painel</span>
+    <details class="mobile-navigation"><summary>☰ Insurance</summary><nav class="client-nav" data-setores aria-label="Setores no celular"></nav></details>
+    <div class="account-menu"><span class="avatar" id="initials">F</span><span class="account-name"><span id="employee-name">Minha conta</span><small>Funcionário Insurance</small></span><button class="logout" type="button" data-logout>Sair</button></div>
+  </header>
+  <main id="conteudo">
+    <div class="page-heading"><div><span class="eyebrow">Área do funcionário</span><h1 id="page-title">Meu painel</h1><p id="page-description">Carregando seu setor…</p></div><button class="button button-outline" id="refresh-page" type="button">Atualizar</button></div>
+    <div id="page-feedback" class="status-message" role="status" hidden></div>
+    <section id="vendas" hidden aria-label="Vendas">
+      <form id="policy-form" class="panel">
+        <h2>Nova apólice</h2>
+        <div class="form-grid">
+          <div class="field"><label for="cliente">Cliente</label><select id="cliente" name="idCliente" required><option value="">Selecione um cliente</option></select></div>
+          <div class="field"><label for="tipo">Bem segurado</label><select id="tipo" name="tipo" required><option value="VEICULO">Automóvel</option><option value="NOTEBOOK">Notebook</option><option value="TELEFONE">Celular</option></select></div>
+          <div class="field"><label for="valor">Valor total da apólice (R$)</label><input id="valor" name="valorTotal" type="number" min="0.01" max="9999999999.99" step="0.01" required></div>
+          <div class="field"><label for="parcelas">Quantidade de parcelas</label><input id="parcelas" name="quantidadeParcelas" type="number" min="1" value="1" required></div>
+          <div class="field"><label for="emissao">Data de assinatura</label><input id="emissao" name="dataEmissao" type="date"></div>
+          <div class="field"><label for="vencimento">Vencimento da apólice</label><input id="vencimento" name="dataVencimento" type="date"></div>
+          <div class="field"><label for="prazo">Dias até a primeira parcela</label><input id="prazo" name="prazo" type="number" min="0" value="30" required><small>Use zero para vencer na data de assinatura.</small></div>
+          <div class="field"><label for="dia">Dia das parcelas seguintes</label><input id="dia" name="diaVencimento" type="number" min="1" max="21" value="10" required></div>
+        </div>
+        <h3 class="form-subtitle">Dados do bem</h3>
+        <div class="form-grid">
+          <div class="field"><label for="finalidade">Finalidade de uso</label><input id="finalidade" name="finalidade" maxlength="50" required></div>
+          <div class="field"><label for="avaliacao">Valor avaliado (R$)</label><input id="avaliacao" name="valorAvaliacao" type="number" min="0" step="0.01"></div>
+          <div class="field full"><label for="descricao">Descrição do bem</label><textarea id="descricao" name="descricao" required></textarea></div>
+          <div class="field"><label for="marca">Marca</label><input id="marca" name="marca" maxlength="100"></div>
+          <div class="field" data-bem="VEICULO"><label for="modelo-veiculo">Modelo do veículo</label><input id="modelo-veiculo" name="modeloVeiculo" maxlength="100" required></div>
+          <div class="field" data-bem="VEICULO"><label for="placa">Placa</label><input id="placa" name="placa" maxlength="10" required></div>
+          <div class="field" data-bem="VEICULO"><label for="chassi">Chassi</label><input id="chassi" name="chassi" maxlength="30" required></div>
+          <div class="field" data-bem="VEICULO"><label for="fabricacao">Data de fabricação</label><input id="fabricacao" name="dataFabricacao" type="date"></div>
+          <div class="field" data-bem="NOTEBOOK TELEFONE"><label for="modelo">Modelo</label><input id="modelo" name="modelo" maxlength="100" required></div>
+          <div class="field" data-bem="NOTEBOOK TELEFONE"><label for="serie">Número de série</label><input id="serie" name="numeroSerie" maxlength="100" required></div>
+          <div class="field" data-bem="TELEFONE"><label for="imei">IMEI</label><input id="imei" name="imei" maxlength="50" required></div>
+        </div>
+        <div class="form-actions"><small>A apólice será encaminhada ao setor de análise de risco.</small><button class="button button-primary" type="submit">Enviar para análise</button></div>
+      </form>
+      <section class="panel"><h2>Apólices que enviei</h2><div id="sales-policies" class="table-scroll" aria-live="polite"></div></section>
+    </section>
+    <section id="analise_risco" hidden aria-label="Análise de risco"><div id="risk-queue" aria-live="polite"></div></section>
+    <section id="rh" hidden aria-label="Recursos humanos">
+      <form id="employee-form" class="panel">
+        <h2>Cadastrar funcionário</h2>
+        <div class="form-grid">
+          <div class="field"><label for="nome">Nome completo</label><input id="nome" name="name" maxlength="255" required></div>
+          <div class="field"><label for="email">E-mail de acesso</label><input id="email" name="email" type="email" maxlength="255" autocomplete="off" required></div>
+          <div class="field"><label for="cpf">CPF</label><input id="cpf" name="cpf" inputmode="numeric" maxlength="14" placeholder="000.000.000-00" required></div>
+          <div class="field"><label for="salario">Salário (R$)</label><input id="salario" name="salario" type="number" min="0" max="99999999.99" step="0.01" required></div>
+          <div class="field"><label for="setor">Setor</label><select id="setor" name="setor" required><option value="">Selecione um setor</option><option value="vendas">Vendas</option><option value="analise_risco">Análise de risco</option><option value="rh">Recursos humanos</option><option value="financeiro">Financeiro</option><option value="atendimento">Atendimento</option></select></div>
+          <div class="field"><label for="senha">Senha de acesso</label><input id="senha" name="password" type="password" minlength="8" maxlength="72" autocomplete="new-password" required></div>
+        </div>
+        <div class="form-actions"><small>O setor define quais recursos estarão disponíveis ao entrar.</small><button class="button button-primary" type="submit">Cadastrar funcionário</button></div>
+      </form>
+    </section>
+    <section id="financeiro" class="panel" hidden aria-label="Financeiro"><h2>Parcelas das apólices</h2><div id="finance-list" class="table-scroll" aria-live="polite"></div></section>
+    <section id="atendimento" class="panel" hidden aria-label="Atendimento"><h2>Sinistros vinculados a mim</h2><div id="claims-list" class="table-scroll" aria-live="polite"></div></section>
+  </main>
+  <footer class="client-footer"><span>© 2026 Insurance. Todos os direitos reservados.</span></footer>
+</div>
+<noscript>Ative o JavaScript para acessar seu painel.</noscript>
+</body>
+</html>

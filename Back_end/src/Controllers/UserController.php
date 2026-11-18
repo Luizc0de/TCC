@@ -3,6 +3,7 @@
 namespace App\Controllers;  
 
 use App\Services\UserServices;
+use App\Services\FuncionarioService;
 use App\Utils\Request;
 use App\Utils\Response;
 
@@ -28,7 +29,15 @@ class UserController
 
     public function getUserPF(Request $request){
         $user = $request->user();
-
+        if (in_array('funcionario', (array) ($user->roles ?? []), true)) {
+            $profile = FuncionarioService::getProfile($user->sub);
+            if ($profile === null) {
+                Response::json(['error' => 'Funcionário não encontrado.'], 404);
+                return;
+            }
+            Response::json($profile + ['roles' => $user->roles], 200);
+            return;
+        }
         UserServices::getProfile($user->sub);
     }
     public function Index(){

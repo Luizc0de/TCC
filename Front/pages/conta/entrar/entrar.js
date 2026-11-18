@@ -45,7 +45,8 @@
       try { sessionStorage.setItem(sessionKey, data.token); }
       catch { throw new Error('Permita o armazenamento da sess\u00e3o neste navegador para entrar.'); }
       password.value = '';
-      location.assign('../../cliente/home/index.html');
+      const funcionario = Array.isArray(data.roles) && data.roles.includes('funcionario');
+      location.assign(funcionario ? '../../funcionario/home/index.html' : '../../cliente/home/index.html');
     } catch (error) {
       message(error.name === 'AbortError' ? 'O servidor demorou para responder. Tente novamente.'
         : error instanceof TypeError ? 'N\u00e3o foi poss\u00edvel conectar \u00e0 API. Verifique o Apache e o MySQL no XAMPP.' : error.message);

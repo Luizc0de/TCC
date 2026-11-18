@@ -17,12 +17,13 @@ use App\Core\Router;
 use App\Core\Routes;
 use Dotenv\Dotenv;
 
-// Carrega o .env localizado no diretório atual (__DIR__)
-$dotenv = Dotenv::createImmutable(__DIR__);
-$dotenv->load();
-
-
-Router::dispatch(Routes::routes());
+try {
+    Dotenv::createImmutable(__DIR__)->load();
+    Router::dispatch(Routes::routes());
+} catch (\Throwable $e) {
+    error_log('Falha na API: ' . get_class($e));
+    \App\Utils\Response::json(['error' => 'Não foi possível processar a solicitação.'], 500);
+}
 
 
 ?>
