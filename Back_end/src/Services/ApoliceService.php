@@ -22,7 +22,8 @@ class ApoliceService
                 valorTotal: $fields['valorTotal'],
                 quantidadeParcelas: $fields['quantidadeParcelas'] === null ? null : (int) $fields['quantidadeParcelas'],
                 idCliente: (int) $fields['idCliente'],
-                idFuncionario: $fields['idFuncionario']
+                idFuncionario: $fields['idFuncionario'],
+                coberturas: $fields['coberturas']
             );
             $bem = new Bem(
                 tipoBem: $fields['tipoBem'],
@@ -61,7 +62,8 @@ class ApoliceService
             $idApolice = ApoliceRepository::save($apolice, $bem, $parcelas);
 
             Response::json(['message' => 'Apólice enviada para análise de risco.', 'idApolice' => $idApolice,
-                'numeroApolice' => $apolice->getNumeroApolice(), 'status' => $apolice->getStatus()], 201);
+                'numeroApolice' => $apolice->getNumeroApolice(), 'status' => $apolice->getStatus(),
+                'coberturas' => $apolice->getCoberturas()], 201);
         } catch (\DomainException $e) {
             Response::json(['error' => $e->getMessage()], $e->getCode());
         } catch (\Throwable $e) {

@@ -84,14 +84,36 @@ $_POST['setor'] = 'admin';
 resposta(fn() => (new FuncionarioController())->createFuncionario(), 400);
 $vendas = login('vendas@example.test', $senha);
 conferir($vendas->roles === ['funcionario', 'vendas'], 'Permissões devem vir do setor cadastrado');
+$_SERVER['REQUEST_METHOD'] = 'GET';
+$_GET['url'] = 'apolices/coberturas';
+$catalogo = resposta(fn() => Router::dispatch(Routes::routes()), 200);
+conferir(isset($catalogo['VEICULO']['comuns']['COLISAO'], $catalogo['TELEFONE']['profissionais']['TRANSACOES_DIGITAIS'],
+    $catalogo['NOTEBOOK']['profissionais']['ACESSORIOS_PROFISSIONAIS']), 'Catálogo dos três produtos');
+$_SERVER['REQUEST_METHOD'] = 'POST';
 $body = ['status' => 'ATIVA', 'idCliente' => $cliente, 'idFuncionario' => $rh->sub, 'tipoApolice' => 'NOTEBOOK',
     'valorTotal' => '120.01', 'quantidadeParcelas' => 2, 'FirstParcelNow' => false, 'daysfromfirstparcel' => 10,
-    'diaVencimento' => 15, 'bem' => ['tipo' => 'NOTEBOOK', 'descricao' => 'Notebook de teste', 'finalidade' => 'PESSOAL',
+    'coberturas' => ['DANOS_ELETRICOS', 'ACESSORIOS_PROFISSIONAIS'],
+    'diaVencimento' => 15, 'bem' => ['tipo' => 'NOTEBOOK', 'descricao' => 'Notebook de teste', 'finalidade' => 'PROFISSIONAL',
     'modelo' => 'Modelo A', 'numeroSerie' => 'SERIE-1']];
 $_GET['url'] = 'apolice';
+foreach ([null, [], 'DANOS_ELETRICOS', ['VIDROS'], ['DANOS_ELETRICOS','DANOS_ELETRICOS'], [['codigo' => 'DANOS_ELETRICOS']]] as $invalidas) {
+    $_POST = array_replace($body, ['coberturas' => $invalidas]);
+    resposta(fn() => Router::dispatch(Routes::routes()), 400);
+}
+$_POST = $body;
+$_POST['bem']['finalidade'] = 'PESSOAL';
+resposta(fn() => Router::dispatch(Routes::routes()), 400);
 $_POST = $body;
 $aprovacao = resposta(fn() => Router::dispatch(Routes::routes()), 201);
 $recusa = resposta(fn() => Router::dispatch(Routes::routes()), 201);
+conferir(array_column($aprovacao['coberturas'], 'codigo') === $body['coberturas'], 'Criação com duas coberturas');
+conferir($aprovacao['coberturas'][1]['descricao'] === $catalogo['NOTEBOOK']['profissionais']['ACESSORIOS_PROFISSIONAIS'], 'Descrição do catálogo');
+$consulta = $db->prepare('SELECT coberturas FROM apolice WHERE idApolice = ?');
+$consulta->execute([$aprovacao['idApolice']]);
+conferir(json_decode($consulta->fetchColumn(), true, 512, JSON_THROW_ON_ERROR) === $aprovacao['coberturas'], 'JSON gravado em LONGTEXT');
+conferir(ApoliceRepository::emAnalise()[0]['coberturas'] === $aprovacao['coberturas'], 'Coberturas exibidas ao risco');
+$detalhe = ApoliceRepository::getApoliceByNumero($aprovacao['numeroApolice'], $cliente, false);
+conferir($detalhe['coberturas'] === $aprovacao['coberturas'], 'Coberturas visíveis ao titular');
 conferir($aprovacao['status'] === 'EM_ANALISE' && count(StripeDeTeste::$emissoes) === 0, 'Criação sem cobrança');
 conferir(count(ApoliceRepository::getAllApolices($vendas->sub, true)) === 2, 'Vínculo com vendedor autenticado');
 conferir(ParcelaRepository::getAllParcelas($cliente) === [], 'Parcelas ocultas antes da decisão');
@@ -118,4 +140,17 @@ $notebook = resposta(fn() => Router::dispatch(Routes::routes()), 201);
 $tipo = $db->prepare('SELECT tipoApolice FROM apolice WHERE idApolice = ?');
 $tipo->execute([$notebook['idApolice']]);
 conferir($tipo->fetchColumn() === 'NOTEBOOK', 'Enum com tipo de apólice específico para notebook');
-echo "OK: cadastro, login, setores, vendas, fila, decisões e cobranças em tabelas temporárias.\n";
+foreach ([
+    ['VEICULO', ['tipo' => 'VEICULO', 'marca' => 'Teste', 'modeloVeiculo' => 'A', 'placa' => 'QA12345', 'chassi' => 'QA123456'],
+        ['COLISAO', 'USO_COMERCIAL_APP']],
+    ['ELETRONICO', ['tipo' => 'TELEFONE', 'modelo' => 'B', 'numeroSerie' => 'QA1234', 'imei' => '111111111111111'],
+        ['QUEBRA_ACIDENTAL', 'TRANSACOES_DIGITAIS']],
+] as [$tipoApolice, $bem, $codigos]) {
+    $_POST = $body;
+    $_POST['tipoApolice'] = $tipoApolice;
+    $_POST['bem'] = $bem + ['descricao' => 'Bem de teste', 'finalidade' => 'PROFISSIONAL'];
+    $_POST['coberturas'] = $codigos;
+    $criacao = resposta(fn() => Router::dispatch(Routes::routes()), 201);
+    conferir(array_column($criacao['coberturas'], 'codigo') === $codigos, 'Coberturas para ' . $bem['tipo']);
+}
+echo "OK: cadastro, login, setores, vendas com múltiplas coberturas, fila, decisões e cobranças em tabelas temporárias.\n";

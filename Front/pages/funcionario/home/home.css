@@ -7,3 +7,11 @@
 .panel .table-scroll { margin-top: 20px; }
 .panel .actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .panel .section-header { margin-bottom: 16px; }
+.coverage-fieldset { margin-top: 28px; }
+.coverage-fieldset > legend { width: 100%; font-weight: 700; font-size: 17px; }
+.coverage-fieldset .policy-number { margin: 8px 0 16px; }
+.coverage-group { margin: 16px 0; }
+.coverage-group legend { font-weight: 600; margin-bottom: 8px; }
+.coverage-option { display: flex; align-items: baseline; gap: 10px; padding: 5px 0; cursor: pointer; }
+.coverage-option input { flex: none; accent-color: var(--blue); }
+.coverage-list { padding-left: 18px; margin: 6px 0; }

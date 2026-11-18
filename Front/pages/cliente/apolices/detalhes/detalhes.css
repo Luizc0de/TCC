@@ -216,6 +216,8 @@ td .actions { display: flex; gap: 8px; flex-wrap: wrap; }
 @media(prefers-reduced-motion:reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
 
 .claim-fieldset { padding: 0; margin: 0; border: 0; min-width: 0; }
+.coverage-title { margin: 24px 0 8px; }
+.coverage-list { margin: 0; padding-left: 18px; }
 
 .skip-table-caption { text-align: left; padding: 12px 14px; color: var(--muted); font-size: 11px; }
 .late-label { color: #b45555; }

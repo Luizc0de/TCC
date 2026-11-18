@@ -13,6 +13,8 @@
   const tipos = { VEICULO: 'Automóvel', NOTEBOOK: 'Notebook', TELEFONE: 'Celular' };
   const moeda = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
   const policyForm = $('#policy-form');
+  const coverageOptions = $('#coverage-options');
+  let catalogo;
   let permitidos = [];
   let setorAtual;
   let versao = 0;
@@ -86,6 +88,18 @@
     });
     target.replaceChildren(table);
   }
+  function listaCoberturas(coberturas, resumir = false) {
+    if (!Array.isArray(coberturas) || !coberturas.length) {
+      return coberturas === null ? 'Registro de coberturas ilegível.' : 'Nenhuma cobertura registrada.';
+    }
+    const lista = el('ul', null, 'coverage-list');
+    coberturas.forEach(cobertura => lista.append(el('li', cobertura.descricao)));
+    if (!resumir) return lista;
+    const details = el('details');
+    const quantidade = coberturas.length;
+    details.append(el('summary', quantidade === 1 ? '1 cobertura' : quantidade + ' coberturas'), lista);
+    return details;
+  }
   function risco(lista) {
     const target = $('#risk-queue');
     target.replaceChildren();
@@ -111,6 +125,11 @@
         field.append(el('dt', label), el('dd', value));
         info.append(field);
       });
+      const coberturas = el('div', null, 'full');
+      const descricoes = el('dd');
+      descricoes.append(listaCoberturas(item.coberturas));
+      coberturas.append(el('dt', 'Coberturas selecionadas'), descricoes);
+      info.append(coberturas);
       const actions = el('div', null, 'actions');
       for (const [label, status, style] of [['Aprovar', 'APROVADA', 'primary'], ['Recusar', 'RECUSADA', 'outline']]) {
         const button = el('button', label, 'button button-' + style);
@@ -156,6 +175,7 @@
     } else if (setorAtual === 'vendas') {
       const cliente = $('#cliente');
       await Promise.all([
+        carregarCatalogo(atual),
         listar('getclientes', cliente, items => {
           const anterior = cliente.value;
           cliente.replaceChildren(new Option(items.length ? 'Selecione um cliente' : 'Nenhum cliente cadastrado', ''));
@@ -163,7 +183,8 @@
           cliente.value = anterior;
         }, atual),
         listar('apolices/get_all', $('#sales-policies'), items => tabela($('#sales-policies'),
-          ['Apólice', 'Cliente', 'Valor total', 'Situação'], items.map(p => [p.numeroApolice, p.cliente, money(p.valor), badge(p.status)]),
+          ['Apólice', 'Cliente', 'Coberturas', 'Valor total', 'Situação'], items.map(p =>
+            [p.numeroApolice, p.cliente, listaCoberturas(p.coberturas, true), money(p.valor), badge(p.status)]),
           'Você ainda não enviou apólices.'), atual)
       ]);
     } else if (setorAtual === 'financeiro') {
@@ -217,7 +238,55 @@
       field.hidden = !field.dataset.bem.split(' ').includes(tipo);
       field.querySelector('input').disabled = field.hidden;
     });
+    mostrarCoberturas();
   }
+
+  function validarCoberturas() {
+    const primeiro = coverageOptions.querySelector('input');
+    if (primeiro) primeiro.setCustomValidity(coverageOptions.querySelector(':checked') ? '' : 'Selecione pelo menos uma cobertura.');
+  }
+  function mostrarCoberturas(preservar = false) {
+    const produto = catalogo?.[$('#tipo').value];
+    if (!produto) return;
+    const marcadas = new Set(preservar ? new FormData(policyForm).getAll('coberturas') : []);
+    coverageOptions.replaceChildren();
+    $('#coverage-product').textContent = produto.modalidade + ' · Selecione uma ou mais coberturas.';
+    const grupos = [['Coberturas comuns', produto.comuns]];
+    if ($('#finalidade').value === 'PROFISSIONAL') grupos.push(['Adicionais de uso profissional', produto.profissionais]);
+    grupos.forEach(([titulo, opcoes]) => {
+      const grupo = el('fieldset', null, 'claim-fieldset coverage-group');
+      grupo.append(el('legend', titulo));
+      Object.entries(opcoes).forEach(([codigo, descricao]) => {
+        const label = el('label', null, 'coverage-option');
+        const input = el('input');
+        input.type = 'checkbox';
+        input.name = 'coberturas';
+        input.value = codigo;
+        input.checked = marcadas.has(codigo);
+        label.append(input, descricao);
+        grupo.append(label);
+      });
+      coverageOptions.append(grupo);
+    });
+    validarCoberturas();
+  }
+  async function carregarCatalogo(atual) {
+    if (catalogo) return;
+    try {
+      const dados = await request('apolices/coberturas');
+      if (atual !== versao) return;
+      for (const tipo of Object.keys(tipos)) {
+        if (!dados[tipo]?.modalidade || !dados[tipo]?.comuns || !dados[tipo]?.profissionais) throw new Error('Catálogo de coberturas inválido.');
+      }
+      catalogo = dados;
+      mostrarCoberturas();
+      policyForm.querySelector('[type=submit]').disabled = false;
+    } catch (error) {
+      if (atual === versao) $('#coverage-product').textContent = error.message + ' Use Atualizar para carregar as coberturas.';
+    }
+  }
+  coverageOptions.addEventListener('change', validarCoberturas);
+  $('#finalidade').addEventListener('change', () => mostrarCoberturas(true));
   $('#tipo').addEventListener('change', camposDoBem);
   camposDoBem();
   async function enviar(event, route, payload) {
@@ -227,20 +296,22 @@
     if (button.disabled || !form.reportValidity()) return;
     button.disabled = true;
     try {
-      const result = await request(route, 'POST', payload(Object.fromEntries(new FormData(form))));
+      const result = await request(route, 'POST', payload(new FormData(form)));
       form.reset();
       if (form === policyForm) { camposDoBem(); await carregarSetor(); }
       notice([result.numeroApolice, result.message].filter(Boolean).join(' · '), 'success');
     } catch (error) { notice(error.message, 'error'); }
     finally { button.disabled = false; }
   }
-  policyForm.addEventListener('submit', event => enviar(event, 'apolice', fields => {
-    const { idCliente, valorTotal, quantidadeParcelas, diaVencimento, dataEmissao, dataVencimento, prazo, ...bem } = fields;
-    return { idCliente, valorTotal, quantidadeParcelas, diaVencimento, dataEmissao, dataVencimento,
+  policyForm.addEventListener('submit', event => enviar(event, 'apolice', dados => {
+    const coberturas = dados.getAll('coberturas');
+    dados.delete('coberturas');
+    const { idCliente, valorTotal, quantidadeParcelas, diaVencimento, dataEmissao, dataVencimento, prazo, ...bem } = Object.fromEntries(dados);
+    return { idCliente, valorTotal, quantidadeParcelas, diaVencimento, dataEmissao, dataVencimento, coberturas,
       tipoApolice: bem.tipo === 'TELEFONE' ? 'ELETRONICO' : bem.tipo, FirstParcelNow: Number(prazo) === 0,
       daysfromfirstparcel: Number(prazo), bem: Object.fromEntries(Object.entries(bem).filter(([, value]) => value !== '')) };
   }));
-  $('#employee-form').addEventListener('submit', event => enviar(event, 'funcionario', data => data));
+  $('#employee-form').addEventListener('submit', event => enviar(event, 'funcionario', dados => Object.fromEntries(dados)));
   $('#refresh-page').addEventListener('click', () => { if (setorAtual) carregarSetor(); else iniciar(); });
   window.addEventListener('hashchange', mostrarSetor);
   iniciar();

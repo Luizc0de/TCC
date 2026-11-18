@@ -520,6 +520,10 @@ Resposta **200**:
   "valor": "1800.00",
   "status": "ATIVA",
   "data": "2026-11-01",
+  "coberturas": [
+    {"codigo": "COLISAO", "descricao": "Colisão"},
+    {"codigo": "VIDROS", "descricao": "Proteção de vidros"}
+  ],
   "bem": {
     "id": 4,
     "tipo": "VEICULO",
@@ -567,6 +571,10 @@ A listagem exige as duas roles `funcionario` e `vendas`.
 
 ## 7. Criar apólice — referência para aplicativo de funcionário
 
+### GET `/apolices/coberturas`
+
+Exige as roles `funcionario` e `vendas`. Retorna um objeto com as chaves `VEICULO`, `TELEFONE` e `NOTEBOOK`. Cada tipo contém a `modalidade` e dois mapas de código para descrição, `comuns` e `profissionais`. Para uso particular, ofereça as comuns. Para uso profissional, ofereça os dois grupos.
+
 ### POST `/apolice`
 
 Exige `funcionario` e `vendas`. A API usa o `sub` do token como `idFuncionario` e define o status inicial como `EM_ANALISE`.
@@ -576,6 +584,7 @@ Exemplo de corpo para um veículo:
 ```json
 {
   "tipoApolice": "VEICULO",
+  "coberturas": ["COLISAO", "VIDROS"],
   "idCliente": 3,
   "valorTotal": "1800.00",
   "quantidadeParcelas": 12,
@@ -602,6 +611,7 @@ Exemplo de corpo para um veículo:
 | --- | --- |
 | `status` | Definido pelo servidor como `EM_ANALISE`. Omitir na criação. |
 | `tipoApolice` | Obrigatório; tipo da apólice no enum abaixo. |
+| `coberturas` | Lista obrigatória com um ou mais códigos do catálogo do bem. Códigos repetidos ou incompatíveis com o tipo ou a finalidade retornam **400**. |
 | `idCliente` | Obrigatório; cliente existente. |
 | `valorTotal` | Obrigatório; valor em reais, preferencialmente string decimal com ponto. |
 | `quantidadeParcelas` | Obrigatório; enviar inteiro positivo. |
@@ -623,7 +633,7 @@ Campos de `bem`:
 | Campo | Regra |
 | --- | --- |
 | `tipo` | Obrigatório: `VEICULO`, `TELEFONE` ou `NOTEBOOK`. |
-| `finalidade` | String obrigatória. |
+| `finalidade` | String obrigatória. O portal envia `PESSOAL` ou `PROFISSIONAL`. A API também reconhece `COMERCIAL` e `RENDA` para os adicionais profissionais. |
 | `descricao` | String obrigatória. |
 | `placa`, `chassi`, `marca`, `modeloVeiculo` | Obrigatórios para `VEICULO`. |
 | `numeroSerie`, `modelo`, `imei` | Obrigatórios para `TELEFONE`. |
@@ -634,7 +644,7 @@ Campos de `bem`:
 
 Use `VEICULO` para automóvel, `NOTEBOOK` para notebook e `ELETRONICO` para telefone. Em bancos antigos cujo enum agrupa notebooks em `ELETRONICO`, a API usa esse valor na apólice e conserva `NOTEBOOK` no bem.
 
-A criação retorna **201** com `message`, `idApolice`, `numeroApolice` e `status`. A API grava o cronograma de parcelas junto com a apólice e aguarda a decisão de risco para disponibilizar cobrança.
+A criação retorna **201** com `message`, `idApolice`, `numeroApolice`, `status` e `coberturas`. A coluna `apolice.coberturas` (LONGTEXT) guarda uma lista JSON de objetos com `codigo` e `descricao`. A resposta de criação, a listagem, os detalhes e a fila de risco retornam essa lista já decodificada. Registros antigos sem coberturas retornam `[]`. Um registro ilegível retorna `null` nesse campo. A API grava o cronograma de parcelas junto com a apólice e aguarda a decisão de risco para disponibilizar cobrança.
 
 ### Análise de risco
 
@@ -871,6 +881,7 @@ restritas por dono ou por role apenas por exigirem JWT.
 | GET | `/test/admin` | JWT com role `admin` | Controller ausente. |
 | POST | `/funcionario` | `funcionario` e `rh` | Cadastro com resposta JSON 201. |
 | POST | `/apolice` | `funcionario` e `vendas` | Envia a apólice para análise. |
+| GET | `/apolices/coberturas` | `funcionario` e `vendas` | Catálogo de coberturas por bem e finalidade. |
 | GET | `/apolices/em_analise` | `funcionario` e `analise_risco` | Lista a fila de análise. |
 | PUT | `/apolices/analisar/{id}` | `funcionario` e `analise_risco` | Registra a aprovação ou recusa. |
 | GET | `/apolices/get_all` | JWT | Lista apenas apólices vinculadas ao cliente ou funcionário autenticado. |

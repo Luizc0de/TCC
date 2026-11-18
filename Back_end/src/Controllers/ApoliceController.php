@@ -2,12 +2,18 @@
 
 namespace App\Controllers;
 
+use App\Models\Cobertura;
 use App\Services\ApoliceService;
 use App\Utils\Request;
 use App\Utils\Response;
 
 class ApoliceController
 {
+    public function coberturas(): void
+    {
+        Response::json(Cobertura::CATALOGO, 200);
+    }
+
     public function createApolice(Request $request): void
     {
         $body = Request::getBody();
@@ -53,6 +59,7 @@ class ApoliceController
                 $fields[$campo] = $valor === null ? null : trim($valor);
             }
             Request::validate(['finalidade' => $fields['finalidade'], 'descricao' => $fields['descricao']]);
+            $fields['coberturas'] = Cobertura::selecionar($tipo, $fields['finalidade'], $body['coberturas'] ?? null);
         } catch (\Exception $e) {
             Response::json(['error' => $e->getMessage()], 400);
             return;

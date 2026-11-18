@@ -43,7 +43,7 @@
         </div>
         <h3 class="form-subtitle">Dados do bem</h3>
         <div class="form-grid">
-          <div class="field"><label for="finalidade">Finalidade de uso</label><input id="finalidade" name="finalidade" maxlength="50" required></div>
+          <div class="field"><label for="finalidade">Finalidade de uso</label><select id="finalidade" name="finalidade" required><option value="PESSOAL">Particular</option><option value="PROFISSIONAL">Profissional / renda</option></select></div>
           <div class="field"><label for="avaliacao">Valor avaliado (R$)</label><input id="avaliacao" name="valorAvaliacao" type="number" min="0" step="0.01"></div>
           <div class="field full"><label for="descricao">Descrição do bem</label><textarea id="descricao" name="descricao" required></textarea></div>
           <div class="field"><label for="marca">Marca</label><input id="marca" name="marca" maxlength="100"></div>
@@ -55,7 +55,12 @@
           <div class="field" data-bem="NOTEBOOK TELEFONE"><label for="serie">Número de série</label><input id="serie" name="numeroSerie" maxlength="100" required></div>
           <div class="field" data-bem="TELEFONE"><label for="imei">IMEI</label><input id="imei" name="imei" maxlength="50" required></div>
         </div>
-        <div class="form-actions"><small>A apólice será encaminhada ao setor de análise de risco.</small><button class="button button-primary" type="submit">Enviar para análise</button></div>
+        <fieldset class="claim-fieldset coverage-fieldset">
+          <legend class="form-subtitle">Coberturas da apólice</legend>
+          <p id="coverage-product" class="policy-number" aria-live="polite">Carregando coberturas…</p>
+          <div id="coverage-options"></div>
+        </fieldset>
+        <div class="form-actions"><small>A apólice será encaminhada ao setor de análise de risco.</small><button class="button button-primary" type="submit" disabled>Enviar para análise</button></div>
       </form>
       <section class="panel"><h2>Apólices que enviei</h2><div id="sales-policies" class="table-scroll" aria-live="polite"></div></section>
     </section>
