@@ -74,6 +74,73 @@
       target.append(card);
     });
   }
+  function imagemDoSinistro(id) {
+    const details = el('details');
+    const feedback = el('p');
+    const imagem = el('img', null, 'claim-image');
+    imagem.alt = 'Imagem do sinistro #' + id;
+    imagem.hidden = true;
+    details.append(el('summary', 'Imagem da ocorrência'), feedback, imagem);
+    let carregando = false;
+    details.addEventListener('toggle', async () => {
+      if (!details.open || carregando || !imagem.hidden) return;
+      carregando = true;
+      feedback.textContent = 'Carregando imagem…';
+      try {
+        const blob = await request('sinistros/imagem/' + id, 'GET', undefined, 'image/*');
+        if (!details.isConnected) return;
+        const url = URL.createObjectURL(blob);
+        try {
+          imagem.src = url;
+          await imagem.decode();
+          imagem.hidden = false;
+          feedback.textContent = '';
+        } finally { URL.revokeObjectURL(url); }
+      } catch (error) {
+        feedback.textContent = error.name === 'EncodingError' ? 'Não foi possível exibir a imagem.' : error.message;
+      } finally { carregando = false; }
+    });
+    return details;
+  }
+
+  function sinistros(lista) {
+    const target = $('#claims-list');
+    target.replaceChildren();
+    if (!lista.length) { target.append(el('p', 'Nenhum sinistro registrado.', 'state')); return; }
+    lista.forEach(item => {
+      const card = el('article', null, 'claim-card');
+      const header = el('div', null, 'card-top');
+      const titulo = el('div');
+      titulo.append(el('h3', 'Sinistro #' + item.idSinistro), el('span', item.numeroApolice || 'Apólice #' + item.idApolice, 'policy-number'));
+      header.append(titulo, badge(item.status));
+      card.append(header, el('div', [item.cliente, date(item.dataAbertura)].filter(Boolean).join(' · '), 'claim-meta'),
+        el('p', item.descricao), imagemDoSinistro(item.idSinistro));
+      if (item.status === 'ABERTO') {
+        const actions = el('div', null, 'actions');
+        for (const [label, status, style] of [['Aprovar indenização', 'APROVADO', 'primary'], ['Negar indenização', 'NEGADO', 'outline']]) {
+          const button = el('button', label, 'button button-' + style);
+          button.type = 'button';
+          button.addEventListener('click', async () => {
+            actions.querySelectorAll('button').forEach(control => { control.disabled = true; });
+            try {
+              const result = await request('sinistros/analisar/' + item.idSinistro, 'PUT', { status });
+              if (setorAtual !== 'atendimento') return;
+              notice(result.message, 'success');
+              await carregarSetor();
+            } catch (error) {
+              if (setorAtual !== 'atendimento') return;
+              notice(error.message, 'error');
+              if (error.status === 404 || error.status === 409) await carregarSetor();
+            } finally { actions.querySelectorAll('button').forEach(control => { control.disabled = false; }); }
+          });
+          actions.append(button);
+        }
+        card.append(actions);
+      }
+      target.append(card);
+    });
+  }
+
   async function listar(route, target, render, atual) {
     target.setAttribute('aria-busy', 'true');
     try {
@@ -110,9 +177,7 @@
           [p.numeroApolice, p.numeroParcela, date(p.dataVencimento), money(p.valorCentavos / 100), badge(p.status)]),
         'Nenhuma parcela disponível.'), atual);
     } else if (setorAtual === 'atendimento') {
-      await listar('sinistros/get_all', $('#claims-list'), items => tabela($('#claims-list'),
-        ['Apólice', 'Abertura', 'Ocorrência', 'Situação'], items.map(s =>
-          [s.numeroApolice, date(s.dataAbertura), s.descricao, badge(s.status)]), 'Nenhum sinistro vinculado.'), atual);
+      await listar('sinistros/get_all', $('#claims-list'), sinistros, atual);
     }
   }
 

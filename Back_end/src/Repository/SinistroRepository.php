@@ -6,34 +6,67 @@ class SinistroRepository
 {
     private const SELECT = 'SELECT s.idSinistro, s.idApolice, s.descricao,
         s.imagemArquivo, s.imagemMime, s.status, s.dataAbertura,
-        a.numeroApolice, a.idCliente, a.idFuncionario
-        FROM sinistro s INNER JOIN apolice a ON a.idApolice = s.idApolice';
+        a.numeroApolice, a.idCliente, a.idFuncionario, c.name AS cliente
+        FROM sinistro s INNER JOIN apolice a ON a.idApolice = s.idApolice
+        LEFT JOIN cliente c ON c.idCliente = a.idCliente';
 
-    public static function getAll(int $idUsuario, bool $funcionario, ?int $idApolice = null): array
+    private static function consultar(int $idUsuario, string $perfil, ?int $idApolice, ?int $idSinistro): \PDOStatement
     {
-        $coluna = $funcionario ? 'a.idFuncionario' : 'a.idCliente';
-        $sql = self::SELECT . " WHERE {$coluna} = :idUsuario";
-        $params = [':idUsuario' => $idUsuario];
-        if ($idApolice !== null) {
-            $sql .= ' AND s.idApolice = :idApolice';
-            $params[':idApolice'] = $idApolice;
+        $colunaVinculo = match ($perfil) {
+            'cliente' => 'a.idCliente', 'funcionario' => 'a.idFuncionario', 'atendimento' => null,
+            default => throw new \DomainException('Perfil sem permissão para acessar sinistros.', 403),
+        };
+        $filtros = [];
+        $params = [];
+        if ($colunaVinculo !== null) {
+            $filtros[] = $colunaVinculo . ' = ?';
+            $params[] = $idUsuario;
         }
-
-        $stmt = ApoliceRepository::getConnection()->prepare($sql . ' ORDER BY s.dataAbertura DESC, s.idSinistro DESC');
+        if ($idApolice !== null) {
+            $filtros[] = 's.idApolice = ?';
+            $params[] = $idApolice;
+        }
+        if ($idSinistro !== null) {
+            $filtros[] = 's.idSinistro = ?';
+            $params[] = $idSinistro;
+        }
+        $sql = self::SELECT . ($filtros ? ' WHERE ' . implode(' AND ', $filtros) : '');
+        if ($idSinistro === null) {
+            $sql .= $perfil === 'atendimento' ? " ORDER BY (s.status = 'ABERTO') DESC, " : ' ORDER BY ';
+            $sql .= 's.dataAbertura DESC, s.idSinistro DESC';
+        }
+        $stmt = ApoliceRepository::getConnection()->prepare($sql);
         $stmt->execute($params);
-
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $stmt;
     }
 
-    public static function getById(int $idSinistro, int $idUsuario, bool $funcionario): ?array
+    public static function getAll(int $idUsuario, string $perfil, ?int $idApolice = null): array
     {
-        $coluna = $funcionario ? 'a.idFuncionario' : 'a.idCliente';
-        $stmt = ApoliceRepository::getConnection()->prepare(
-            self::SELECT . " WHERE s.idSinistro = :idSinistro AND {$coluna} = :idUsuario"
-        );
-        $stmt->execute([':idSinistro' => $idSinistro, ':idUsuario' => $idUsuario]);
+        return self::consultar($idUsuario, $perfil, $idApolice, null)->fetchAll(\PDO::FETCH_ASSOC);
+    }
 
-        return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
+    public static function getById(int $idSinistro, int $idUsuario, string $perfil): ?array
+    {
+        return self::consultar($idUsuario, $perfil, null, $idSinistro)->fetch(\PDO::FETCH_ASSOC) ?: null;
+    }
+
+    public static function decidir(int $idSinistro, string $status): void
+    {
+        $db = ApoliceRepository::getConnection();
+        $stmt = $db->prepare("UPDATE sinistro SET status = ? WHERE idSinistro = ? AND status = 'ABERTO'");
+        $stmt->execute([$status, $idSinistro]);
+        if ($stmt->rowCount() === 1) {
+            return;
+        }
+        $consulta = $db->prepare('SELECT status FROM sinistro WHERE idSinistro = ?');
+        $consulta->execute([$idSinistro]);
+        $atual = $consulta->fetchColumn();
+        if ($atual === false) {
+            throw new \DomainException('Sinistro não encontrado.', 404);
+        }
+        if ($atual !== $status) {
+            throw new \DomainException('Este sinistro já recebeu outra decisão.', 409);
+        }
     }
 
     public static function getApoliceDoCliente(int $idApolice, int $idCliente): ?array
@@ -51,8 +84,8 @@ class SinistroRepository
     {
         $db = ApoliceRepository::getConnection();
         $stmt = $db->prepare(
-            'INSERT INTO sinistro (idApolice, descricao, imagemArquivo, imagemMime)
-            VALUES (:idApolice, :descricao, :arquivo, :mime)'
+            "INSERT INTO sinistro (idApolice, descricao, imagemArquivo, imagemMime, status)
+            VALUES (:idApolice, :descricao, :arquivo, :mime, 'ABERTO')"
         );
         $stmt->execute([
             ':idApolice' => $idApolice,

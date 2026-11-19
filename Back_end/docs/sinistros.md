@@ -1,4 +1,4 @@
-# Sinistros — abertura, consulta e imagem
+# Sinistros — abertura, consulta e decisão de indenização
 
 Todas as rotas exigem `Authorization: Bearer TOKEN`. O token determina o
 usuário; o app não envia um ID de cliente ou funcionário para escolher quem acessa.
@@ -6,10 +6,11 @@ usuário; o app não envia um ID de cliente ou funcionário para escolher quem a
 | Método | Rota | Função |
 | --- | --- | --- |
 | POST | `/sinistro` | Cliente abre um sinistro com apólice, descrição e uma imagem. |
-| GET | `/sinistros/get_all` | Lista sinistros vinculados ao usuário autenticado. |
+| GET | `/sinistros/get_all` | Lista os sinistros visíveis ao perfil autenticado. |
 | GET | `/sinistros/get_all?idApolice=7` | Filtra a listagem por apólice, mantendo a autorização. |
 | GET | `/sinistros/get/{id}` | Consulta um sinistro pelo ID numérico. |
 | GET | `/sinistros/imagem/{id}` | Retorna os bytes da imagem com autenticação. |
+| PUT | `/sinistros/analisar/{id}` | O Atendimento aprova ou nega a indenização. |
 
 No roteamento explícito, use:
 
@@ -25,16 +26,15 @@ http://localhost/TCC/Back_end/index.php?url=sinistros/imagem/1
 
 - Role `user`: abre sinistros somente em apólices do próprio `idCliente` e
   consulta apenas os sinistros dessas apólices.
-- Roles `funcionario` e `admin`: consultam somente sinistros das apólices em
-  que `idFuncionario` corresponde ao `sub` do token. Não têm acesso global e
-  não podem abrir sinistro como cliente.
+- Quem tem as duas roles `funcionario` e `atendimento` consulta todos os sinistros e imagens. Os abertos aparecem primeiro.
+- Os demais funcionários e administradores consultam sinistros das apólices em que `idFuncionario` corresponde ao `sub` do token.
 - Se houver roles de cliente e funcionário juntas, prevalece o perfil de funcionário.
-- Funcionários sem vínculo e clientes sem sinistros recebem `[]` na listagem.
-- Tentar consultar um sinistro ou sua imagem sem vínculo retorna 404.
+- A listagem retorna `[]` quando o perfil não tem ocorrências visíveis.
+- A consulta de um sinistro ou imagem fora do escopo do perfil retorna 404.
 
-O responsável é obtido da apólice, não de campos enviados pelo app. A associação
-acompanha o vínculo atual da apólice. Este fluxo registra a ocorrência; não faz
-análise de cobertura, aprovação, recusa ou pagamento de indenização.
+Para decidir um sinistro aberto, envie JSON com `{"status":"APROVADO"}` ou `{"status":"NEGADO"}`.
+A API retorna 200 e o status gravado. Repetir a mesma decisão também retorna 200.
+Uma decisão divergente depois do encerramento retorna 409. A aprovação registra a autorização de pagamento.
 
 ## Abrir pelo Postman
 
@@ -83,7 +83,7 @@ Resposta **201**:
 
 O status inicial sempre é `ABERTO`; `status`, `idCliente` e `idFuncionario`
 enviados pelo consumidor não controlam a criação. Uma apólice pode ter mais de
-um sinistro. Não há edição, exclusão ou mudança de status nesta implementação.
+um sinistro. Cada ocorrência recebe sua própria decisão do Atendimento.
 
 ## Consumir no aplicativo
 
@@ -150,10 +150,11 @@ não autentica o pedido. Não coloque JWT em query string.
 
 | HTTP | Causa |
 | --- | --- |
-| 400 | ID inválido, descrição ausente/grande demais, imagem ausente/inválida ou dimensões excessivas. |
+| 400 | ID ou status inválido, descrição ausente/grande demais, imagem ausente/inválida ou dimensões excessivas. |
 | 401 | Token ausente, inválido ou expirado. |
 | 403 | Perfil não autorizado; funcionário tentando abrir sinistro como cliente. |
 | 404 | Apólice não pertence ao cliente, sinistro fora do vínculo, sinistro inexistente ou imagem ausente. |
+| 409 | Outra decisão já foi registrada para esse sinistro. |
 | 413 | Arquivo acima de 5 MiB ou corpo acima de 6 MiB. |
 | 415 | Tipo real do arquivo não é JPEG, PNG ou WebP. |
 | 500 | Falha interna, de banco ou de armazenamento; não retorna detalhes SQL. |
@@ -212,11 +213,8 @@ pelo menos 6 MiB. Limites menores da hospedagem podem recusar o envio antes do P
 ## Teste automatizado
 
 ```powershell
-php Back_end/tests/SinistroHttpTest.php
+php Back_end/tests/SinistroAtendimentoTest.php
 ```
 
-O teste inicia um servidor PHP efêmero em loopback, usa JWT e uploads multipart
-reais, mas isola os dados em tabelas temporárias e as imagens em uma pasta exclusiva
-de teste. Não lê nem altera registros reais e remove os arquivos ao encerrar.
-Verifica acesso por cliente/funcionário, IDs coincidentes, imagem privada, arquivos
-disfarçados, tamanho, campos obrigatórios e remoção da imagem após falha de banco.
+O teste usa PDO SQLite em memória para conferir a fila, o vínculo por perfil,
+a prioridade dos sinistros abertos, decisões repetidas ou conflitantes e o status exibido ao cliente.

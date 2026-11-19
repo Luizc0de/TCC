@@ -891,16 +891,15 @@ restritas por dono ou por role apenas por exigirem JWT.
 | POST | `/parcelas/pagar/{id}` | JWT | Implementada; retorna link Stripe. |
 | POST | `/parcelas/atualizar_pagamento/{id}` | JWT | Implementada; sincronização manual. |
 | POST | `/sinistro` | JWT de cliente | Abre sinistro com apólice própria, descrição e imagem multipart. |
-| GET | `/sinistros/get_all` | JWT | Lista sinistros vinculados ao cliente ou funcionário autenticado. |
-| GET | `/sinistros/get/{id}` | JWT | Consulta sinistro com verificação de vínculo. |
-| GET | `/sinistros/imagem/{id}` | JWT | Retorna imagem privada com verificação de vínculo. |
+| GET | `/sinistros/get_all` | JWT | Lista os sinistros visíveis ao perfil autenticado. |
+| GET | `/sinistros/get/{id}` | JWT | Consulta uma ocorrência visível ao perfil. |
+| GET | `/sinistros/imagem/{id}` | JWT | Retorna a imagem privada da ocorrência. |
+| PUT | `/sinistros/analisar/{id}` | `funcionario` e `atendimento` | Aprova ou nega a indenização de um sinistro aberto. |
 
 ## 14. Sinistros
 
-O cliente abre um sinistro em uma de suas próprias apólices. Funcionários e
-administradores consultam os sinistros das apólices em que são o `idFuncionario`;
-não existe acesso global para essas roles. Cliente e funcionário com o mesmo
-ID numérico continuam com escopos diferentes.
+O cliente abre e consulta sinistros das próprias apólices. O Atendimento consulta a fila de toda a empresa, incluindo as imagens.
+Para os demais funcionários e administradores, a consulta considera o vínculo `idFuncionario` da apólice.
 
 ### Selecionar apólice e abrir o sinistro
 
@@ -967,10 +966,8 @@ Sinistro e imagem fora do vínculo retornam 404. Descrição/imagem ausente,
 ID inválido ou dimensões excessivas retornam 400; tamanho excessivo, 413;
 formato diferente de JPEG/PNG/WebP, 415; falha interna, 500 JSON.
 
-O responsável é o funcionário atualmente vinculado à apólice. Não há edição,
-exclusão, análise de cobertura ou alteração de status neste contrato. Uma
-apólice pode ter vários sinistros. O app deve implementar abertura, consulta
-e exibição de imagem sem simular aprovação ou indenização.
+O Atendimento envia `{"status":"APROVADO"}` ou `{"status":"NEGADO"}` à rota de decisão.
+O cliente acompanha o resultado no campo `status` do sinistro. A decisão registra a autorização ou recusa do pagamento.
 
 Instalação em outro servidor requer aplicar a migração com
 `php Back_end/database/migrate_sinistro.php` e disponibilizar armazenamento
