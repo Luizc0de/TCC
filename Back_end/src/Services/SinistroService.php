@@ -25,7 +25,7 @@ class SinistroService
 
             $imagem = SinistroImage::salvar($upload);
             $id = SinistroRepository::save($idApolice, $descricao, $imagem);
-            $sinistro = self::getById($id, $idCliente, false);
+            $sinistro = self::getById($id, $idCliente, 'cliente');
             $db->commit();
 
             return ['message' => 'Sinistro criado com sucesso.', 'sinistro' => $sinistro];
@@ -40,20 +40,30 @@ class SinistroService
         }
     }
 
-    public static function getAll(int $idUsuario, bool $funcionario, ?int $idApolice = null): array
+    public static function analisar(int $idSinistro, mixed $status): array
     {
-        return array_map([self::class, 'formatar'], SinistroRepository::getAll($idUsuario, $funcionario, $idApolice));
+        if (!in_array($status, ['APROVADO', 'NEGADO'], true)) {
+            throw new \DomainException('Selecione APROVADO ou NEGADO para a indenização.', 400);
+        }
+        SinistroRepository::decidir($idSinistro, $status);
+        $decisao = $status === 'APROVADO' ? 'aprovada' : 'negada';
+        return ['idSinistro' => $idSinistro, 'status' => $status, 'message' => "Indenização do sinistro #{$idSinistro} {$decisao}."];
     }
 
-    public static function getById(int $idSinistro, int $idUsuario, bool $funcionario): array
+    public static function getAll(int $idUsuario, string $perfil, ?int $idApolice = null): array
     {
-        return self::formatar(self::buscar($idSinistro, $idUsuario, $funcionario));
+        return array_map([self::class, 'formatar'], SinistroRepository::getAll($idUsuario, $perfil, $idApolice));
     }
 
-    public static function getImagem(int $idSinistro, int $idUsuario, bool $funcionario): array
+    public static function getById(int $idSinistro, int $idUsuario, string $perfil): array
     {
-        $sinistro = self::buscar($idSinistro, $idUsuario, $funcionario);
-        $path = SinistroImage::caminho($sinistro['imagemArquivo']);
+        return self::formatar(self::buscar($idSinistro, $idUsuario, $perfil));
+    }
+
+    public static function getImagem(int $idSinistro, int $idUsuario, string $perfil): array
+    {
+        $sinistro = self::buscar($idSinistro, $idUsuario, $perfil);
+        $path = SinistroImage::caminho($sinistro['imagemArquivo'] ?? '');
         if (!is_file($path) || !is_readable($path)) {
             throw new \DomainException('Imagem não encontrada.', 404);
         }
@@ -61,9 +71,9 @@ class SinistroService
         return ['path' => $path, 'mime' => $sinistro['imagemMime']];
     }
 
-    private static function buscar(int $idSinistro, int $idUsuario, bool $funcionario): array
+    private static function buscar(int $idSinistro, int $idUsuario, string $perfil): array
     {
-        $sinistro = SinistroRepository::getById($idSinistro, $idUsuario, $funcionario);
+        $sinistro = SinistroRepository::getById($idSinistro, $idUsuario, $perfil);
         if ($sinistro === null) {
             throw new \DomainException('Sinistro não encontrado.', 404);
         }

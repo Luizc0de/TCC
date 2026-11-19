@@ -8,7 +8,7 @@
     analise_risco: ['Análise de risco', 'Consulte os dados do bem e decida sobre as apólices em análise.'],
     rh: ['Recursos humanos', 'Cadastre funcionários e defina o setor de acesso.'],
     financeiro: ['Financeiro', 'Acompanhe os valores, vencimentos e pagamentos das parcelas.'],
-    atendimento: ['Atendimento', 'Consulte as ocorrências das apólices sob sua responsabilidade.']
+    atendimento: ['Atendimento', 'Consulte os sinistros e analise os pedidos de indenização.']
   };
   const tipos = { VEICULO: 'Automóvel', NOTEBOOK: 'Notebook', TELEFONE: 'Celular' };
   const moeda = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -19,19 +19,25 @@
   }
   $('[data-logout]').addEventListener('click', signOut);
 
-  async function request(route, method = 'GET', payload) {
+  async function request(route, method = 'GET', payload, accept = 'application/json') {
     let token;
     try { token = sessionStorage.getItem(sessionKey); } catch {}
     if (!token) { signOut(); throw new Error('Entre novamente para continuar.'); }
     const url = new URL(apiBase);
     url.searchParams.set('url', route);
-    const headers = { Accept: 'application/json', Authorization: 'Bearer ' + token };
+    const headers = { Accept: accept, Authorization: 'Bearer ' + token };
     if (payload) headers['Content-Type'] = 'application/json';
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 30000);
     try {
       const res = await fetch(url, { method, headers, body: JSON.stringify(payload), signal: controller.signal, cache: 'no-store' });
       if (res.status === 401) { signOut(); throw new Error('Sua sessão expirou.'); }
+      if (res.ok && accept === 'image/*') {
+        if (!/^image\/(jpeg|png|webp)$/i.test(res.headers.get('Content-Type')?.split(';')[0] || '')) {
+          throw new Error('A API retornou uma imagem inválida.');
+        }
+        return await res.blob();
+      }
       const data = await res.json().catch(() => null);
       if (!res.ok || data === null) {
         const error = new Error(data?.error || 'Não foi possível concluir a solicitação.');
@@ -65,11 +71,12 @@
   function money(value) { return value == null ? '—' : moeda.format(value); }
   function badge(value) {
     const status = { SOLICITADA: 'Solicitada', EM_ANALISE: 'Em análise', AGUARDANDO_DADOS: 'Aguardando dados',
+      ABERTO: 'Aberto', APROVADO: 'Indenização aprovada', NEGADO: 'Indenização negada',
       APROVADA: 'Aprovada', RECUSADA: 'Recusada', ATIVA: 'Ativa', INADIMPLENTE: 'Inadimplente',
       SUSPENSA: 'Suspensa', CANCELADA: 'Cancelada', ENCERRADA: 'Encerrada', PAGA: 'Paga', ABERTA: 'Em aberto', PENDENTE: 'Pendente' };
-    const color = ['APROVADA', 'ATIVA', 'PAGA'].includes(value) ? 'green'
-      : ['RECUSADA', 'CANCELADA', 'SUSPENSA', 'ENCERRADA', 'INADIMPLENTE'].includes(value) ? 'red'
-      : ['ABERTA', 'PENDENTE', 'AGUARDANDO_DADOS'].includes(value) ? 'amber' : 'blue';
+    const color = ['APROVADO', 'APROVADA', 'ATIVA', 'PAGA'].includes(value) ? 'green'
+      : ['NEGADO', 'RECUSADA', 'CANCELADA', 'SUSPENSA', 'ENCERRADA', 'INADIMPLENTE'].includes(value) ? 'red'
+      : ['ABERTO', 'ABERTA', 'PENDENTE', 'AGUARDANDO_DADOS'].includes(value) ? 'amber' : 'blue';
     return el('span', status[value] || String(value || '—').replaceAll('_', ' ').toLowerCase(), 'badge ' + color);
   }
   function listaCoberturas(coberturas) {

@@ -47,6 +47,7 @@ Routes::post('/sinistro', 'SinistroController@criar', true);
 Routes::get('/sinistros/get_all', 'SinistroController@Index', true);
 Routes::get('/sinistros/get/{id}', 'SinistroController@Show', true);
 Routes::get('/sinistros/imagem/{id}', 'SinistroController@imagem', true);
+Routes::put('/sinistros/analisar/{id}', 'SinistroController@analisar', ['funcionario', 'atendimento']);
 
 
 ?>

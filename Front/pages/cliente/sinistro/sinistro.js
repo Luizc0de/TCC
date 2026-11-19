@@ -68,10 +68,10 @@
     const now = new Date();
     return now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
   }
-  const labels = {ATIVA:'Ativa',PAGA:'Paga',ABERTA:'Em aberto',PENDENTE:'Pendente',CANCELADA:'Cancelada',ENCERRADA:'Encerrada',ABERTO:'Aberto',EM_ANALISE:'Em análise',AGUARDANDO_DADOS:'Aguardando dados',APROVADA:'Aprovada',RECUSADA:'Recusada',SOLICITADA:'Solicitada',INADIMPLENTE:'Inadimplente',SUSPENSA:'Suspensa'};
+  const labels = {ATIVA:'Ativa',PAGA:'Paga',ABERTA:'Em aberto',PENDENTE:'Pendente',CANCELADA:'Cancelada',ENCERRADA:'Encerrada',ABERTO:'Aberto',APROVADO:'Indenização aprovada',NEGADO:'Indenização negada',EM_ANALISE:'Em análise',AGUARDANDO_DADOS:'Aguardando dados',APROVADA:'Aprovada',RECUSADA:'Recusada',SOLICITADA:'Solicitada',INADIMPLENTE:'Inadimplente',SUSPENSA:'Suspensa'};
   function badge(value) {
     const status = upper(value);
-    const color = ['ATIVA','PAGA','APROVADA'].includes(status) ? 'green' : ['CANCELADA','ENCERRADA','RECUSADA','INADIMPLENTE','SUSPENSA'].includes(status) ? 'red' : ['ABERTA','PENDENTE','AGUARDANDO_DADOS'].includes(status) ? 'amber' : 'blue';
+    const color = ['ATIVA','PAGA','APROVADA','APROVADO'].includes(status) ? 'green' : ['CANCELADA','ENCERRADA','RECUSADA','NEGADO','INADIMPLENTE','SUSPENSA'].includes(status) ? 'red' : ['ABERTA','ABERTO','PENDENTE','AGUARDANDO_DADOS'].includes(status) ? 'amber' : 'blue';
     return '<span class="badge ' + color + '">' + esc(labels[status] || value || 'Não informado') + '</span>';
   }
   function kind(policy) {

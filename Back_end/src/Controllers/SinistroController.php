@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Core\JwtService;
 use App\Services\SinistroService;
 use App\Utils\Request;
 use App\Utils\Response;
@@ -10,8 +11,8 @@ class SinistroController
 {
     public function criar(Request $request): void
     {
-        $this->responder($request, function (int $idUsuario, bool $funcionario): array {
-            if ($funcionario) {
+        $this->responder($request, function (int $idUsuario, string $perfil): array {
+            if ($perfil !== 'cliente') {
                 throw new \DomainException('Somente clientes podem abrir um sinistro.', 403);
             }
             if ((int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > 6 * 1024 * 1024) {
@@ -34,25 +35,32 @@ class SinistroController
 
     public function Index(Request $request): void
     {
-        $this->responder($request, function (int $idUsuario, bool $funcionario): array {
+        $this->responder($request, function (int $idUsuario, string $perfil): array {
             $idApolice = isset($_GET['idApolice']) ? $this->validarId($_GET['idApolice']) : null;
 
-            return SinistroService::getAll($idUsuario, $funcionario, $idApolice);
+            return SinistroService::getAll($idUsuario, $perfil, $idApolice);
         });
     }
 
     public function Show(Request $request, Response $response, array $params): void
     {
-        $this->responder($request, fn (int $idUsuario, bool $funcionario): array =>
-            SinistroService::getById($this->validarId($params[0] ?? null), $idUsuario, $funcionario)
+        $this->responder($request, fn (int $idUsuario, string $perfil): array =>
+            SinistroService::getById($this->validarId($params[0] ?? null), $idUsuario, $perfil)
+        );
+    }
+
+    public function analisar(Request $request, Response $response, array $params): void
+    {
+        $this->responder($request, fn (): array =>
+            SinistroService::analisar($this->validarId($params[0] ?? null), Request::getBody()['status'] ?? null)
         );
     }
 
     public function imagem(Request $request, Response $response, array $params): void
     {
         try {
-            [$idUsuario, $funcionario] = $this->usuario($request);
-            $imagem = SinistroService::getImagem($this->validarId($params[0] ?? null), $idUsuario, $funcionario);
+            [$idUsuario, $perfil] = $this->usuario($request);
+            $imagem = SinistroService::getImagem($this->validarId($params[0] ?? null), $idUsuario, $perfil);
             header('Content-Type: ' . $imagem['mime']);
             header('Content-Length: ' . filesize($imagem['path']));
             header('Cache-Control: private, no-store');
@@ -80,20 +88,23 @@ class SinistroController
         if ($id === false) {
             throw new \DomainException('Usuário não autenticado.', 401);
         }
+        if (JwtService::hasRoles($user, ['funcionario', 'atendimento'])) {
+            return [$id, 'atendimento'];
+        }
         $roles = (array) ($user->roles ?? []);
         $funcionario = array_intersect(['funcionario', 'admin'], $roles) !== [];
         if (!$funcionario && !in_array('user', $roles, true)) {
             throw new \DomainException('Perfil sem permissão para acessar sinistros.', 403);
         }
 
-        return [$id, $funcionario];
+        return [$id, $funcionario ? 'funcionario' : 'cliente'];
     }
 
     private function responder(Request $request, callable $acao, int $status = 200): void
     {
         try {
-            [$id, $funcionario] = $this->usuario($request);
-            Response::json($acao($id, $funcionario), $status);
+            [$id, $perfil] = $this->usuario($request);
+            Response::json($acao($id, $perfil), $status);
         } catch (\Throwable $e) {
             $this->erro($e);
         }
