@@ -444,12 +444,10 @@ estiver visível, por exemplo a cada 5 segundos durante até 1 minuto, canceland
 ao sair da tela. Isso é uma política sugerida do aplicativo, não uma exigência
 ou limite implementado pelo backend. Não consultar em loop sem limite.
 
-**Estado do webhook nesta cópia:** há uma rota `/stripe/webhook` cadastrada,
-mas os arquivos de controller/service correspondentes não foram encontrados
-na conferência. Por isso, o aplicativo gerado deve funcionar com a sincronização
-explícita acima até o recebimento automático ser restaurado e validado no servidor.
-Quando o webhook estiver operacional, ele atualizará o banco; o app ainda
-precisará buscar a parcela novamente para exibir o novo estado.
+Com o webhook configurado, a API recebe a confirmação do Stripe e grava a baixa.
+A apólice aprovada passa a `INADIMPLENTE` quando há alguma parcela aberta ou pendente cujo vencimento já passou.
+Com as parcelas em dia, o pagamento da parcela número 1 ativa a apólice. O aplicativo exibe o status recebido da API.
+A sincronização manual aplica a mesma regra. Consulte a parcela ou a apólice novamente para exibir o resultado.
 
 Não há deep link, URL de retorno mobile, WebSocket, push ou endpoint de
 notificações implementado. Não presumir retorno automático do Stripe para o app.
@@ -840,7 +838,6 @@ como prontas para consumo.
 | --- | --- |
 | `POST /users_PJ` | Aponta para `UserController@createUserPJ`, método ausente. |
 | `POST /auth/verify_code` | Aponta para `UserController@verifyCode`, método ausente. Há um método em `AuthController`, mas a rota não aponta para ele. |
-| `POST /stripe/webhook` | Rota cadastrada; `StripeWebhookController` e `StripeWebhookService` não encontrados nesta cópia. Não depender da baixa automática até restaurar e testar. |
 | `GET /test/private` e `GET /test/admin` | Apontam para `TestController`, que não foi encontrado. Não são endpoints úteis ao app. |
 | Troca de senha de cliente | Corrigida para usar `idCliente`; valida a senha atual, salva hash e retorna 500 JSON em falha interna. |
 | Confirmação de cadastro por e-mail | Envio usa sandbox SMTP; rota de validação está incorreta. |
@@ -873,7 +870,7 @@ restritas por dono ou por role apenas por exigirem JWT.
 | POST | `/users_PJ` | Pública | Método ausente. |
 | POST | `/auth/verify_code` | Pública | Método ausente no controller indicado. |
 | POST | `/auth/login` | Pública | Implementada. |
-| POST | `/stripe/webhook` | Assinatura Stripe prevista; sem JWT | Controller ausente nesta cópia. Não é chamada mobile. |
+| POST | `/stripe/webhook` | Assinatura Stripe | Recebe a confirmação de pagamento enviada pelo Stripe. |
 | GET | `/profile` | JWT | Perfil do cliente ou funcionário autenticado. |
 | POST | `/profile/change_password` | JWT | Implementada para cliente; senha atual obrigatória. |
 | GET | `/getclientes` | `funcionario` e `vendas` | Clientes para o cadastro de apólice. |

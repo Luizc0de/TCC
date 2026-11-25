@@ -1,6 +1,7 @@
 <?php
     namespace App\Utils;
 
+    use App\Repository\ParcelaRepository;
     use PDO;
     use Stripe\Stripe;
     use Stripe\Customer;
@@ -13,6 +14,23 @@
         public static function init(): void
         {
             Stripe::setApiKey($_ENV['Stripe_API_KEY']);
+        }
+
+        public static function registrarFatura(PDO $pdo, array $parcela, Invoice $invoice): string
+        {
+            $status = match ($invoice->status) {
+                'paid' => 'PAGA',
+                'open' => 'ABERTA',
+                'void' => 'CANCELADA',
+                default => throw new \DomainException('A cobrança não está disponível para pagamento.', 409),
+            };
+            $valor = (int) $parcela['valorCentavos'];
+            if ($status === 'PAGA' && ($invoice->currency !== 'brl' || $invoice->amount_paid !== $valor)) {
+                throw new \DomainException('O pagamento da fatura diverge do valor da parcela.', 409);
+            }
+            ParcelaRepository::atualizarPagamento((int) $parcela['idParcela'], $invoice->id, $status,
+                $invoice->hosted_invoice_url, $pdo, $valor);
+            return $status;
         }
 
         // Retorna o Customer do Stripe do cliente, criando e salvando o id na primeira vez
@@ -81,10 +99,6 @@
             );
             $salvarItem = $pdo->prepare(
                 'UPDATE parcela SET itemCriado = 1 WHERE idParcela = ?'
-            );
-            $finalizar = $pdo->prepare(
-                "UPDATE parcela SET status = ?, linkPagamento = ? WHERE idParcela = ?
-                AND status IN ('PENDENTE', 'ABERTA')"
             );
 
             $falhas = [];
@@ -160,11 +174,7 @@
                         throw new \RuntimeException('Estado inesperado da invoice: ' . $invoice->status);
                     }
 
-                    $finalizar->execute([
-                        $invoice->status === 'paid' ? 'PAGA' : 'ABERTA',
-                        $invoice->hosted_invoice_url,
-                        $idParcela
-                    ]);
+                    self::registrarFatura($pdo, $parcela, $invoice);
                 } catch (\Throwable $e) {
                     $falhas[] = "Parcela {$numero}: " . $e->getMessage();
                 }
@@ -234,13 +244,6 @@
                 UPDATE parcela
                 SET itemCriado = 1
                 WHERE idApolice = ? AND numeroParcela = ?
-            ");
-
-            $finalizarRegistro = $pdo->prepare("
-                UPDATE parcela
-                SET status = ?, linkPagamento = ?
-                WHERE idApolice = ? AND numeroParcela = ?
-                AND status IN ('PENDENTE', 'ABERTA')
             ");
 
             $parcelas = [];
@@ -388,16 +391,7 @@
                     }
 
                     // 3. Persistir resultado no MySQL
-                    $status = $invoice->status === 'paid'
-                        ? 'PAGA'
-                        : 'ABERTA';
-
-                    $finalizarRegistro->execute([
-                        $status,
-                        $invoice->hosted_invoice_url,
-                        $apoliceId,
-                        $i
-                    ]);
+                    $status = self::registrarFatura($pdo, $registro, $invoice);
 
                     $parcelas[] = [
                         'idApolice' => $apoliceId,

@@ -436,12 +436,30 @@ position: relative;
   box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
-  transition: transform .25s,box-shadow .25s;
+  transition: transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s,border-color .3s;
 }
 
 .insurance-card:hover {
-transform: translateY(-7px);
-  box-shadow: 0 25px 45px #102c4c16;
+transform: translateY(-10px) scale(1.02);
+  border-color: #b9ccf7;
+  box-shadow: 0 28px 50px #2459eb26;
+}
+
+.insurance-card .product-icon {
+transition: transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s;
+}
+
+.insurance-card:hover .product-icon {
+transform: translateY(-3px) rotate(-6deg) scale(1.08);
+  box-shadow: 0 12px 24px #2459eb40;
+}
+
+.insurance-card .card-tag {
+transition: transform .3s;
+}
+
+.insurance-card:hover .card-tag {
+transform: scale(1.06);
 }
 
 .insurance-card .card-tag {
@@ -1118,9 +1136,25 @@ position: absolute;
 transform: translate(-50%,5px);
 }
 
+.scroll-cue > span {
+display: block;
+}
+
 .scroll-cue .icon {
-width: 27px;
+display: block;
+  width: 27px;
   height: 27px;
+  animation: scroll-cue-bounce 1.2s ease-in-out infinite!important;
+}
+
+@keyframes scroll-cue-bounce {
+0%, 100% {
+transform: translateY(-8px);
+}
+
+50% {
+transform: translateY(10px);
+}
 }
 
 .home-solutions {

@@ -21,11 +21,26 @@ As rotas POST não precisam de corpo. O valor e a fatura vêm do banco.
 `linkPagamento` para concluir o pagamento na página do Stripe. Se a emissão
 anterior falhou, a rota tenta emitir somente a parcela solicitada.
 
-Abrir o link não marca a parcela como paga. Com o [webhook configurado](stripe-webhook.md),
-o Stripe avisa o backend e a parcela passa automaticamente para `PAGA` no banco.
-Recarregue a listagem para exibir a alteração. A rota `atualizar_pagamento`
-continua disponível para uma consulta manual; a listagem lê o banco e não
-faz chamadas ao Stripe.
+Depois da aprovação do risco, uma parcela `PENDENTE` ou `ABERTA` com vencimento anterior à data de hoje em São Paulo torna a apólice `INADIMPLENTE`.
+O dia do vencimento ainda conta como em dia. Parcelas pagas e canceladas ficam fora do cálculo.
+A baixa e a atualização da apólice ocorrem na mesma transação. Enquanto houver atraso, a apólice continua `INADIMPLENTE`.
+Ao regularizar a última vencida, ela volta a `ATIVA` se a primeira parcela estiver paga, ou a `APROVADA` se ainda aguardar o primeiro pagamento.
+O webhook e a sincronização manual aplicam a mesma regra. As consultas de apólices e parcelas também atualizam o status gravado antes de responder.
+
+Para receber a confirmação automática, configure no painel do Stripe um destino para o evento
+`invoice.paid` na URL pública da API, `/index.php?url=stripe/webhook`.
+No arquivo `.env` da API, defina `STRIPE_WEBHOOK_SECRET` com o segredo de assinatura desse destino (`whsec_...`).
+
+### Atualização diária no cPanel
+
+Em **Trabalhos Cron**, agende [atualizar-inadimplencia.php](../scripts/atualizar-inadimplencia.php) uma vez por dia, logo após a meia-noite de São Paulo. Use o horário equivalente do servidor.
+O comando abaixo usa um caminho de exemplo. Ajuste o executável PHP e a pasta da API conforme a hospedagem.
+
+```sh
+php /home/USUARIO/api.insurance.dev.br/scripts/atualizar-inadimplencia.php
+```
+
+A tarefa atualiza também os registros anteriores à publicação, mesmo nos dias em que ninguém acessa o sistema. Usa o mesmo banco configurado no `.env` da API.
 
 Os valores são retornados em `valorCentavos`. IDs inválidos retornam 400;
 parcelas inexistentes ou de outro cliente, 404; parcelas já pagas, canceladas
@@ -34,6 +49,6 @@ Falhas na comunicação com o Stripe retornam 502.
 
 ## Verificação
 
-Na raiz do projeto, execute `php Back_end/tests/ParcelaControllerTest.php`.
+Na raiz do projeto, execute `php Back_end/tests/AtivacaoApoliceTest.php`.
 O teste usa a conexão MySQL do `.env`, cria tabelas temporárias na própria
 sessão e simula o Stripe. Não altera os registros reais nem faz cobranças.

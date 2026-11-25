@@ -5,7 +5,9 @@ namespace App\Services;
 use App\Repository\ApoliceRepository;
 use App\Repository\ParcelaRepository;
 use App\Utils\StripeControl;
+use Stripe\Exception\SignatureVerificationException;
 use Stripe\Invoice;
+use Stripe\Webhook;
 
 class ParcelaService
 {
@@ -67,22 +69,39 @@ class ParcelaService
 
         StripeControl::init();
         $invoice = Invoice::retrieve($parcela['stripeInvoiceId']);
-        $status = match ($invoice->status) {
-            'paid' => 'PAGA',
-            'open' => 'ABERTA',
-            'void' => 'CANCELADA',
-            default => throw new \DomainException('A cobrança não está disponível para pagamento.', 409),
-        };
-
-        // O status vem do Stripe; dados enviados pelo cliente não dão baixa na parcela.
-        ParcelaRepository::atualizarPagamento(
-            $idParcela,
-            $parcela['stripeInvoiceId'],
-            $status,
-            $invoice->hosted_invoice_url
-        );
+        StripeControl::registrarFatura(ApoliceRepository::getConnection(), $parcela, $invoice);
 
         return self::getParcelaById($idParcela, $idCliente);
+    }
+
+    public static function receberEventoStripe(string $payload, string $assinatura): void
+    {
+        $secret = $_ENV['STRIPE_WEBHOOK_SECRET'] ?? '';
+        if ($secret === '') {
+            throw new \DomainException('Webhook de pagamento não configurado.', 500);
+        }
+        try {
+            $evento = Webhook::constructEvent($payload, $assinatura, $secret);
+        } catch (SignatureVerificationException | \UnexpectedValueException $e) {
+            throw new \DomainException('Notificação do Stripe inválida.', 400);
+        }
+        if (!is_string($evento->type) || $evento->type === '') {
+            throw new \DomainException('Notificação do Stripe inválida.', 400);
+        }
+        if (!in_array($evento->type, ['invoice.paid', 'invoice.payment_succeeded'], true)) {
+            return;
+        }
+        $invoice = $evento->data->object;
+        if (!$invoice instanceof Invoice || !is_string($invoice->id) || $invoice->id === '') {
+            throw new \DomainException('A notificação não contém uma fatura válida.', 400);
+        }
+        if ($invoice->status !== 'paid') {
+            return;
+        }
+        $parcela = ParcelaRepository::getParcelaByStripeInvoice($invoice->id);
+        if ($parcela !== null) {
+            StripeControl::registrarFatura(ApoliceRepository::getConnection(), $parcela, $invoice);
+        }
     }
 
     private static function validarPagamento(array $parcela): void

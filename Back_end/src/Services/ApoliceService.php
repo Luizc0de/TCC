@@ -102,6 +102,7 @@ class ApoliceService
             if ($pendente) {
                 $resposta['avisoStripe'] = 'Há cobranças pendentes de emissão. Elas podem ser emitidas ao abrir o pagamento.';
             }
+            $resposta['status'] = ApoliceRepository::getStatus($id);
         }
         Response::json($resposta, 200);
     }

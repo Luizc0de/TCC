@@ -157,4 +157,8 @@ $_SERVER['REQUEST_METHOD'] = 'GET';
 $_GET['url'] = 'apolices/vendas/' . $recusa['idApolice'];
 $detalheVenda = resposta(fn() => Router::dispatch(Routes::routes()), 200);
 conferir($detalheVenda['status'] === 'RECUSADA' && $detalheVenda['coberturas'] === $recusa['coberturas'], 'Vendedor acompanha a apólice após a decisão');
+$db->prepare("UPDATE parcela SET dataVencimento = '2000-01-01' WHERE idApolice = ? AND numeroParcela = 1")
+    ->execute([$notebook['idApolice']]);
+$aprovadaComAtraso = resposta(fn() => ApoliceService::analisar($notebook['idApolice'], 'APROVADA'), 200);
+conferir($aprovadaComAtraso['status'] === 'INADIMPLENTE', 'Aprovação do risco informa o status financeiro quando a parcela já venceu');
 echo "OK: cadastro, login, setores, vendas com múltiplas coberturas, fila, decisões e cobranças em tabelas temporárias.\n";
