@@ -25,6 +25,30 @@ class ApoliceRepository
         return self::$db;
     }
 
+    public static function atualizarSituacaoFinanceira(\PDO $db, array $filtros = []): int
+    {
+        $hoje = new \DateTimeImmutable('today', new \DateTimeZone('America/Sao_Paulo'));
+        $params = [$hoje->format('Y-m-d')];
+        $sql = "UPDATE apolice a SET status = (
+            SELECT CASE
+                WHEN MAX(p.status IN ('PENDENTE', 'ABERTA') AND p.dataVencimento < ?) = 1 THEN 'INADIMPLENTE'
+                WHEN MAX(p.numeroParcela = 1 AND p.status = 'PAGA') = 1 THEN 'ATIVA'
+                WHEN a.status = 'INADIMPLENTE' AND COUNT(*) > 0 THEN 'APROVADA'
+                ELSE a.status END
+            FROM parcela p WHERE p.idApolice = a.idApolice
+        ) WHERE a.status IN ('APROVADA', 'ATIVA', 'INADIMPLENTE')";
+        foreach ($filtros as $coluna => $valor) {
+            if (!in_array($coluna, ['idApolice', 'numeroApolice', 'idCliente', 'idFuncionario'], true)) {
+                throw new \InvalidArgumentException('Filtro de apólice desconhecido.');
+            }
+            $sql .= " AND a.{$coluna} = ?";
+            $params[] = $valor;
+        }
+        $stmt = $db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->rowCount();
+    }
+
     public static function save(Apolice $apolice, Bem $bem, array $parcelas = []): int
     {
         $db = null;
@@ -183,6 +207,8 @@ class ApoliceRepository
             if ($status === 'RECUSADA') {
                 $db->prepare("UPDATE parcela SET status = 'CANCELADA' WHERE idApolice = ? AND status = 'PENDENTE'")
                     ->execute([$id]);
+            } else {
+                self::atualizarSituacaoFinanceira($db, ['idApolice' => $id]);
             }
             $db->commit();
             return (int) $apolice['idCliente'];
@@ -193,12 +219,24 @@ class ApoliceRepository
             throw $e;
         }
     }
+    public static function getStatus(int $id): string
+    {
+        $stmt = self::getConnection()->prepare('SELECT status FROM apolice WHERE idApolice = ?');
+        $stmt->execute([$id]);
+        $status = $stmt->fetchColumn();
+        if ($status === false) {
+            throw new \DomainException('Apólice não encontrada.', 404);
+        }
+        return $status;
+    }
+
     public static function getAllApolices(int $idUsuario, bool $funcionario): array
     {
         $db = self::getConnection();
         // Cliente e funcionário têm IDs em tabelas diferentes; filtrar apenas
         // a coluna correspondente ao perfil para não misturar IDs coincidentes.
-        $colunaVinculo = $funcionario ? 'a.idFuncionario' : 'a.idCliente';
+        $colunaVinculo = $funcionario ? 'idFuncionario' : 'idCliente';
+        self::atualizarSituacaoFinanceira($db, [$colunaVinculo => $idUsuario]);
 
         $stmt = $db->prepare("
             SELECT
@@ -218,7 +256,7 @@ class ApoliceRepository
             FROM apolice a
             LEFT JOIN cliente c ON c.idCliente = a.idCliente
             LEFT JOIN bem b ON b.id_bem = a.id_bem
-            WHERE {$colunaVinculo} = :idUsuario
+            WHERE a.{$colunaVinculo} = :idUsuario
         ");
 
         $stmt->execute([':idUsuario' => $idUsuario]);
@@ -229,8 +267,9 @@ class ApoliceRepository
     {
         $db = self::getConnection();
         // Um número de apólice só com dígitos continua sendo uma string. O ID interno é inteiro.
-        $colunaApolice = is_int($identificador) ? 'a.idApolice' : 'a.numeroApolice';
-        $colunaVinculo = $funcionario ? 'a.idFuncionario' : 'a.idCliente';
+        $colunaApolice = is_int($identificador) ? 'idApolice' : 'numeroApolice';
+        $colunaVinculo = $funcionario ? 'idFuncionario' : 'idCliente';
+        self::atualizarSituacaoFinanceira($db, [$colunaVinculo => $idUsuario, $colunaApolice => $identificador]);
 
         $stmt = $db->prepare("
             SELECT
@@ -247,7 +286,7 @@ class ApoliceRepository
                 a.dataAssinatura AS data
             FROM apolice a
             LEFT JOIN cliente c ON c.idCliente = a.idCliente
-            WHERE {$colunaApolice} = :identificador AND {$colunaVinculo} = :idUsuario
+            WHERE a.{$colunaApolice} = :identificador AND a.{$colunaVinculo} = :idUsuario
         ");
 
         $stmt->execute([':identificador' => $identificador, ':idUsuario' => $idUsuario]);

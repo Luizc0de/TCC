@@ -24,7 +24,10 @@ class ParcelaRepository
             $params[':idApolice'] = $idApolice;
         }
 
-        $stmt = ApoliceRepository::getConnection()->prepare(
+        $db = ApoliceRepository::getConnection();
+        $filtros = array_filter(['idCliente' => $idCliente, 'idApolice' => $idApolice], fn ($id) => $id !== null);
+        ApoliceRepository::atualizarSituacaoFinanceira($db, $filtros);
+        $stmt = $db->prepare(
             $sql . ' ORDER BY p.dataVencimento, p.idApolice, p.numeroParcela'
         );
         $stmt->execute($params);
@@ -41,9 +44,15 @@ class ParcelaRepository
             $params[':idCliente'] = $idCliente;
         }
 
-        $stmt = ApoliceRepository::getConnection()->prepare($sql);
+        $db = ApoliceRepository::getConnection();
+        $stmt = $db->prepare($sql);
         $stmt->execute($params);
-
+        $parcela = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (!$parcela) {
+            return null;
+        }
+        ApoliceRepository::atualizarSituacaoFinanceira($db, ['idApolice' => $parcela['idApolice']]);
+        $stmt->execute($params);
         return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
     }
 
@@ -57,38 +66,57 @@ class ParcelaRepository
         return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
     }
 
-    public static function confirmarPagamentoStripe(int $idParcela, string $invoiceId, int $valorCentavos, ?string $link): bool
+    public static function atualizarPagamento(int $idParcela, string $invoiceId, string $status, ?string $link,
+        ?\PDO $db = null, ?int $valorCentavos = null): bool
     {
-        // Atualização atômica: reenvios do mesmo evento ou de outra confirmação
-        // da mesma fatura não dão baixa novamente. Não há outros efeitos colaterais.
-        $stmt = ApoliceRepository::getConnection()->prepare(
-            "UPDATE parcela SET status = 'PAGA', linkPagamento = COALESCE(:link, linkPagamento)
-            WHERE idParcela = :idParcela AND stripeInvoiceId = :invoiceId
-            AND valorCentavos = :valorCentavos AND status <> 'PAGA'"
-        );
-        $stmt->execute([
-            ':link' => $link,
-            ':idParcela' => $idParcela,
-            ':invoiceId' => $invoiceId,
-            ':valorCentavos' => $valorCentavos,
-        ]);
-
-        return $stmt->rowCount() > 0;
+        $db ??= ApoliceRepository::getConnection();
+        $filtro = 'idParcela = ? AND stripeInvoiceId = ?';
+        $params = [$idParcela, $invoiceId];
+        if ($valorCentavos !== null) {
+            $filtro .= ' AND valorCentavos = ?';
+            $params[] = $valorCentavos;
+        }
+        $propria = !$db->inTransaction();
+        if ($propria) {
+            $db->beginTransaction();
+        } else {
+            $db->exec('SAVEPOINT atualizar_pagamento');
+        }
+        try {
+            // Serializa pagamentos de parcelas diferentes da mesma apólice antes de calcular o saldo em atraso.
+            $lock = $db->prepare("SELECT idApolice FROM apolice WHERE idApolice =
+                (SELECT idApolice FROM parcela WHERE {$filtro}) FOR UPDATE");
+            $lock->execute($params);
+            $idApolice = $lock->fetchColumn();
+            $alterada = false;
+            if ($idApolice !== false) {
+                $campoLink = $status === 'PAGA' ? 'COALESCE(?, linkPagamento)' : '?';
+                $stmt = $db->prepare("UPDATE parcela SET status = ?, linkPagamento = {$campoLink}
+                    WHERE {$filtro} AND status IN ('PENDENTE', 'ABERTA')");
+                $stmt->execute(array_merge([$status, $link], $params));
+                $situacoes = ApoliceRepository::atualizarSituacaoFinanceira($db, ['idApolice' => $idApolice]);
+                $alterada = $stmt->rowCount() > 0 || $situacoes > 0;
+            }
+            if ($propria) {
+                $db->commit();
+            } else {
+                $db->exec('RELEASE SAVEPOINT atualizar_pagamento');
+            }
+            return $alterada;
+        } catch (\Throwable $e) {
+            if ($db->inTransaction()) {
+                if ($propria) {
+                    $db->rollBack();
+                } else {
+                    $db->exec('ROLLBACK TO SAVEPOINT atualizar_pagamento');
+                }
+            }
+            throw $e;
+        }
     }
 
-    public static function atualizarPagamento(int $idParcela, string $invoiceId, string $status, ?string $link): void
+    public static function confirmarPagamentoStripe(int $idParcela, string $invoiceId, int $valorCentavos, ?string $link): bool
     {
-        // Uma consulta atrasada não deve reabrir uma parcela já paga ou cancelada.
-        $stmt = ApoliceRepository::getConnection()->prepare(
-            "UPDATE parcela SET status = :status, linkPagamento = :link
-            WHERE idParcela = :idParcela AND stripeInvoiceId = :invoiceId
-            AND status IN ('PENDENTE', 'ABERTA')"
-        );
-        $stmt->execute([
-            ':status' => $status,
-            ':link' => $link,
-            ':idParcela' => $idParcela,
-            ':invoiceId' => $invoiceId,
-        ]);
+        return self::atualizarPagamento($idParcela, $invoiceId, 'PAGA', $link, null, $valorCentavos);
     }
 }
