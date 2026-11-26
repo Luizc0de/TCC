@@ -35,7 +35,7 @@ class RecuperacaoSenhaRepository
             $chave = [$tipo, $conta['id']];
             $db->prepare('INSERT INTO recuperacao_senha (tipoConta,idConta,email) VALUES (?,?,?)
                 ON DUPLICATE KEY UPDATE idConta = idConta')->execute([$tipo, $conta['id'], $conta['email']]);
-            $stmt = $db->prepare('SELECT ultimoEnvio, inicioJanela, envios, tentativas FROM recuperacao_senha
+            $stmt = $db->prepare('SELECT ultimoEnvio, inicioJanela, envios, tentativas, expiraEm, codigoHash, tokenHash FROM recuperacao_senha
                 WHERE tipoConta = ? AND idConta = ? FOR UPDATE');
             $stmt->execute($chave);
             $linha = $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -43,12 +43,21 @@ class RecuperacaoSenhaRepository
             $novaJanela = $agora >= (int) $linha['inicioJanela'] + 900;
             if ($agora < (int) $linha['ultimoEnvio'] + 60 ||
                 (!$novaJanela && ($linha['envios'] >= 3 || $linha['tentativas'] >= 5))) {
+                if ($linha['codigoHash'] === null && $linha['tokenHash'] === null) {
+                    throw new \DomainException('O último envio falhou. Tente novamente em alguns minutos.', 503);
+                }
+                if ((int) $linha['expiraEm'] === 0) {
+                    throw new \DomainException('O envio está em andamento. Aguarde um minuto antes de tentar novamente.', 429);
+                }
+                if ($linha['codigoHash'] === null || $linha['expiraEm'] <= $agora || $linha['tentativas'] >= 5) {
+                    throw new \DomainException('Aguarde 15 minutos antes de solicitar um novo código.', 429);
+                }
                 return false;
             }
             $db->prepare('UPDATE recuperacao_senha SET email = ?, codigoHash = ?, tokenHash = NULL,
-                expiraEm = ?, ultimoEnvio = ?, inicioJanela = ?, envios = ?, tentativas = ?
+                expiraEm = 0, ultimoEnvio = ?, inicioJanela = ?, envios = ?, tentativas = ?
                 WHERE tipoConta = ? AND idConta = ?')->execute([
-                    $conta['email'], $hash, $agora + self::VALIDADE_MINUTOS * 60, $agora,
+                    $conta['email'], $hash, $agora,
                     $novaJanela ? $agora : $linha['inicioJanela'], $novaJanela ? 1 : $linha['envios'] + 1,
                     $novaJanela ? 0 : $linha['tentativas'], $tipo, $conta['id']
                 ]);
@@ -56,10 +65,18 @@ class RecuperacaoSenhaRepository
         });
     }
 
+    public static function confirmarEnvio(string $tipo, int $id, string $hash): bool
+    {
+        $stmt = ApoliceRepository::getConnection()->prepare('UPDATE recuperacao_senha SET expiraEm = ?
+            WHERE tipoConta = ? AND idConta = ? AND codigoHash = ? AND expiraEm = 0');
+        $stmt->execute([time() + self::VALIDADE_MINUTOS * 60, $tipo, $id, $hash]);
+        return $stmt->rowCount() === 1;
+    }
+
     public static function cancelarEnvio(string $tipo, int $id, string $hash): void
     {
-        ApoliceRepository::getConnection()->prepare('UPDATE recuperacao_senha SET codigoHash = NULL, ultimoEnvio = 0
-            WHERE tipoConta = ? AND idConta = ? AND codigoHash = ?')->execute([$tipo, $id, $hash]);
+        ApoliceRepository::getConnection()->prepare('UPDATE recuperacao_senha SET codigoHash = NULL
+            WHERE tipoConta = ? AND idConta = ? AND codigoHash = ? AND expiraEm = 0')->execute([$tipo, $id, $hash]);
     }
 
     public static function validarCodigo(string $tipo, array $conta, string $hash): ?string

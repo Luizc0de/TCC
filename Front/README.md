@@ -41,6 +41,8 @@ Para publicar, importe [a tabela de recuperação](../Back_end/database/migratio
 
 No `.env` da API, configure `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USERNAME` e `EMAIL_PASSWORD` com as credenciais SMTP do provedor. `EMAIL_FROM` é o endereço que aparece como remetente nas mensagens de cadastro e recuperação. Quando omitido, a API usa o usuário SMTP como remetente.
 
+Para o Gmail, use `smtp.gmail.com` na porta `587`, o endereço completo da conta em `EMAIL_USERNAME` e uma senha de aplicativo dessa mesma conta em `EMAIL_PASSWORD`. Deixe `EMAIL_FROM` ausente para usar o mesmo endereço como remetente. Se o log da API indicar “autenticação recusada”, confira a conta e gere uma nova senha de aplicativo no Google.
+
 Para entregar os códigos aos usuários pelo Mailtrap, use as credenciais de envio transacional, com `EMAIL_HOST=live.smtp.mailtrap.io`, `EMAIL_PORT=587`, `EMAIL_USERNAME=api`, o token SMTP em `EMAIL_PASSWORD` e um remetente do domínio verificado em `EMAIL_FROM`. Para testar na caixa do Mailtrap, use as credenciais próprias do Sandbox e `EMAIL_HOST=sandbox.smtp.mailtrap.io`. A conexão usa STARTTLS. Sem um host configurado, a API mantém o padrão `smtp.gmail.com`.
 
 ## Configuracao unica da API

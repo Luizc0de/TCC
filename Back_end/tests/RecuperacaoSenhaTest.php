@@ -19,6 +19,10 @@ class CaixaDeTeste
     public static function sendPasswordResetCode(string $email, string $codigo, int $minutos): void
     {
         if (self::$indisponivel) throw new \PHPMailer\PHPMailer\Exception('SMTP de teste indisponível');
+        $pendente = ApoliceRepository::getConnection()->query('SELECT tipoConta FROM recuperacao_senha WHERE codigoHash IS NOT NULL AND expiraEm = 0')->fetchColumn();
+        $conta = ['tipoConta' => $pendente, 'email' => $email];
+        falha(fn() => Recuperacao::solicitar($conta), 429);
+        falha(fn() => Recuperacao::verificar($conta + ['codigo' => $codigo]), 400);
         conferir($email === 'pessoa@example.test' && strlen($codigo) === 6 && ctype_digit($codigo) && $minutos === 10, 'E-mail com código de seis dígitos');
         self::$codigos[] = $codigo;
     }
@@ -75,7 +79,7 @@ for ($i = 0; $i < 5; $i++) falha(fn() => Recuperacao::verificar($funcionario + [
 $verificar = fn() => Recuperacao::verificar($funcionario + ['codigo' => end(CaixaDeTeste::$codigos)]);
 falha($verificar, 400);
 $db->exec('UPDATE recuperacao_senha SET ultimoEnvio = 0');
-Recuperacao::solicitar($funcionario);
+falha(fn() => Recuperacao::solicitar($funcionario), 429);
 conferir(count(CaixaDeTeste::$codigos) === 2, 'Reenvio não contorna limite de tentativas');
 $db->exec('UPDATE recuperacao_senha SET inicioJanela = 0');
 Recuperacao::solicitar($funcionario);
@@ -92,4 +96,11 @@ conferir(AuthServices::login($email, 'Nova-atendente') !== null && AuthServices:
 CaixaDeTeste::$indisponivel = true;
 falha(fn() => Recuperacao::solicitar($cliente), 503);
 conferir($db->query('SELECT codigoHash FROM recuperacao_senha')->fetchColumn() === null, 'Falha no envio invalida o código');
+falha(fn() => Recuperacao::solicitar($cliente), 503);
+$db->exec('UPDATE recuperacao_senha SET ultimoEnvio = 0, envios = 3');
+falha(fn() => Recuperacao::solicitar($cliente), 503);
+$db->exec('UPDATE recuperacao_senha SET inicioJanela = 0');
+CaixaDeTeste::$indisponivel = false;
+Recuperacao::solicitar($cliente);
+conferir(isset(Recuperacao::verificar($cliente + ['codigo' => end(CaixaDeTeste::$codigos)])['token']), 'Recuperação após o SMTP voltar a aceitar envios');
 echo "OK: recuperação, tentativas, validade, uso único, envio e login dos dois perfis em tabelas temporárias.\n";

@@ -38,8 +38,12 @@ class RecuperacaoSenhaService
                     Email::sendPasswordResetCode($conta['email'], $codigo, RecuperacaoSenhaRepository::VALIDADE_MINUTOS);
                 } catch (\PHPMailer\PHPMailer\Exception $e) {
                     RecuperacaoSenhaRepository::cancelarEnvio($tipo, (int) $conta['id'], $hash);
-                    error_log('Falha no envio SMTP do código de recuperação.');
+                    $motivo = str_contains($e->getMessage(), 'Could not authenticate') ? 'autenticação recusada' : 'falha no envio';
+                    error_log('Recuperação de senha SMTP: ' . $motivo);
                     throw new \DomainException('O envio de e-mail está indisponível. Tente novamente mais tarde.', 503);
+                }
+                if (!RecuperacaoSenhaRepository::confirmarEnvio($tipo, (int) $conta['id'], $hash)) {
+                    throw new \DomainException('Uma solicitação mais recente substituiu este código. Use o último código solicitado.', 409);
                 }
             }
         }

@@ -215,6 +215,11 @@ O código e o token expiram em dez minutos cada. Um código inválido ou
 expirado retorna 400. Se a autorização de troca expirar, a API retorna 403
 e o usuário pode iniciar uma nova solicitação.
 
+Na solicitação, 503 indica falha de envio pelo SMTP. A resposta 429 pede
+que o usuário aguarde para tentar novamente. A resposta 409 indica que um
+pedido mais recente substituiu o anterior. Nesses casos, mantenha o usuário
+na etapa atual e mostre a mensagem da API.
+
 ### GET `/profile` — perfil do cliente autenticado
 
 Privada. Sem parâmetros. Resposta **200**:
