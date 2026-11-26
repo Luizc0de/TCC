@@ -891,6 +891,17 @@ font-size: 12px;
   margin: 22px 0 0;
 }
 
+.auth-switch button.text-link {
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+.auth-switch button:disabled {
+  color: var(--muted);
+  cursor: default;
+}
+
 .auth-form-inner .notice {
 margin-top: 25px;
 }

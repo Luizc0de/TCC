@@ -8,6 +8,9 @@ Routes::post('/users_PJ', 'UserController@createUserPJ');
 
 Routes::post('/auth/verify_code', 'UserController@verifyCode');
 Routes::post('/auth/login', 'AuthController@login');
+Routes::post('/auth/recuperar-senha/solicitar', 'AuthController@solicitarRecuperacao');
+Routes::post('/auth/recuperar-senha/verificar', 'AuthController@verificarRecuperacao');
+Routes::post('/auth/recuperar-senha/redefinir', 'AuthController@redefinirSenha');
 
 // O Stripe autentica esta rota pela assinatura, sem JWT de usuário.
 Routes::post('/stripe/webhook', 'StripeWebhookController@receber');

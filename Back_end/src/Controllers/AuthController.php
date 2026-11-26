@@ -2,11 +2,42 @@
 namespace App\Controllers;
 
 use App\Services\AuthServices;
+use App\Services\RecuperacaoSenhaService;
 use App\Utils\Request;
 use App\Utils\Response;
 use App\Core\JwtService;
 class AuthController
 {
+    public function solicitarRecuperacao(): void
+    {
+        $this->recuperacao([RecuperacaoSenhaService::class, 'solicitar']);
+    }
+
+    public function verificarRecuperacao(): void
+    {
+        $this->recuperacao([RecuperacaoSenhaService::class, 'verificar']);
+    }
+
+    public function redefinirSenha(): void
+    {
+        $this->recuperacao([RecuperacaoSenhaService::class, 'redefinir']);
+    }
+
+    private function recuperacao(callable $acao): void
+    {
+        header('Cache-Control: no-store');
+        try {
+            $dados = Request::getBody();
+            if (!is_array($dados)) throw new \DomainException('Informe os dados da recuperação.', 400);
+            Response::json($acao($dados), 200);
+        } catch (\DomainException $e) {
+            Response::json(['error' => $e->getMessage()], $e->getCode());
+        } catch (\Throwable $e) {
+            error_log('Falha na recuperação de senha: ' . get_class($e));
+            Response::json(['error' => 'Não foi possível recuperar a senha. Tente novamente mais tarde.'], 500);
+        }
+    }
+
     public function login()
     {
         $body = Request::getBody();
