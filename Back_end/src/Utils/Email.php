@@ -16,6 +16,10 @@ class Email extends PHPMailer
         $this->SMTPAuth = true;
         $this->Username = $_ENV['EMAIL_USERNAME'] ?? '244078.aluno@iserj.edu.br';
         $this->Password = $_ENV['EMAIL_PASSWORD'] ?? '';
+        if (strcasecmp($this->Host, 'smtp.gmail.com') === 0 &&
+            preg_match('/\A[a-z]{4}(?: [a-z]{4}){3}\z/i', $this->Password)) {
+            $this->Password = str_replace(' ', '', $this->Password);
+        }
         $this->Timeout = 10;
         $this->SMTPSecure = 'tls';
         $this->Port = (int) ($_ENV['EMAIL_PORT'] ?? 587);

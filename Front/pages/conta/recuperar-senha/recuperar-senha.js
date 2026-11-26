@@ -70,7 +70,8 @@
     await api('solicitar', conta);
     proximoEnvio = Date.now() + 60000;
     verificar.reset();
-    etapa(verificar, 'Confira seu e-mail', 'Se ' + conta.email + ' estiver cadastrado nesse tipo de conta, você receberá um código válido por 10 minutos. Verifique também a pasta de spam.');
+    const perfil = conta.tipoConta === 'funcionario' ? 'funcionário' : 'cliente';
+    etapa(verificar, 'Confira seu e-mail', 'Se ' + conta.email + ' estiver cadastrado como ' + perfil + ', use o código do e-mail mais recente. Ele vale por 10 minutos. Confira também o spam ou altere o e-mail e o tipo de conta abaixo.');
     clearInterval(intervalo);
     atualizarReenvio();
     intervalo = setInterval(atualizarReenvio, 1000);
