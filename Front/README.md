@@ -15,12 +15,12 @@ Cada pagina tem seu index.html e sua propria folha CSS na mesma pasta:
 - pages/contato/: index.html e contato.css
 - pages/conta/entrar/: index.html e entrar.css
 - pages/conta/cadastro/: index.html e cadastro.css
-- pages/conta/recuperar-senha/: index.html e recuperar-senha.css
+- pages/conta/recuperar-senha/ inclui o formulário e a integração para recuperar o acesso por e-mail.
 - pages/conta/perfil/: index.html e perfil.css
 
 A pasta assets guarda apenas imagens, a fonte local e sua licenca. O index.html da raiz encaminha para pages/home/index.html usando HTML.
 
-Cabecalho, rodape e icones estao diretamente no HTML de cada pagina. Os menus usam o elemento nativo details. Contato, recuperacao de senha, simulador e cotacoes permanecem demonstrativos. O backend nao foi alterado.
+Cabecalho, rodape e icones estao diretamente no HTML de cada pagina. Os menus usam o elemento nativo details. Contato, simulador e cotacoes permanecem demonstrativos.
 
 Foto: Cytonn Photography / Unsplash, https://unsplash.com/photos/two-people-shaking-hands-n95VMLxqM2I
 Fonte: Plus Jakarta Sans / Google Fonts. Licenca em assets/fonts/OFL.txt.
@@ -33,7 +33,15 @@ Fonte: Plus Jakarta Sans / Google Fonts. Licenca em assets/fonts/OFL.txt.
 
 O endpoint e calculado relativamente a pasta Back_end, no mesmo host e porta do site. Abra pelo Apache do XAMPP, com MySQL ativo. O token fica apenas em sessionStorage, na chave insurance.authToken, ate sair ou encerrar a sessao da aba. Senhas nao sao armazenadas. Cada script fica junto do HTML e CSS da pagina correspondente.
 
-Cadastro HTTP 201 significa conta criada, mesmo quando o backend informa falha no envio do e-mail. Nesse caso, a interface orienta a entrar sem reenviar o cadastro. A verificacao de codigo e a recuperacao de senha nao fazem parte desta integracao.
+Cadastro HTTP 201 significa conta criada, mesmo quando o backend informa falha no envio do e-mail. Nesse caso, a interface orienta a entrar sem reenviar o cadastro.
+
+Em **Esqueci minha senha**, o cliente ou funcionário informa o tipo de conta e o e-mail, valida o código de seis dígitos e escolhe a nova senha. O código e a autorização de troca valem dez minutos cada. A API permite até três envios e cinco tentativas por conta em quinze minutos, com um minuto entre envios.
+
+Para publicar, importe [a tabela de recuperação](../Back_end/database/migrations/20261126_recuperacao_senha.sql) no phpMyAdmin e envie os arquivos da tela e da API pelo cPanel. O fluxo usa o mesmo `JWT_SECRET` privado do login.
+
+No `.env` da API, configure `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USERNAME` e `EMAIL_PASSWORD` com as credenciais SMTP do provedor. `EMAIL_FROM` é o endereço que aparece como remetente nas mensagens de cadastro e recuperação. Quando omitido, a API usa o usuário SMTP como remetente.
+
+Para entregar os códigos aos usuários pelo Mailtrap, use as credenciais de envio transacional, com `EMAIL_HOST=live.smtp.mailtrap.io`, `EMAIL_PORT=587`, `EMAIL_USERNAME=api`, o token SMTP em `EMAIL_PASSWORD` e um remetente do domínio verificado em `EMAIL_FROM`. Para testar na caixa do Mailtrap, use as credenciais próprias do Sandbox e `EMAIL_HOST=sandbox.smtp.mailtrap.io`. A conexão usa STARTTLS. Sem um host configurado, a API mantém o padrão `smtp.gmail.com`.
 
 ## Configuracao unica da API
 

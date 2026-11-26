@@ -11,20 +11,30 @@ class Email extends PHPMailer
     {
         parent::__construct(true);
 
-        // ADICIONE ESTA LINHA PARA VER O ERRO DETALHADO:
-        //$this->SMTPDebug = 2;
-
         $this->isSMTP();
-        $this->Host = 'smtp.gmail.com';
+        $this->Host = $_ENV['EMAIL_HOST'] ?? 'smtp.gmail.com';
         $this->SMTPAuth = true;
-        $this->Username = '244078.aluno@iserj.edu.br';
-        $this->Password = 'stivanalgweeeepd';
+        $this->Username = $_ENV['EMAIL_USERNAME'] ?? '244078.aluno@iserj.edu.br';
+        $this->Password = $_ENV['EMAIL_PASSWORD'] ?? '';
+        $this->Timeout = 10;
         $this->SMTPSecure = 'tls';
-        $this->Port = 587;
+        $this->Port = (int) ($_ENV['EMAIL_PORT'] ?? 587);
         $this->CharSet = 'UTF-8';
     }
 
-public static function sendVerificationCode($to, $code)
+    public static function sendPasswordResetCode(string $to, string $code, int $minutos): void
+    {
+        $mail = new self();
+        $mail->setFrom($_ENV['EMAIL_FROM'] ?? $mail->Username, 'Insurance - Suporte');
+        $mail->addAddress($to);
+        $mail->Subject = 'Código para redefinir sua senha - Insurance';
+        $mail->Body = "Use o código $code para redefinir sua senha na Insurance. Ele vale por $minutos minutos.
+
+Se você não solicitou a troca, ignore este e-mail.";
+        $mail->send();
+    }
+
+    public static function sendVerificationCode($to, $code)
     {
         $mail = new self();
 
@@ -67,7 +77,7 @@ public static function sendVerificationCode($to, $code)
         </html>';
 
         try {
-            $mail->setFrom('244078.aluno@iserj.edu.br', 'Insurance - Suporte');
+            $mail->setFrom($_ENV['EMAIL_FROM'] ?? $mail->Username, 'Insurance - Suporte');
             $mail->addAddress($to);
             $mail->Subject = 'Cadastro realizado - Insurance';
             $mail->isHTML(true);

@@ -236,10 +236,25 @@ a resposta ainda pode ser **201**, com este formato:
 ```
 
 Nesse caso, não repetir automaticamente o cadastro: a conta pode já existir.
-O serviço de e-mail atual usa um sandbox SMTP. Não prometer ao usuário que um
-código necessariamente chegará à sua caixa de entrada. A rota de verificação
-de código está indisponível conforme a seção 12; não bloquear o app nessa tela.
+O envio usa o SMTP configurado na API. A seção 12 descreve a limitação da
+rota de confirmação do cadastro.
 O login atual não exige que o campo de verificação de e-mail esteja ativo.
+
+### Recuperação de senha
+
+As três rotas recebem JSON por POST e aceitam pedidos sem login. Selecione
+`cliente` ou `funcionario` em `tipoConta` para identificar qual senha alterar.
+
+| Rota | Campos | Resposta de sucesso |
+| --- | --- | --- |
+| `/auth/recuperar-senha/solicitar` | `email`, `tipoConta` | 200 com mensagem genérica de envio |
+| `/auth/recuperar-senha/verificar` | `email`, `tipoConta`, `codigo` como texto de seis dígitos | 200 com `token` de uso único |
+| `/auth/recuperar-senha/redefinir` | `token`, `password` | 200 com confirmação da troca |
+
+Mostre o formulário de nova senha ao receber o token e guarde-o em memória.
+O código e o token expiram em dez minutos cada. Um código inválido ou
+expirado retorna 400. Se a autorização de troca expirar, a API retorna 403
+e o usuário pode iniciar uma nova solicitação.
 
 ### GET `/profile` — perfil do cliente autenticado
 
@@ -882,7 +897,7 @@ como prontas para consumo.
 | `POST /auth/verify_code` | Aponta para `UserController@verifyCode`, método ausente. Há um método em `AuthController`, mas a rota não aponta para ele. |
 | `GET /test/private` e `GET /test/admin` | Apontam para `TestController`, que não foi encontrado. Não são endpoints úteis ao app. |
 | Troca de senha de cliente | Corrigida para usar `idCliente`; valida a senha atual, salva hash e retorna 500 JSON em falha interna. |
-| Confirmação de cadastro por e-mail | Envio usa sandbox SMTP; rota de validação está incorreta. |
+| Confirmação de cadastro por e-mail | A rota de validação do cadastro está incorreta. |
 | Sessão | Não há renovação de token, revogação ou logout no servidor. |
 | Configuração de segredos | Configure `JWT_SECRET` com uma chave aleatória privada de pelo menos 32 bytes no `.env` do servidor. Configurações SMTP também devem permanecer privadas. |
 
